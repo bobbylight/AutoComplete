@@ -134,37 +134,12 @@ public class AutoCompletion implements HierarchyListener, ComponentListener {
 	}
 
 
+	/**
+	 * Displays the popup window.  Hosting applications can call this method
+	 * to programmatically begin an auto-completion operation.
+	 */
 	public void doCompletion() {
-		Completion comp = popupWindow.getSelection();
-		doCompletionImpl(comp);
-	}
-
-
-	private void doCompletionImpl(Completion c) {
-
-		JTextComponent textComp = getTextComponent();
-		String alreadyEntered = c.getAlreadyEntered(textComp);
-		hidePopupWindow();
-		Caret caret = textComp.getCaret();
-
-		int dot = caret.getDot();
-		caret.setDot(dot - alreadyEntered.length());
-		caret.moveDot(dot);
-		textComp.replaceSelection(c.getReplacementText());
-/*
-		Document doc = textComp.getDocument();
-		int end = caret.getDot();
-		int start = end - alreadyEntered.length();
-try {
-		if (doc instanceof AbstractDocument) {
-			((AbstractDocument)doc).replace(start, end-start, c.getReplacementText(), null);
-		}
-		else {
-			doc.remove(start, end-start);
-			doc.insertString(start, c.getReplacementText(), null);
-		}
-} catch (javax.swing.text.BadLocationException ble) { ble.printStackTrace(); }
-*/
+		refreshPopupWindow();
 	}
 
 
@@ -280,12 +255,48 @@ try {
 	}
 
 
+	/**
+	 * Hides the popup window, if it is visible.
+	 */
 	private void hidePopupWindow() {
 		if (popupWindow!=null) {
 			if (popupWindow.isVisible()) {
 				popupWindow.setVisible(false);
 			}
 		}
+	}
+
+
+	/**
+	 * Inserts a completion.
+	 *
+	 * @param c A completion to insert.  This cannot be <code>null</code>.
+	 */
+	void insertCompletion(Completion c) {
+
+		JTextComponent textComp = getTextComponent();
+		String alreadyEntered = c.getAlreadyEntered(textComp);
+		hidePopupWindow();
+		Caret caret = textComp.getCaret();
+
+		int dot = caret.getDot();
+		caret.setDot(dot - alreadyEntered.length());
+		caret.moveDot(dot);
+		textComp.replaceSelection(c.getReplacementText());
+/*
+		Document doc = textComp.getDocument();
+		int end = caret.getDot();
+		int start = end - alreadyEntered.length();
+try {
+		if (doc instanceof AbstractDocument) {
+			((AbstractDocument)doc).replace(start, end-start, c.getReplacementText(), null);
+		}
+		else {
+			doc.remove(start, end-start);
+			doc.insertString(start, c.getReplacementText(), null);
+		}
+} catch (javax.swing.text.BadLocationException ble) { ble.printStackTrace(); }
+*/
 	}
 
 
@@ -336,6 +347,11 @@ try {
 	}
 
 
+	/**
+	 * Returns whether the popup window is visible.
+	 *
+	 * @return Whether the popup window is visible.
+	 */
 	private boolean isPopupVisible() {
 		return popupWindow!=null && popupWindow.isVisible();
 	}
@@ -364,11 +380,6 @@ try {
 			}
 
 			popupWindow.setCompletions(completions);
-//			popupWindow.clear();
-//			for (int i=0; i<completions.size(); i++) {
-//				
-//				popupWindow.addItem((Completion)completions.get(i));
-//			}
 			popupWindow.selectFirstItem();
 
 			if (!popupWindow.isVisible()) {
@@ -393,7 +404,7 @@ try {
 		else if (count==1) { // !isPopupVisible && autoCompleteSingleChoices
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					doCompletionImpl((Completion)completions.get(0));
+					insertCompletion((Completion)completions.get(0));
 				}
 			});
 		}

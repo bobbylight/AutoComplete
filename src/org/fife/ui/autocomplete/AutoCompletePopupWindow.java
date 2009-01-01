@@ -176,9 +176,20 @@ lastLine = -1;
 	}
 
 
+	/**
+	 * Inserts the currently selected completion.
+	 *
+	 * @see #getSelection()
+	 */
+	public void insertSelectedCompletion() {
+		Completion comp = getSelection();
+		ac.insertCompletion(comp);
+	}
+
+
 	public void mouseClicked(MouseEvent e) {
 		if (e.getClickCount()==2) {
-			ac.doCompletion();
+			insertSelectedCompletion();
 		}
 	}
 
@@ -510,7 +521,7 @@ lastLine = -1;
 
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
-				ac.doCompletion();
+				insertSelectedCompletion();
 			}
 		}
 
