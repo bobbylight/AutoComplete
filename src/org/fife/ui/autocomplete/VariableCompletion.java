@@ -59,7 +59,7 @@ public class VariableCompletion extends AbstractCompletion {
 
 		// Add the return type if applicable (C macros like NULL have no type).
 		if (type!=null) {
-			sb.append(type);
+			appendPossibleDataType(sb, type);
 			sb.append(' ');
 		}
 
@@ -68,6 +68,22 @@ public class VariableCompletion extends AbstractCompletion {
 
 		sb.append("</b>");
 
+	}
+
+
+	protected void appendPossibleDataType(StringBuffer sb, String type) {
+		if (type!=null) {
+			ProceduralLanguageCompletionProvider p =
+				(ProceduralLanguageCompletionProvider)getProvider();
+			String dataTypeFG = p.isDataType(type);
+			if (dataTypeFG!=null) {
+				sb.append("<font color=\"").append(dataTypeFG).append("\">");
+			}
+			sb.append(type);
+			if (dataTypeFG!=null) {
+				sb.append("</font>");
+			}
+		}
 	}
 
 

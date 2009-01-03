@@ -24,6 +24,7 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.Color;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,17 +34,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Segment;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
@@ -74,17 +74,18 @@ public class ProceduralLanguageCompletionProvider
 	private boolean colorizeHeader;
 
 
+	public ProceduralLanguageCompletionProvider(InputStream in) {
+		try {
+			this.completions = loadXMLFromStream(in);
+			Collections.sort(this.completions);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		init();
+	}
+
+
 	public ProceduralLanguageCompletionProvider(String fileName) {
-
-		completions = new ArrayList();
-		seg = new Segment();
-
-		setColorizeHeader(false);
-
-		long start = System.currentTimeMillis();
-
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		XMLParser handler = new XMLParser();
 		try {
 			InputStream in = null;
 			File file = new File(fileName);
@@ -95,23 +96,12 @@ public class ProceduralLanguageCompletionProvider
 				ClassLoader cl = getClass().getClassLoader();
 				in = cl.getResourceAsStream(fileName);
 			}
-			try {
-				SAXParser saxParser = factory.newSAXParser();
-				saxParser.parse(in, handler);
-				this.completions = handler.getCompletions();
-				Collections.sort(this.completions);
-			} finally {
-				in.close();
-			}
-		} catch (Throwable err) {
-			err.printStackTrace ();
+			this.completions = loadXMLFromStream(in);
+			Collections.sort(this.completions);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		}
-
-		long time = System.currentTimeMillis() - start;
-		System.out.println("XML loaded in: " + time + "ms");
-
-		setListCellRenderer(new ProceduralLanguageCellRenderer());
-
+		init();
 	}
 
 
@@ -148,12 +138,6 @@ public class ProceduralLanguageCompletionProvider
 	}
 
 
-	private String getColorFor(String text) {
-		int index = dataTypes==null ? -1 : Arrays.binarySearch(dataTypes, text);
-		return index>=0 ? dataTypeFG : null;
-	}
-
-
 	/**
 	 * Returns whether the description area should have its header information
 	 * syntax highlighted.
@@ -163,6 +147,46 @@ public class ProceduralLanguageCompletionProvider
 	 */
 	public boolean getColorizeHeader() {
 		return colorizeHeader;
+	}
+
+
+	/**
+	 * Does initialization common to various constructors.
+	 */
+	private void init() {
+		seg = new Segment();
+		setColorizeHeader(false);
+		setListCellRenderer(new ProceduralLanguageCellRenderer());
+	}
+
+
+	public String isDataType(String str) {
+		return Arrays.binarySearch(dataTypes, str)>=0 ?
+				dataTypeFG : null;
+	}
+
+
+	private List loadXMLFromStream(InputStream in) throws IOException {
+
+		long start = System.currentTimeMillis();
+
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		XMLParser handler = new XMLParser();
+		BufferedInputStream bin = new BufferedInputStream(in);
+		try {
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(bin, handler);
+			return handler.getCompletions();
+		} catch (SAXException se) {
+			throw new IOException(se.toString());
+		} catch (ParserConfigurationException pce) {
+			throw new IOException(pce.toString());
+		} finally {
+			long time = System.currentTimeMillis() - start;
+			System.out.println("XML loaded in: " + time + "ms");
+			bin.close();
+		}
+
 	}
 
 
@@ -239,22 +263,31 @@ public class ProceduralLanguageCompletionProvider
 		private String type;
 		private String returnType;
 		private StringBuffer desc;
+		private String paramName;
+		private String paramType;
+		private StringBuffer paramDesc;
 		private List params;
 		private String definedIn;
 		private boolean doingKeywords;
 		private boolean inKeyword;
 		private boolean gettingDesc;
 		private boolean gettingParams;
+		private boolean inParam;
+		private boolean gettingParamDesc;
 
 		public XMLParser() {
 			completions = new ArrayList();
 			params = new ArrayList(1);
 			desc = new StringBuffer();
+			paramDesc = new StringBuffer();
 		}
 
 		public void characters(char[] ch, int start, int length) {
 			if (gettingDesc) {
 				desc.append(ch, start, length);
+			}
+			else if (gettingParamDesc) {
+				paramDesc.append(ch, start, length);
 			}
 		}
 
@@ -271,7 +304,10 @@ public class ProceduralLanguageCompletionProvider
 					if ("function".equals(type)) {
 						FunctionCompletion fc = new FunctionCompletion(
 								ProceduralLanguageCompletionProvider.this, name, returnType);
-						fc.setDescription(desc.toString());
+						if (desc.length()>0) {
+							fc.setDescription(desc.toString());
+							desc.setLength(0);
+						}
 						fc.setParams(params);
 						fc.setDefinedIn(definedIn);
 						c = fc;
@@ -279,7 +315,10 @@ public class ProceduralLanguageCompletionProvider
 					else if ("constant".equals(type)) {
 						VariableCompletion vc = new VariableCompletion(
 								ProceduralLanguageCompletionProvider.this, name, returnType);
-						vc.setDescription(desc.toString());
+						if (desc.length()>0) {
+							vc.setDescription(desc.toString());
+							desc.setLength(0);
+						}
 						vc.setDefinedIn(definedIn);
 						c = vc;
 					}
@@ -293,8 +332,26 @@ public class ProceduralLanguageCompletionProvider
 					if ("desc".equals(qName)) {
 						gettingDesc = false;
 					}
-					else if ("params".equals(qName)) {
-						gettingParams = false;
+					else if (gettingParams) {
+						if ("params".equals(qName)) {
+							gettingParams = false;
+						}
+						else if ("param".equals(qName)) {
+							FunctionCompletion.Parameter param =
+								new FunctionCompletion.Parameter(paramType,
+															paramName);
+							if (paramDesc.length()>0) {
+								param.setDescription(paramDesc.toString());
+								paramDesc.setLength(0);
+							}
+							params.add(param);
+							inParam = false;
+						}
+						else if (inParam) {
+							if ("desc".equals(qName)) {
+								gettingParamDesc = false;
+							}
+						}
 					}
 				}
 
@@ -320,22 +377,23 @@ public class ProceduralLanguageCompletionProvider
 					inKeyword = true;
 				}
 				else if (inKeyword) {
-					if ("desc".equals(qName)) {
-						gettingDesc = true;
-						desc.setLength(0);
-					}
-					else if ("params".equals(qName)) {
+					if ("params".equals(qName)) {
 						gettingParams = true;
 					}
 					else if (gettingParams) {
 						if ("param".equals(qName)) {
-							String name = attrs.getValue("name");
-							String type = attrs.getValue("type");
-							FunctionCompletion.Parameter param =
-								new FunctionCompletion.Parameter(type, name);
-							// TODO: Get desc.
-							params.add(param);
+							paramName = attrs.getValue("name");
+							paramType = attrs.getValue("type");
+							inParam = true;
 						}
+						if (inParam) {
+							if ("desc".equals(qName)) {
+								gettingParamDesc = true;
+							}
+						}
+					}
+					else if ("desc".equals(qName)) {
+						gettingDesc = true;
 					}
 				}
 			}

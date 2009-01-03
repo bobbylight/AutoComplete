@@ -58,8 +58,9 @@ public class FunctionCompletion extends VariableCompletion {
 		sb.append("<html><b>");
 
 		// Add the return type if applicable (C macros like NULL have no type).
-		if (getType()!=null) {
-			sb.append(getType());
+		String type = getType();
+		if (type!=null) {
+			appendPossibleDataType(sb, type);
 			sb.append(' ');
 		}
 
@@ -70,7 +71,12 @@ public class FunctionCompletion extends VariableCompletion {
 		sb.append('(');
 		for (int i=0; i<getParamCount(); i++) {
 			Parameter param = getParam(i);
-			sb.append(param.toString());
+			type = param.getType();
+			if (type!=null) {
+				appendPossibleDataType(sb, type);
+				sb.append(' ');
+			}
+			sb.append(param.getName());
 			if (i<params.size()-1) {
 				sb.append(", ");
 			}

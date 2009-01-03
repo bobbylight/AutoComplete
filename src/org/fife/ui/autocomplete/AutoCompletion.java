@@ -42,7 +42,7 @@ import javax.swing.text.*;
  * It also handles communication between the CompletionProvider and the actual
  * popup Window.
  */
-public class AutoCompletion implements HierarchyListener, ComponentListener {
+public class AutoCompletion implements HierarchyListener {
 
 	/**
 	 * The text component we're providing completion for.
@@ -94,10 +94,27 @@ public class AutoCompletion implements HierarchyListener, ComponentListener {
 	private KeyStroke trigger;
 
 	/**
+	 * The previous key in the text component's <code>InputMap</code> for the
+	 * trigger key.
+	 */
+	private Object oldTriggerKey;
+
+	/**
 	 * The action previously assigned to {@link #trigger}, so we can reset it
 	 * if the user disables auto-completion.
 	 */
 	private Action oldTriggerAction;
+
+	/**
+	 * Listens for events in the parent window that affect the visibility of
+	 * the popup window.
+	 */
+	private Listener parentWindowListener;
+
+	/**
+	 * The key used in the input map for the AutoComplete action.
+	 */
+	private static final String ACTION_MAP_KEY	= "AutoComplete";
 
 
 	/**
@@ -112,25 +129,7 @@ public class AutoCompletion implements HierarchyListener, ComponentListener {
 		setAutoCompleteEnabled(true);
 		setAutoCompleteSingleChoices(true);
 		setShowDescWindow(false);
-	}
-
-
-	public void componentHidden(ComponentEvent e) {
-		hidePopupWindow();
-	}
-
-
-	public void componentMoved(ComponentEvent e) {
-		hidePopupWindow();
-	}
-
-
-	public void componentResized(ComponentEvent e) {
-		hidePopupWindow();
-	}
-
-
-	public void componentShown(ComponentEvent e) {
+		parentWindowListener = new Listener();
 	}
 
 
@@ -163,7 +162,7 @@ public class AutoCompletion implements HierarchyListener, ComponentListener {
 	 */
 	public static KeyStroke getDefaultTriggerKey() {
 		// Default to CTRL, even on Mac, since Ctrl+Space activates Spotlight
-		int mask = Event.CTRL_MASK;
+		int mask = InputEvent.CTRL_MASK;
 		return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, mask);
 	}
 
@@ -184,13 +183,6 @@ public class AutoCompletion implements HierarchyListener, ComponentListener {
 		Document doc = textComponent.getDocument();
 		Element root = doc.getDefaultRootElement();
 		return root.getElementIndex(textComponent.getCaretPosition());
-	}
-
-
-	CompletionProvider getProviderAtCaretPosition() {
-		// TODO: Delegate to provider in case the provider itself delegates.
-		//return provider.getProviderAtCaretPosition(textComponent);
-		return provider;
 	}
 
 
@@ -245,10 +237,10 @@ public class AutoCompletion implements HierarchyListener, ComponentListener {
 		parentWindow = SwingUtilities.getWindowAncestor(textComponent);
 		if (parentWindow!=oldParentWindow) {
 			if (oldParentWindow!=null) {
-				oldParentWindow.removeComponentListener(this);
+				parentWindowListener.removeFrom(oldParentWindow);
 			}
 			if (parentWindow!=null) {
-				parentWindow.addComponentListener(this);
+				parentWindowListener.addTo(parentWindow);
 			}
 		}
 
@@ -330,9 +322,12 @@ try {
 	 * @see #uninstallTriggerKey() 
 	 */
 	private void installTriggerKey(KeyStroke ks) {
-		Keymap km = textComponent.getKeymap();
-		oldTriggerAction = km.getAction(ks);
-		km.addActionForKeyStroke(ks, new AutoCompleteAction());
+		InputMap im = textComponent.getInputMap();
+		oldTriggerKey = im.get(ks);
+		im.put(ks, ACTION_MAP_KEY);
+		ActionMap am = textComponent.getActionMap();
+		oldTriggerAction = am.get(ACTION_MAP_KEY);
+		am.put(ACTION_MAP_KEY, new AutoCompleteAction());
 	}
 
 
@@ -525,7 +520,7 @@ try {
 			uninstallTriggerKey();
 			textComponent.removeHierarchyListener(this);
 			if (parentWindow!=null) {
-				parentWindow.removeComponentListener(this);
+				parentWindowListener.removeFrom(parentWindow);
 			}
 			textComponent = null;
 		}
@@ -539,13 +534,10 @@ try {
 	 * @see #installTriggerKey(KeyStroke)
 	 */
 	private void uninstallTriggerKey() {
-		Keymap km = textComponent.getKeymap();
-		if (oldTriggerAction!=null) {
-			km.addActionForKeyStroke(trigger, oldTriggerAction);
-		}
-		else {
-			km.removeKeyStrokeBinding(trigger);
-		}
+		InputMap im = textComponent.getInputMap();
+		im.put(trigger, oldTriggerKey);
+		ActionMap am = textComponent.getActionMap();
+		am.put(ACTION_MAP_KEY, oldTriggerAction);
 	}
 
 
@@ -577,6 +569,48 @@ try {
 			else if (oldTriggerAction!=null) {
 				oldTriggerAction.actionPerformed(e);
 			}
+		}
+
+	}
+
+
+	/**
+	 * Listens for events in the parent window of the text component with
+	 * autocompletion enabled.
+	 *
+	 * @author Robert Futrell
+	 * @version 1.0
+	 */
+	private class Listener extends ComponentAdapter
+									implements WindowFocusListener {
+
+		public void addTo(Window w) {
+			w.addComponentListener(this);
+			w.addWindowFocusListener(this);
+		}
+
+		public void componentHidden(ComponentEvent e) {
+			hidePopupWindow();
+		}
+
+		public void componentMoved(ComponentEvent e) {
+			hidePopupWindow();
+		}
+
+		public void componentResized(ComponentEvent e) {
+			hidePopupWindow();
+		}
+
+		public void removeFrom(Window w) {
+			w.removeComponentListener(this);
+			w.removeWindowFocusListener(this);
+		}
+
+		public void windowGainedFocus(WindowEvent e) {
+		}
+
+		public void windowLostFocus(WindowEvent e) {
+			hidePopupWindow();
 		}
 
 	}

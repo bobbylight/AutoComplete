@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JList;

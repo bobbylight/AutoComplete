@@ -114,13 +114,11 @@ public class ProceduralLanguageCellRenderer extends DefaultListCellRenderer {
 					if (!selected) {
 						sb.append("</font>");
 					}
+					sb.append(' ');
 				}
 				String name = param.getName();
 				if (name!=null) {
-					if (type!=null) {
-						sb.append(' ');
-						sb.append(name);
-					}
+					sb.append(name);
 				}
 				if (i<paramCount-1) {
 					sb.append(", ");

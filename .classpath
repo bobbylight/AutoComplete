@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="i18n"/>
 	<classpathentry kind="src" path="img"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/RSyntaxTextArea"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
