@@ -24,7 +24,6 @@
 package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.text.JTextComponent;

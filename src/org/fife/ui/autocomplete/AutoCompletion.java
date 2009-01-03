@@ -187,6 +187,25 @@ public class AutoCompletion implements HierarchyListener {
 
 
 	/**
+	 * Returns the text to replace with in the document.  This is a
+	 * "last-chance" hook for subclasses to make special modifications to the
+	 * completion text inserted.  The default implementation simply returns
+	 * <tt>c.getReplacementText()</tt>.  You usually will not need to modify
+	 * this method.
+	 *
+	 * @param c The completion being inserted.
+	 * @param doc The document being modified.
+	 * @param start The start of the text being replaced.
+	 * @param len The length of the text being replaced.
+	 * @return The text to replace with.
+	 */
+	protected String getReplacementText(Completion c, Document doc, int start,
+										int len) {
+		return c.getReplacementText();
+	}
+
+
+	/**
 	 * Returns whether the "description window" should be shown alongside
 	 * the completion window.
 	 *
@@ -272,20 +291,23 @@ public class AutoCompletion implements HierarchyListener {
 		Caret caret = textComp.getCaret();
 
 		int dot = caret.getDot();
-		caret.setDot(dot - alreadyEntered.length());
+		int len = alreadyEntered.length();
+		int start = dot-len;
+		String replacement = getReplacementText(c, textComp.getDocument(),
+												start, len);
+
+		caret.setDot(start);
 		caret.moveDot(dot);
-		textComp.replaceSelection(c.getReplacementText());
+		textComp.replaceSelection(replacement);
 /*
 		Document doc = textComp.getDocument();
-		int end = caret.getDot();
-		int start = end - alreadyEntered.length();
 try {
 		if (doc instanceof AbstractDocument) {
-			((AbstractDocument)doc).replace(start, end-start, c.getReplacementText(), null);
+			((AbstractDocument)doc).replace(start, len, replacement, null);
 		}
 		else {
-			doc.remove(start, end-start);
-			doc.insertString(start, c.getReplacementText(), null);
+			doc.remove(start, len);
+			doc.insertString(start, replacement, null);
 		}
 } catch (javax.swing.text.BadLocationException ble) { ble.printStackTrace(); }
 */
