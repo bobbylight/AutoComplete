@@ -25,7 +25,6 @@ package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
@@ -35,13 +34,24 @@ import org.fife.ui.rsyntaxtextarea.Token;
 
 
 /**
- * A completion provider that is aware of the programming language it is
- * providing auto-completion for.
+ * A completion provider for the C programming language (and other languages
+ * with similar syntax).  This provider simply delegates to another provider,
+ * depending on whether the caret is in:
+ * 
+ * <ul>
+ *    <li>A string</li>
+ *    <li>A comment</li>
+ *    <li>A documentation comment</li>
+ *    <li>Plain text</li>
+ * </ul>
+ *
+ * This allows for different completion choices in comments than  in code,
+ * for example.
  *
  * @author Robert Futrell
  * @version 1.0
  */
-public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
+public class CCompletionProvider extends AbstractCompletionProvider{
 
 	/**
 	 * The provider to use when no provider is assigned to a particular token
@@ -50,9 +60,19 @@ public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
 	private CompletionProvider defaultProvider;
 
 	/**
-	 * The provider to use when completing a string.
+	 * The provider to use when completing in a string.
 	 */
 	private CompletionProvider stringCompletionProvider;
+
+	/**
+	 * The provider to use when completing in a comment.
+	 */
+	private CompletionProvider commentCompletionProvider;
+
+	/**
+	 * The provider to use while in documentation comments.
+	 */
+	private CompletionProvider docCommentCompletionProvider;
 
 
 	/**
@@ -61,9 +81,9 @@ public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
 	 * @param defaultProvider The provider to use when no provider is assigned
 	 *        to a particular token type.  This cannot be <code>null</code>.
 	 */
-	public LanguageAwareCompletionProvider(CompletionProvider defaultProvider) {
+	public CCompletionProvider(CompletionProvider defaultProvider) {
 		setDefaultCompletionProvider(defaultProvider);
-		completions = new java.util.ArrayList(0); // TODO: Remove me.
+		completions = new ArrayList(0); // TODO: Remove me.
 	}
 
 
@@ -73,6 +93,17 @@ public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
 		}
 		CompletionProvider provider = getProviderFor(comp);
 		return provider.getAlreadyEnteredText(comp);
+	}
+
+
+	/**
+	 * Returns the completion provider to use for comments.
+	 *
+	 * @return The completion provider to use.
+	 * @see #setCommentCompletionProvider(CompletionProvider)
+	 */
+	public CompletionProvider getCommentCompletionProvider() {
+		return commentCompletionProvider;
 	}
 
 
@@ -88,7 +119,8 @@ public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
 			return new ArrayList(0);
 		}
 		CompletionProvider provider = getProviderFor(comp);
-		return provider.getCompletions(comp);
+		return provider!=null ? provider.getCompletions(comp) :
+					new ArrayList(0);
 	}
 
 
@@ -104,50 +136,107 @@ public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
 	}
 
 
+	/**
+	 * Returns the completion provider to use for documentation comments.
+	 *
+	 * @return The completion provider to use.
+	 * @see #setDocCommentCompletionProvider(CompletionProvider)
+	 */
+	public CompletionProvider getDocCommentCompletionProvider() {
+		return docCommentCompletionProvider;
+	}
+
+
 	private CompletionProvider getProviderFor(JTextComponent comp) {
 
 		RSyntaxTextArea rsta = (RSyntaxTextArea)comp;
 		RSyntaxDocument doc = (RSyntaxDocument)rsta.getDocument();
-		Token t = doc.getTokenListForLine(rsta.getCaretLineNumber());
+		int line = rsta.getCaretLineNumber();
+		Token t = doc.getTokenListForLine(line);
 		if (t==null) {
 			return getDefaultCompletionProvider();
 		}
 
 		int dot = rsta.getCaretPosition();
 		Token curToken = RSyntaxUtilities.getTokenAtOffset(t, dot);
-		int type = 0;
+
 		if (curToken==null) { // At end of the line
-			Token temp = t.getLastPaintableToken();
-			if (temp==null) {
-				return getDefaultCompletionProvider();
+
+			int type = doc.getLastTokenTypeOnLine(line);
+			if (type==Token.NULL) {
+				Token temp = t.getLastPaintableToken();
+				if (temp==null) {
+					return getDefaultCompletionProvider();
+				}
+				type = temp.type;
 			}
-			type = temp.type;
-		}
-		else {
-			type = curToken.type;
+
+			switch (type) {
+				case Token.ERROR_STRING_DOUBLE:
+					return getStringCompletionProvider();
+				case Token.COMMENT_EOL:
+				case Token.COMMENT_MULTILINE:
+					return getCommentCompletionProvider();
+				case Token.COMMENT_DOCUMENTATION:
+					return getDocCommentCompletionProvider();
+				default:
+					return getDefaultCompletionProvider();
+			}
+
 		}
 
-		switch (type) {
+		// FIXME: This isn't always a safe assumption.
+		if (dot==curToken.offset) { // At the very beginning of a new token
+			// Need to check previous token for its type before deciding.
+			// Previous token may also be on previous line!
+			return getDefaultCompletionProvider();
+		}
+
+		switch (curToken.type) {
 			case Token.LITERAL_STRING_DOUBLE_QUOTE:
 			case Token.ERROR_STRING_DOUBLE:
 				return getStringCompletionProvider();
-			default:
+			case Token.COMMENT_EOL:
+			case Token.COMMENT_MULTILINE:
+				return getCommentCompletionProvider();
+			case Token.COMMENT_DOCUMENTATION:
+				return getDocCommentCompletionProvider();
+			case Token.WHITESPACE:
+			case Token.IDENTIFIER:
+			case Token.VARIABLE:
+			case Token.PREPROCESSOR:
+			case Token.DATA_TYPE:
+			case Token.FUNCTION:
 				return getDefaultCompletionProvider();
 		}
+
+		return null; // In a token type we can't auto-complete from.
 
 	}
 
 
 	/**
-	 * Returns the completion provider to use for strings.  This may be the
-	 * default provider if one isn't explicitly set for strings.
+	 * Returns the completion provider to use for strings.
 	 *
 	 * @return The completion provider to use.
 	 * @see #setStringCompletionProvider(CompletionProvider)
 	 */
 	public CompletionProvider getStringCompletionProvider() {
-		return stringCompletionProvider==null ? defaultProvider :
-									stringCompletionProvider;
+		return stringCompletionProvider;
+	}
+
+
+	/**
+	 * Sets the comment completion provider.
+	 *
+	 * @param provider The provider to use in comments.
+	 * @see #getCommentCompletionProvider()
+	 */
+	public void setCommentCompletionProvider(CompletionProvider provider) {
+		if (provider==null) {
+			throw new IllegalArgumentException("provider cannot be null");
+		}
+		this.commentCompletionProvider = provider;
 	}
 
 
@@ -167,10 +256,23 @@ public class LanguageAwareCompletionProvider extends AbstractCompletionProvider{
 
 
 	/**
+	 * Sets the documentation comment completion provider.
+	 *
+	 * @param provider The provider to use in comments.
+	 * @see #getDocCommentCompletionProvider()
+	 */
+	public void setDocCommentCompletionProvider(CompletionProvider provider) {
+		if (provider==null) {
+			throw new IllegalArgumentException("provider cannot be null");
+		}
+		this.docCommentCompletionProvider = provider;
+	}
+
+
+	/**
 	 * Sets the completion provider to use while in a string.
 	 *
-	 * @param provider The provider to use.  If this is <code>null</code>, the
-	 *        default completion provider will be used.
+	 * @param provider The provider to use.
 	 * @see #getStringCompletionProvider()
 	 */
 	public void setStringCompletionProvider(CompletionProvider provider) {

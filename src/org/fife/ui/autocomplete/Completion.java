@@ -40,7 +40,7 @@ public interface Completion {
 	 * into the text component.  The match is case-insensitive.<p>
 	 *
 	 * This is a convenience method for:
-	 * <code>getProvider().getAlreadyEntered(comp)</code>.
+	 * <code>getProvider().getAlreadyEnteredText(comp)</code>.
 	 *
 	 * @param comp The text component.
 	 * @return The already-entered portion of this completion.

@@ -45,7 +45,21 @@ public class BasicCompletion extends AbstractCompletion {
 	 * @param replacementText The text to replace.
 	 */
 	public BasicCompletion(CompletionProvider provider, String replacementText){
-		this(provider, replacementText, null, null);
+		this(provider, replacementText, null);
+	}
+
+
+	/**
+	 * Constructor.
+	 *
+	 * @param provider The parent completion provider.
+	 * @param replacementText The text to replace.
+	 * @param shortDesc A short description of the completion.  This will be
+	 *        displayed in the completion list.  This may be <code>null</code>.
+	 */
+	public BasicCompletion(CompletionProvider provider, String replacementText,
+							String shortDesc) {
+		this(provider, replacementText, shortDesc, null);
 	}
 
 
@@ -88,19 +102,30 @@ public class BasicCompletion extends AbstractCompletion {
 	 * Returns a string representation of this completion.  If the short
 	 * description is not <code>null</code>, this method will return:
 	 * 
-	 * <code>getReplacementText() + " - " + shortDesc</code>
+	 * <code>getInputText() + " - " + shortDesc</code>
 	 * 
-	 * otherwise, it will return <tt>getReplacementText()</tt>.
+	 * otherwise, it will return <tt>getInputText()</tt>.
 	 *
 	 * @return A string representation of this completion.
 	 */
 	public String toString() {
 		if (shortDesc==null) {
-			return getReplacementText();
+			return getInputText();
 		}
 		else {
-			return getReplacementText() + " - " + shortDesc;
+			return getInputText() + " - " + shortDesc;
 		}
+	}
+
+
+	/**
+	 * Sets the summary for this completion.
+	 *
+	 * @param summary The summary for this completion.
+	 * @see #getSummary()
+	 */
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 

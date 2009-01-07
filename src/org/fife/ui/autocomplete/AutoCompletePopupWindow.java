@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -85,8 +86,6 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		this.ac = ac;
 		model = new CompletionListModel();//DefaultListModel();
 		list = new JList(model);
-//list.setFixedCellWidth(300);
-//list.setFixedCellHeight(29);
 		list.setCellRenderer(new DelegatingCellRenderer());
 		list.addListSelectionListener(this);
 		list.addMouseListener(this);
@@ -162,6 +161,20 @@ lastLine = -1;
 
 	protected void doAutocomplete() {
 		lastLine = ac.refreshPopupWindow();
+	}
+
+
+	/**
+	 * Returns the default list cell renderer used when a completion provider
+	 * does not supply its own.
+	 *
+	 * @return The default list cell renderer.
+	 * @see #setListCellRenderer(ListCellRenderer)
+	 */
+	public ListCellRenderer getListCellRenderer() {
+		DelegatingCellRenderer dcr = (DelegatingCellRenderer)list.
+															getCellRenderer();
+		return dcr.getFallbackCellRenderer();
 	}
 
 
@@ -365,6 +378,21 @@ lastLine = -1;
 		}
 		list.setSelectedIndex(index);
 		list.ensureIndexIsVisible(index);
+	}
+
+
+	/**
+	 * Sets the default list cell renderer to use when a completion provider
+	 * does not supply its own.
+	 *
+	 * @param renderer The renderer to use.  If this is <code>null</code>,
+	 *        a default renderer is used.
+	 * @see #getListCellRenderer()
+	 */
+	public void setListCellRenderer(ListCellRenderer renderer) {
+		DelegatingCellRenderer dcr = (DelegatingCellRenderer)list.
+													getCellRenderer();
+		dcr.setFallbackCellRenderer(renderer);
 	}
 
 

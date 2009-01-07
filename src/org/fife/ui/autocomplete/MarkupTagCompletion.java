@@ -1,8 +1,9 @@
 /*
- * 12/22/2008
+ * 01/06/2009
  *
- * VariableCompletion.java - A completion for a variable.
- * Copyright (C) 2008 Robert Futrell
+ * MarkupTagComletion.java - A completion representing a tag in markup, such
+ * as HTML or XML.
+ * Copyright (C) 2009 Robert Futrell
  * robert_futrell at users.sourceforge.net
  * http://fifesoft.com/rsyntaxtextarea
  *
@@ -22,57 +23,94 @@
  */
 package org.fife.ui.autocomplete;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.fife.ui.autocomplete.FunctionCompletion.Parameter;
+
 
 /**
- * A completion for a variable (or constant) in a programming language.
+ * A completion representing a tag in markup, such as HTML or XML.
  *
  * @author Robert Futrell
  * @version 1.0
  */
-public class VariableCompletion extends AbstractCompletion {
+public class MarkupTagCompletion extends AbstractCompletion {
 
 	private String name;
-	private String type;
 	private String desc;
 	private String definedIn;
+
+	/**
+	 * Attributes of the tag.
+	 */
+	private List attrs;
 
 
 	/**
 	 * Constructor.
 	 *
-	 * @param provider The parent provider.
-	 * @param name The name of this variable.
-	 * @param type The type of this variable (e.g. "<code>int</code>",
-	 *        "<code>String</code>", etc.).
+	 * @param provider The parent provider instance.
+	 * @param name The name of the tag.
 	 */
-	public VariableCompletion(CompletionProvider provider, String name,
-							String type) {
+	public MarkupTagCompletion(CompletionProvider provider, String name) {
 		super(provider);
 		this.name = name;
-		this.type = type;
+	}
+
+
+	/**
+	 * Adds HTML describing the attributes of this tag to a buffer.
+	 *
+	 * @param sb The buffer to append to.
+	 */
+	protected void addAttributes(StringBuffer sb) {
+
+		if (attrs!=null && attrs.size()>0) {
+			sb.append("<b>Attributes:</b><br>"); // TODO: Localize me
+			for (int i=0; i<getAttributeCount(); i++) {
+				Parameter attr = getAttribute(i);
+				sb.append("&nbsp;&nbsp;&nbsp;<b>");
+				sb.append(attr.getName()!=null ? attr.getName() :
+							attr.getType());
+				sb.append("</b>&nbsp;");
+				String desc = attr.getDescription();
+				if (desc!=null) {
+					sb.append(desc);
+				}
+				sb.append("<br>");
+			}
+			sb.append("<br><br>");
+		}
+
 	}
 
 
 	protected void addDefinitionString(StringBuffer sb) {
-
-		sb.append("<html><b>");
-
-		// Add the return type if applicable (C macros like NULL have no type).
-		if (type!=null) {
-			appendPossibleDataType(sb, type);
-			sb.append(' ');
-		}
-
-		// Add the item being described's name.
-		sb.append(name);
-
-		sb.append("</b>");
-
+		sb.append("<html><b>").append(name).append("</b>");
 	}
 
 
-	protected void appendPossibleDataType(StringBuffer sb, String type) {
-		sb.append(type);
+	/**
+	 * Returns the specified {@link Parameter}.
+	 *
+	 * @param index The index of the attribute to retrieve.
+	 * @return The attribute.
+	 * @see #getAttributeCount()
+	 */
+	public Parameter getAttribute(int index) {
+		return (Parameter)attrs.get(index);
+	}
+
+
+	/**
+	 * Returns the number of attributes of this tag.
+	 *
+	 * @return The number of attributes of this tag.
+	 * @see #getAttribute(int)
+	 */
+	public int getAttributeCount() {
+		return attrs==null ? 0 : attrs.size();
 	}
 
 
@@ -101,12 +139,20 @@ public class VariableCompletion extends AbstractCompletion {
 
 
 	/**
-	 * Returns the name of this variable.
+	 * Returns the name of this tag.
 	 *
-	 * @return The name.
+	 * @return The name of this tag.
 	 */
 	public String getName() {
 		return name;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getReplacementText() {
+		return getName();
 	}
 
 
@@ -117,28 +163,9 @@ public class VariableCompletion extends AbstractCompletion {
 		StringBuffer sb = new StringBuffer();
 		addDefinitionString(sb);
 		possiblyAddDescription(sb);
+		addAttributes(sb);
 		possiblyAddDefinedIn(sb);
 		return sb.toString();
-	}
-
-
-	/**
-	 * Returns the type of this variable.
-	 *
-	 * @return The type.
-	 */
-	public String getType() {
-		return type;
-	}
-
-
-	/**
-	 * Returns the name of this variable.
-	 *
-	 * @return The text to autocomplete with.
-	 */
-	public String getReplacementText() {
-		return getName();
 	}
 
 
@@ -183,15 +210,28 @@ public class VariableCompletion extends AbstractCompletion {
 
 
 	/**
-	 * Sets the short description of this variable.  This should be an
+	 * Sets the short description of this tag.  This should be an
 	 * HTML snippet.
 	 *
-	 * @param desc A short description of this variable.  This may be
+	 * @param desc A short description of this tag.  This may be
 	 *        <code>null</code>.
 	 * @see #getDescription()
 	 */
 	public void setDescription(String desc) {
 		this.desc = desc;
+	}
+
+
+	/**
+	 * Sets the attributes of this tag.
+	 *
+	 * @param attrs The attributes.
+	 * @see #getAttribute(int)
+	 * @see #getAttributeCount()
+	 */
+	public void setAttributes(List attrs) {
+		// Deep copy so parsing can re-use its array.
+		this.attrs = new ArrayList(attrs);
 	}
 
 

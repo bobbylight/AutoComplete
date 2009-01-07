@@ -25,7 +25,6 @@ package org.fife.ui.autocomplete;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.Window;
@@ -100,12 +99,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	private int historyPos;
 
 	/**
-	 * Used on OS X, where non-editable JEditorPanes don't have their cursors
-	 * made into hand cursors on hyperlink mouseover.
-	 */
-	private Cursor prevCursor;
-
-	/**
 	 * The resource bundle for this window.
 	 */
 	private ResourceBundle bundle;
@@ -116,8 +109,8 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	private static final String MSG =
 					"org.fife.ui.autocomplete.AutoCompleteDescWindow";
 
-	private static final boolean IS_OS_X = System.getProperty("os.name").
-													indexOf("OS X")>-1;
+//	private static final boolean IS_OS_X = System.getProperty("os.name").
+//													indexOf("OS X")>-1;
 
 
 	/**
@@ -243,7 +236,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 * @return The default background color.
 	 */
 	protected Color getDefaultBackground() {
-		System.out.println(UIManager.getColor("info"));
 		Color c = UIManager.getColor("ToolTip.background");
 		if (c==null) { // Some LookAndFeels like Nimbus
 			c = UIManager.getColor("info"); // Used by Nimbus (and others)
@@ -289,20 +281,9 @@ System.out.println(descArea.isEnabled() + ", " + e);
 				// No handler - try loading in external browser (Java 6+ only).
 				try {
 					Util.browse(new URI(url.toString()));
-					//descArea.setText(null);
-					//descArea.read(url.openStream(), descArea.getDocument());
-					////descArea.setPage(url);
-					////descArea.setCaretPosition(0); // In case we scrolled
-					////addToHistory(descArea.getText());
 				} catch (/*IO*/URISyntaxException ioe) {
 					UIManager.getLookAndFeel().provideErrorFeedback(descArea);
 					ioe.printStackTrace();
-//					try {
-//						descArea.read(url.openStream(), null);
-//					} catch (IOException ioe2) {
-//						ioe2.printStackTrace();
-//						UIManager.getLookAndFeel().provideErrorFeedback(descArea);
-//					}
 				}
 			}
 			else { // Simple function name text, like in c.xml
@@ -317,20 +298,6 @@ System.out.println(descArea.isEnabled() + ", " + e);
 										getCompletionByInputText(name);
 					setDescriptionFor(c, true);
 				}
-			}
-		}
-
-		// OS X needs a little push to use the hand cursor for links in a
-		// non-editable JEditorPane
-		else if (IS_OS_X) {
-			boolean entered = HyperlinkEvent.EventType.ENTERED.equals(type);
-			if (entered) {
-				prevCursor = descArea.getCursor();
-				descArea.setCursor(Cursor.getPredefinedCursor(
-											Cursor.HAND_CURSOR));
-			}
-			else {
-				descArea.setCursor(prevCursor);
 			}
 		}
 

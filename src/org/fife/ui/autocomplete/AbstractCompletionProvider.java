@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import javax.swing.ListCellRenderer;
 import javax.swing.text.JTextComponent;
 
@@ -89,7 +88,7 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	 * @see #clear()
 	 */
 	public void addCompletion(Completion c) {
-		completions.add(c);
+		checkProviderAndAdd(c);
 		Collections.sort(completions);
 	}
 
@@ -99,15 +98,42 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	 *
 	 * @param completions The completions to add.  This cannot be
 	 *        <code>null</code>.
-	 * @throws IllegalArgumentException If the completion's provider isn't
+	 * @throws IllegalArgumentException If a completion's provider isn't
 	 *         this <tt>CompletionProvider</tt>.
 	 * @see #addCompletion(Completion)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
 	 */
 	public void addCompletions(List completions) {
-		this.completions.addAll(completions);
+		//this.completions.addAll(completions);
+		for (int i=0; i<completions.size(); i++) {
+			Completion c = (Completion)completions.get(i);
+			checkProviderAndAdd(c);
+		}
 		Collections.sort(this.completions);
+	}
+
+
+	/**
+	 * Adds simple completions for a list of words.
+	 *
+	 * @param words The words.
+	 * @see BasicCompletion
+	 */
+	protected void addWordCompletions(String[] words) {
+		int count = words==null ? 0 : words.length;
+		for (int i=0; i<count; i++) {
+			completions.add(new BasicCompletion(this, words[i]));
+		}
+		Collections.sort(completions);
+	}
+
+
+	protected void checkProviderAndAdd(Completion c) {
+		if (c.getProvider()!=this) {
+			throw new IllegalArgumentException("Invalid CompletionProvider");
+		}
+		completions.add(c);
 	}
 
 
@@ -170,7 +196,7 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 		String text = getAlreadyEnteredText(comp);
 
 		int index = Collections.binarySearch(completions, text, comparator);
-		System.out.println(index + "(" + completions.size() + ")");
+		//System.out.println(index + "(" + completions.size() + ")");
 		if (index<0) {
 			index = -index - 1;
 		}

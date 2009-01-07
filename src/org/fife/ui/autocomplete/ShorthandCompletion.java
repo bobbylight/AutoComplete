@@ -33,7 +33,7 @@ package org.fife.ui.autocomplete;
  * @author Robert Futrell
  * @version 1.0
  */
-public class ShorthandCompletion extends WordCompletion {
+public class ShorthandCompletion extends BasicCompletion {
 
 	/**
 	 * The text the user can start typing that will match this completion.
@@ -56,15 +56,36 @@ public class ShorthandCompletion extends WordCompletion {
 
 
 	/**
-	 * Returns the replacement text.  Subclasses can override this method to
-	 * return a more detailed description.
+	 * Constructor.
 	 *
-	 * @return A description of this completion (the text that will be
-	 *         inserted).
-	 * @see #getReplacementText()
+	 * @param provider The provider that returns this completion.
+	 * @param inputText The text the user inputs to get this completion.
+	 * @param replacementText The replacement text of the completion.
+	 * @param shortDesc A short description of the completion.  This will be
+	 *        displayed in the completion list.  This may be <code>null</code>.
 	 */
-	public String getSummary() {
-		return "<html><body><tt>" + getReplacementText();
+	public ShorthandCompletion(CompletionProvider provider, String inputText,
+								String replacementText, String shortDesc) {
+		super(provider, replacementText, shortDesc);
+		this.inputText = inputText;
+	}
+
+
+	/**
+	 * Constructor.
+	 *
+	 * @param provider The provider that returns this completion.
+	 * @param inputText The text the user inputs to get this completion.
+	 * @param replacementText The replacement text of the completion.
+	 * @param shortDesc A short description of the completion.  This will be
+	 *        displayed in the completion list.  This may be <code>null</code>.
+	 * @param summary The summary of this completion.  This should be HTML.
+	 *        This may be <code>null</code>.
+	 */
+	public ShorthandCompletion(CompletionProvider provider, String inputText,
+					String replacementText, String shortDesc, String summary) {
+		super(provider, replacementText, shortDesc, summary);
+		this.inputText = inputText;
 	}
 
 
@@ -75,6 +96,21 @@ public class ShorthandCompletion extends WordCompletion {
 	 */
 	public String getInputText() {
 		return inputText;
+	}
+
+
+	/**
+	 * If a summary has been set, that summary is returned.  Otherwise, the
+	 * replacement text is returned.
+	 *
+	 * @return A description of this completion (the text that will be
+	 *         inserted).
+	 * @see #getReplacementText()
+	 */
+	public String getSummary() {
+		String summary = super.getSummary();
+		return summary!=null ? summary :
+							"<html><body><tt>" + getReplacementText();
 	}
 
 

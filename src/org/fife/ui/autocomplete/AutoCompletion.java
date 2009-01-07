@@ -65,6 +65,12 @@ public class AutoCompletion implements HierarchyListener {
 	private CompletionProvider provider;
 
 	/**
+	 * The renderer to use for the completion choices.  If this is
+	 * <code>null</code>, then a default renderer is used.
+	 */
+	private ListCellRenderer renderer;
+
+	/**
 	 * The handler to use when an external URL is clicked in the help
 	 * documentation.
 	 */
@@ -183,6 +189,18 @@ public class AutoCompletion implements HierarchyListener {
 		Document doc = textComponent.getDocument();
 		Element root = doc.getDefaultRootElement();
 		return root.getElementIndex(textComponent.getCaretPosition());
+	}
+
+
+	/**
+	 * Returns the default list cell renderer used when a completion provider
+	 * does not supply its own.
+	 *
+	 * @return The default list cell renderer.
+	 * @see #setListCellRenderer(ListCellRenderer)
+	 */
+	public ListCellRenderer getListCellRenderer() {
+		return renderer;
 	}
 
 
@@ -394,6 +412,9 @@ try {
 
 			if (popupWindow==null) {
 				popupWindow = new AutoCompletePopupWindow(parentWindow, this);
+				if (renderer!=null) {
+					popupWindow.setListCellRenderer(renderer);
+				}
 			}
 
 			popupWindow.setCompletions(completions);
@@ -491,6 +512,23 @@ try {
 	 */
 	public void setExternalURLHandler(ExternalURLHandler handler) {
 		this.externalURLHandler = handler;
+	}
+
+
+	/**
+	 * Sets the default list cell renderer to use when a completion provider
+	 * does not supply its own.
+	 *
+	 * @param renderer The renderer to use.  If this is <code>null</code>,
+	 *        a default renderer is used.
+	 * @see #getListCellRenderer()
+	 */
+	public void setListCellRenderer(ListCellRenderer renderer) {
+		this.renderer = renderer;
+		if (popupWindow!=null) {
+			popupWindow.setListCellRenderer(renderer);
+			hidePopupWindow();
+		}
 	}
 
 

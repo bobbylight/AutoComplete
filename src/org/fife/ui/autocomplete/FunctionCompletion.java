@@ -72,11 +72,16 @@ public class FunctionCompletion extends VariableCompletion {
 		for (int i=0; i<getParamCount(); i++) {
 			Parameter param = getParam(i);
 			type = param.getType();
+			String name = param.getName();
 			if (type!=null) {
 				appendPossibleDataType(sb, type);
-				sb.append(' ');
+				if (name!=null) {
+					sb.append(' ');
+				}
 			}
-			sb.append(param.getName());
+			if (name!=null) {
+				sb.append(name);
+			}
 			if (i<params.size()-1) {
 				sb.append(", ");
 			}
@@ -159,6 +164,7 @@ public class FunctionCompletion extends VariableCompletion {
 	 * @param params The parameters.  This should be a list of
 	 *        {@link Parameter}s.
 	 * @see #getParam(int)
+	 * @see #getParamCount()
 	 */
 	public void setParams(List params) {
 		// Deep copy so parsing can re-use its array.
