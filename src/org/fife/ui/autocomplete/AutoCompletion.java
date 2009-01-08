@@ -161,6 +161,16 @@ public class AutoCompletion implements HierarchyListener {
 
 
 	/**
+	 * Returns the completion provider.
+	 *
+	 * @return The completion provider.
+	 */
+	public CompletionProvider getCompletionProvider() {
+		return provider;
+	}
+
+
+	/**
 	 * Returns the default autocomplete "trigger key" for this OS.  For
 	 * Windows, for example, it is Ctrl+Space.
 	 *
@@ -540,6 +550,7 @@ try {
 	 * @see #getShowDescWindow()
 	 */
 	public void setShowDescWindow(boolean show) {
+		hidePopupWindow(); // Needed to force it to take effect
 		showDescWindow = show;
 	}
 

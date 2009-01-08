@@ -459,8 +459,11 @@ lastLine = -1;
 				unregisterActions();
 			}
 			super.setVisible(visible);
-			if (descWindow!=null && ac.getShowDescWindow()) {
-				descWindow.setVisible(visible);
+			// Must set descWindow's visibility one way or the other each time,
+			// because of the way child JWindows' visibility is handled - in
+			// some ways it's dependent on the parent, in other ways it's not.
+			if (descWindow!=null) {
+				descWindow.setVisible(visible && ac.getShowDescWindow());
 			}
 		}
 	}

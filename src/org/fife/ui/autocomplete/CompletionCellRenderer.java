@@ -120,7 +120,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		}
 		else {
 			Completion c = (Completion)value;
-			prepareForCompletion(list, c, index, selected, hasFocus);
+			prepareForOtherCompletion(list, c, index, selected, hasFocus);
 		}
 
 		if (!selected && (index&1)==0 && altBG!=null) {
@@ -128,27 +128,6 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		}
 
 		return this;
-
-	}
-
-
-	/**
-	 * Prepares this renderer to display a shorthand completion.
-	 *
-	 * @param list The list of choices being rendered.
-	 * @param c The completion to render.
-	 * @param index The index into <code>list</code> being rendered.
-	 * @param selected Whether the item is selected.
-	 * @param hasFocus Whether the item has focus.
-	 */
-	protected void prepareForCompletion(JList list,
-		Completion c, int index, boolean selected, boolean hasFocus) {
-
-		StringBuffer sb = new StringBuffer("<html><b><em>");
-		sb.append(c.getInputText());
-		sb.append("</em></b>");
-
-		setText(sb.toString());
 
 	}
 
@@ -222,6 +201,28 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 		StringBuffer sb = new StringBuffer("<html><b><em>");
 		sb.append(mc.getName());
+		sb.append("</em></b>");
+
+		setText(sb.toString());
+
+	}
+
+
+	/**
+	 * Prepares this renderer to display a completion not specifically handled
+	 * elsewhere.
+	 *
+	 * @param list The list of choices being rendered.
+	 * @param c The completion to render.
+	 * @param index The index into <code>list</code> being rendered.
+	 * @param selected Whether the item is selected.
+	 * @param hasFocus Whether the item has focus.
+	 */
+	protected void prepareForOtherCompletion(JList list,
+		Completion c, int index, boolean selected, boolean hasFocus) {
+
+		StringBuffer sb = new StringBuffer("<html><b><em>");
+		sb.append(c.getInputText());
 		sb.append("</em></b>");
 
 		setText(sb.toString());
