@@ -147,6 +147,16 @@ public class CCompletionProvider extends AbstractCompletionProvider{
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public List getParameterizedCompletionsAt(JTextComponent tc) {
+		CompletionProvider provider = getProviderFor(tc);
+		return provider!=null ? provider.getParameterizedCompletionsAt(tc) :
+								null;
+	}
+
+
 	private CompletionProvider getProviderFor(JTextComponent comp) {
 
 		RSyntaxTextArea rsta = (RSyntaxTextArea)comp;
@@ -201,6 +211,7 @@ public class CCompletionProvider extends AbstractCompletionProvider{
 				return getCommentCompletionProvider();
 			case Token.COMMENT_DOCUMENTATION:
 				return getDocCommentCompletionProvider();
+			case Token.NULL:
 			case Token.WHITESPACE:
 			case Token.IDENTIFIER:
 			case Token.VARIABLE:

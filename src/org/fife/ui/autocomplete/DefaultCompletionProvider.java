@@ -119,6 +119,63 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public List getParameterizedCompletionsAt(JTextComponent tc) {
+
+		List list = null;
+
+		String paramListStart = getParameterListStart();
+		if (paramListStart==null) {
+			return list; // null
+		}
+
+		int dot = tc.getCaretPosition();
+		Segment s = new Segment();
+		Document doc = tc.getDocument();
+		Element root = doc.getDefaultRootElement();
+		int line = root.getElementIndex(dot);
+		Element elem = root.getElement(line);
+		int offs = elem.getStartOffset();
+		int len = dot - offs - paramListStart.length();
+		if (len<=0) { // Not enough chars on line for a method.
+			return list; // null
+		}
+
+		try {
+
+			doc.getText(offs, len, s);
+			offs = s.offset + len - 1;
+			while (offs>=s.offset && Character.isWhitespace(s.array[offs])) {
+				offs--;
+			}
+			int end = offs;
+			while (offs>=s.offset && isValidChar(s.array[offs])) {
+				System.out.println("... Examining '" + s.array[offs] + "'");
+				offs--;
+			}
+
+			String text = new String(s.array, offs+1, end-offs);
+			System.out.println("... ... \"" + text + "\"");
+
+			Completion c = getCompletionByInputText(text);
+			if (c instanceof ParameterizedCompletion) {
+				if (list==null) {
+					list = new ArrayList(1);
+				}
+				list.add(c);
+			}
+
+		} catch (BadLocationException ble) {
+			ble.printStackTrace(); // Never happens
+		}
+
+		return list;
+
+	}
+
+
+	/**
 	 * Initializes this completion provider.
 	 */
 	protected void init() {

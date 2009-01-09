@@ -148,7 +148,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		sb.append(fc.getName());
 		sb.append("</em></b>");
 
-		sb.append('(');
+		sb.append(fc.getProvider().getParameterListStart());
 		int paramCount = fc.getParamCount();
 		for (int i=0; i<paramCount; i++) {
 			FunctionCompletion.Parameter param = fc.getParam(i);
@@ -170,10 +170,11 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 				sb.append(name);
 			}
 			if (i<paramCount-1) {
-				sb.append(", ");
+				sb.append(fc.getProvider().getParameterListSeparator());
 			}
 		}
-		sb.append(") : ");
+		sb.append(fc.getProvider().getParameterListEnd());
+		sb.append(" : ");
 		if (!selected) {
 			sb.append("<font color='#a0a0ff'>");
 		}

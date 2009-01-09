@@ -267,7 +267,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 * @param e The event.
 	 */
 	public void hyperlinkUpdate(HyperlinkEvent e) {
-System.out.println(descArea.isEnabled() + ", " + e);
+
 		HyperlinkEvent.EventType type = e.getEventType();
 
 		if (type.equals(HyperlinkEvent.EventType.ACTIVATED)) {

@@ -28,7 +28,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.ListCellRenderer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.Segment;
 
 
 /**
@@ -64,6 +68,21 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	 */
 	private Comparator comparator;
 
+	/**
+	 * Text that marks the beginning of a parameter list, for example, "(".
+	 */
+	private String paramListStart;
+
+	/**
+	 * Text that marks the end of a parameter list, for example, ")".
+	 */
+	private String paramListEnd;
+
+	/**
+	 * Text that separates items in a parameter list, for example, ", ".
+	 */
+	private String paramListSeparator;
+
 	protected static final String EMPTY_STRING = "";
 
 
@@ -72,6 +91,9 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	 */
 	public AbstractCompletionProvider() {
 		comparator = new CaseInsensitiveComparator();
+		paramListStart = "(";
+		paramListEnd = ")";
+		paramListSeparator = ", ";
 	}
 
 
@@ -222,6 +244,30 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	 */
 	public ListCellRenderer getListCellRenderer() {
 		return listCellRenderer;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getParameterListEnd() {
+		return paramListEnd;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getParameterListSeparator() {
+		return paramListSeparator;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getParameterListStart() {
+		return paramListStart;
 	}
 
 

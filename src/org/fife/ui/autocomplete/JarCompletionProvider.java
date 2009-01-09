@@ -149,6 +149,14 @@ public class JarCompletionProvider extends AbstractCompletionProvider {
 
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public List getParameterizedCompletionsAt(JTextComponent tc) {
+		return null; // This provider knows no functions or methods.
+	}
+
+
+	/**
 	 * Returns whether the specified character is valid in an auto-completion.
 	 *
 	 * @param ch The character.

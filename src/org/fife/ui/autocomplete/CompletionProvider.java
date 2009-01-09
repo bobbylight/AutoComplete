@@ -74,6 +74,53 @@ public interface CompletionProvider {
 
 
 	/**
+	 * Returns a list of parameterized completions that have been entered
+	 * at the current caret position of a text component (and thus can have
+	 * their completion choices displayed).
+	 * 
+	 * @param tc The text component.
+	 * @return The list of {@link ParameterizedCompletion}s.  If no completions
+	 *         are available, this may be <code>null</code>.
+	 */
+	public List getParameterizedCompletionsAt(JTextComponent tc);
+
+
+	/**
+	 * Returns the text that marks the end of a list of parameters to a
+	 * function or method.
+	 *
+	 * @return The text for a parameter list end, for example,
+	 *         "<code>)</code>".
+	 * @see #getParameterListStart()
+	 * @see #getParameterListSeparator()
+	 */
+	public String getParameterListEnd();
+
+
+	/**
+	 * Returns the text that separates parameters to a function or method.
+	 *
+	 * @return The text that separates parameters, for example,
+	 *         "<code>, </code>".
+	 * @see #getParameterListStart()
+	 * @see #getParameterListEnd()
+	 */
+	public String getParameterListSeparator();
+
+
+	/**
+	 * Returns the text that marks the start of a list of parameters to a
+	 * function or method.
+	 *
+	 * @return The text for a parameter list start, for example,
+	 *         "<code>(</code>".
+	 * @see #getParameterListEnd()
+	 * @see #getParameterListSeparator()
+	 */
+	public String getParameterListStart();
+
+
+	/**
 	 * Returns the parent completion provider.
 	 *
 	 * @return The parent completion provider.

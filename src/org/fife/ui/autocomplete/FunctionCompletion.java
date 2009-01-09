@@ -32,7 +32,8 @@ import java.util.List;
  * @author Robert Futrell
  * @version 1.0
  */
-public class FunctionCompletion extends VariableCompletion {
+public class FunctionCompletion extends VariableCompletion
+								implements ParameterizedCompletion {
 
 	/**
 	 * Parameters to the function.
@@ -54,42 +55,9 @@ public class FunctionCompletion extends VariableCompletion {
 
 
 	protected void addDefinitionString(StringBuffer sb) {
-
 		sb.append("<html><b>");
-
-		// Add the return type if applicable (C macros like NULL have no type).
-		String type = getType();
-		if (type!=null) {
-			appendPossibleDataType(sb, type);
-			sb.append(' ');
-		}
-
-		// Add the item being described's name.
-		sb.append(getName());
-
-		// Add parameters for functions.
-		sb.append('(');
-		for (int i=0; i<getParamCount(); i++) {
-			Parameter param = getParam(i);
-			type = param.getType();
-			String name = param.getName();
-			if (type!=null) {
-				appendPossibleDataType(sb, type);
-				if (name!=null) {
-					sb.append(' ');
-				}
-			}
-			if (name!=null) {
-				sb.append(name);
-			}
-			if (i<params.size()-1) {
-				sb.append(", ");
-			}
-		}
-		sb.append(')');
-
+		sb.append(getDefinitionString());
 		sb.append("</b>");
-
 	}
 
 
@@ -118,6 +86,54 @@ public class FunctionCompletion extends VariableCompletion {
 		}
 
 		// TODO: Add description of return type.
+
+	}
+
+
+	/**
+	 * Returns the "definition string" for this function completion.  For
+	 * example, for the C "<code>printf</code>" function, this would return
+	 * "<code>int printf(const char *, ...)</code>".
+	 * 
+	 * @return The definition string.
+	 */
+	public String getDefinitionString() {
+
+		StringBuffer sb = new StringBuffer();
+
+		// Add the return type if applicable (C macros like NULL have no type).
+		String type = getType();
+		if (type!=null) {
+			appendPossibleDataType(sb, type);
+			sb.append(' ');
+		}
+
+		// Add the item being described's name.
+		sb.append(getName());
+
+		// Add parameters for functions.
+		CompletionProvider provider = getProvider();
+		sb.append(provider.getParameterListStart());
+		for (int i=0; i<getParamCount(); i++) {
+			Parameter param = getParam(i);
+			type = param.getType();
+			String name = param.getName();
+			if (type!=null) {
+				appendPossibleDataType(sb, type);
+				if (name!=null) {
+					sb.append(' ');
+				}
+			}
+			if (name!=null) {
+				sb.append(name);
+			}
+			if (i<params.size()-1) {
+				sb.append(provider.getParameterListSeparator());
+			}
+		}
+		sb.append(provider.getParameterListEnd());
+
+		return sb.toString();
 
 	}
 
@@ -169,56 +185,6 @@ public class FunctionCompletion extends VariableCompletion {
 	public void setParams(List params) {
 		// Deep copy so parsing can re-use its array.
 		this.params = new ArrayList(params);
-	}
-
-
-	/**
-	 * A parameter passed to a function.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
-	 */
-	public static class Parameter {
-
-		private String name;
-		private String type;
-		private String desc;
-
-		public Parameter(String type, String name) {
-			this.name = name;
-			this.type = type;
-		}
-
-		public String getDescription() {
-			return desc;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public void setDescription(String desc) {
-			this.desc = desc;
-		}
-
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			if (type!=null) {
-				sb.append(type);
-			}
-			if (name!=null) {
-				if (type!=null) {
-					sb.append(' ');
-					sb.append(name);
-				}
-			}
-			return sb.toString();
-		}
-
 	}
 
 

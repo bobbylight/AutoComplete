@@ -26,7 +26,7 @@ package org.fife.ui.autocomplete;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fife.ui.autocomplete.FunctionCompletion.Parameter;
+import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
 
 
 /**

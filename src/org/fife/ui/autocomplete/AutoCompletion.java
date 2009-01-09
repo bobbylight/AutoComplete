@@ -60,6 +60,11 @@ public class AutoCompletion implements HierarchyListener {
 	private AutoCompletePopupWindow popupWindow;
 
 	/**
+	 * A "tooltip" describing a function just entered.
+	 */
+	private ParameterizedCompletionDescriptionToolTip descToolTip;
+
+	/**
 	 * Provides the completion options relevant to the current caret position.
 	 */
 	private CompletionProvider provider;
@@ -136,6 +141,47 @@ public class AutoCompletion implements HierarchyListener {
 		setAutoCompleteSingleChoices(true);
 		setShowDescWindow(false);
 		parentWindowListener = new Listener();
+	}
+
+
+	/**
+	 * Displays a "tooltip" detailing the inputs to the function just entered.
+	 *
+	 * @param pc The completion.
+	 * @param addParamListStart Whether or not
+	 *        {@link CompletionProvider#getParameterListStart()} should be
+	 *        added to the text component.
+	 */
+	private void displayDescriptionToolTip(ParameterizedCompletion pc,
+										boolean addParamListStart) {
+
+		// Get rid of the previous tooltip window, if there is one.
+		hideToolTipWindow();
+
+		// Don't bother with a tooltip if there are no parameters.
+		if (pc.getParamCount()==0) {
+			CompletionProvider p = pc.getProvider();
+			textComponent.replaceSelection(p.getParameterListStart() +
+									p.getParameterListEnd());
+			return;
+		}
+
+		descToolTip = new ParameterizedCompletionDescriptionToolTip(
+													parentWindow, this, pc);
+		try {
+			int dot = textComponent.getCaretPosition();
+			Rectangle r = textComponent.modelToView(dot);
+			Point p = new Point(r.x, r.y);
+			SwingUtilities.convertPointToScreen(p, textComponent);
+			r.x = p.x;
+			r.y = p.y;
+			descToolTip.setLocationRelativeTo(r);
+			descToolTip.setVisible(true, addParamListStart);
+		} catch (BadLocationException ble) { // Should never happen
+			UIManager.getLookAndFeel().provideErrorFeedback(textComponent);
+			ble.printStackTrace();
+		}
+
 	}
 
 
@@ -306,6 +352,14 @@ public class AutoCompletion implements HierarchyListener {
 	}
 
 
+	private void hideToolTipWindow() {
+		if (descToolTip!=null) {
+			descToolTip.setVisible(false, false);
+			descToolTip = null;
+		}
+	}
+
+
 	/**
 	 * Inserts a completion.
 	 *
@@ -327,6 +381,11 @@ public class AutoCompletion implements HierarchyListener {
 		caret.setDot(start);
 		caret.moveDot(dot);
 		textComp.replaceSelection(replacement);
+
+		if (c instanceof ParameterizedCompletion) {
+			ParameterizedCompletion pc = (ParameterizedCompletion)c;
+			displayDescriptionToolTip(pc, true);
+		}
 /*
 		Document doc = textComp.getDocument();
 try {
@@ -358,6 +417,24 @@ try {
 
 		this.textComponent = c;
 		installTriggerKey(getTriggerKey());
+
+		InputMap im = c.getInputMap();
+		ActionMap am = c.getActionMap();
+		KeyStroke ks = KeyStroke.getKeyStroke('(');
+		Object oldParenKey = im.get(ks);
+		im.put(ks, "AutoCompletion.FunctionStart");
+		Action oldParenAction = am.get("AutoCompletion.FunctionStart");
+		am.put("AutoCompletion.FunctionStart", new javax.swing.AbstractAction() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				textComponent.replaceSelection("(");
+				List completions = provider.getParameterizedCompletionsAt(textComponent);
+				if (completions!=null && completions.size()>0) {
+					// TODO: Have tooltip let you select between multiple, like VS
+					ParameterizedCompletion pc = (ParameterizedCompletion)completions.get(0);
+					displayDescriptionToolTip(pc, false);
+				}
+			}
+		});
 
 		this.textComponent.addHierarchyListener(this);
 		hierarchyChanged(null); // In case textComponent is already in a window
@@ -662,14 +739,17 @@ try {
 
 		public void componentHidden(ComponentEvent e) {
 			hidePopupWindow();
+			hideToolTipWindow();
 		}
 
 		public void componentMoved(ComponentEvent e) {
 			hidePopupWindow();
+			hideToolTipWindow();
 		}
 
 		public void componentResized(ComponentEvent e) {
 			hidePopupWindow();
+			hideToolTipWindow();
 		}
 
 		public void removeFrom(Window w) {
@@ -682,6 +762,7 @@ try {
 
 		public void windowLostFocus(WindowEvent e) {
 			hidePopupWindow();
+			hideToolTipWindow();
 		}
 
 	}
