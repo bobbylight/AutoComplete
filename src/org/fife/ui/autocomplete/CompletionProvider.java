@@ -43,6 +43,16 @@ public interface CompletionProvider {
 
 
 	/**
+	 * Clears the values used to identify and insert "parameterized completions"
+	 * (e.g. functions or methods).  After this method is called, functions and
+	 * methods will not have their parameters auto-completed.
+	 *
+	 * @see #setParameterizedCompletionParams(char, String, char)
+	 */
+	public void clearParameterizedCompletionParams();
+
+
+	/**
 	 * Returns the text just before the current caret position that could be
 	 * the start of something auto-completable.
 	 *
@@ -90,11 +100,12 @@ public interface CompletionProvider {
 	 * function or method.
 	 *
 	 * @return The text for a parameter list end, for example,
-	 *         "<code>)</code>".
+	 *         '<code>)</code>'.
 	 * @see #getParameterListStart()
 	 * @see #getParameterListSeparator()
+	 * @see #setParameterizedCompletionParams(char, String, char)
 	 */
-	public String getParameterListEnd();
+	public char getParameterListEnd();
 
 
 	/**
@@ -104,6 +115,7 @@ public interface CompletionProvider {
 	 *         "<code>, </code>".
 	 * @see #getParameterListStart()
 	 * @see #getParameterListEnd()
+	 * @see #setParameterizedCompletionParams(char, String, char)
 	 */
 	public String getParameterListSeparator();
 
@@ -116,8 +128,9 @@ public interface CompletionProvider {
 	 *         "<code>(</code>".
 	 * @see #getParameterListEnd()
 	 * @see #getParameterListSeparator()
+	 * @see #setParameterizedCompletionParams(char, String, char)
 	 */
-	public String getParameterListStart();
+	public char getParameterListStart();
 
 
 	/**
@@ -136,6 +149,23 @@ public interface CompletionProvider {
 	 * @see #getListCellRenderer()
 	 */
 	public void setListCellRenderer(ListCellRenderer r);
+
+
+	/**
+	 * Sets the values used to identify and insert "parameterized completions"
+	 * (e.g. functions or methods).  If this method isn't called, functions
+	 * and methods will not have their parameters auto-completed.
+	 *
+	 * @param listStart The character that marks the beginning of a list of
+	 *        parameters, such as '<tt>(</tt>' in C or Java.
+	 * @param separator Text that should separate parameters in a parameter
+	 *        list when one is inserted.  For example, "<tt>, </tt>".
+	 * @param listEnd The character that marks the end of a list of parameters,
+	 *        such as '<tt>)</tt>' in C or Java.
+	 * @see #clearParameterizedCompletionParams()
+	 */
+	public void setParameterizedCompletionParams(char listStart,
+										String separator, char listEnd);
 
 
 	/**

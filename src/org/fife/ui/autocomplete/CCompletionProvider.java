@@ -51,7 +51,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
  * @author Robert Futrell
  * @version 1.0
  */
-public class CCompletionProvider extends AbstractCompletionProvider{
+public class CCompletionProvider extends CompletionProviderBase {
 
 	/**
 	 * The provider to use when no provider is assigned to a particular token
@@ -83,10 +83,26 @@ public class CCompletionProvider extends AbstractCompletionProvider{
 	 */
 	public CCompletionProvider(CompletionProvider defaultProvider) {
 		setDefaultCompletionProvider(defaultProvider);
-		completions = new ArrayList(0); // TODO: Remove me.
 	}
 
 
+	/**
+	 * Calling this method will result in an
+	 * {@link UnsupportedOperationException} being thrown.  To set the
+	 * parameter completion parameters, do so on the provider returned by
+	 * {@link #getDefaultCompletionProvider()}.
+	 *
+	 * @throws UnsupportedOperationException Always.
+	 * @see #setParameterizedCompletionParams(char, String, char)
+	 */
+	public void clearParameterizedCompletionParams() {
+		throw new UnsupportedOperationException();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getAlreadyEnteredText(JTextComponent comp) {
 		if (!(comp instanceof RSyntaxTextArea)) {
 			return EMPTY_STRING;
@@ -151,12 +167,46 @@ public class CCompletionProvider extends AbstractCompletionProvider{
 	 * {@inheritDoc}
 	 */
 	public List getParameterizedCompletionsAt(JTextComponent tc) {
+		// Parameterized completions can only come from the "code" completion
+		// provider.  We do not do function/method completions while editing
+		// strings or comments.
 		CompletionProvider provider = getProviderFor(tc);
-		return provider!=null ? provider.getParameterizedCompletionsAt(tc) :
-								null;
+		return provider==defaultProvider ?
+				provider.getParameterizedCompletionsAt(tc) : null;
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public char getParameterListEnd() {
+		return defaultProvider.getParameterListEnd();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getParameterListSeparator() {
+		return defaultProvider.getParameterListSeparator();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public char getParameterListStart() {
+		return defaultProvider.getParameterListStart();
+	}
+
+
+	/**
+	 * Returns the completion provider to use at the current caret position in
+	 * a text component.
+	 *
+	 * @param comp The text component to check.
+	 * @return The completion provider to use.
+	 */
 	private CompletionProvider getProviderFor(JTextComponent comp) {
 
 		RSyntaxTextArea rsta = (RSyntaxTextArea)comp;
@@ -244,9 +294,6 @@ public class CCompletionProvider extends AbstractCompletionProvider{
 	 * @see #getCommentCompletionProvider()
 	 */
 	public void setCommentCompletionProvider(CompletionProvider provider) {
-		if (provider==null) {
-			throw new IllegalArgumentException("provider cannot be null");
-		}
 		this.commentCompletionProvider = provider;
 	}
 
@@ -273,10 +320,22 @@ public class CCompletionProvider extends AbstractCompletionProvider{
 	 * @see #getDocCommentCompletionProvider()
 	 */
 	public void setDocCommentCompletionProvider(CompletionProvider provider) {
-		if (provider==null) {
-			throw new IllegalArgumentException("provider cannot be null");
-		}
 		this.docCommentCompletionProvider = provider;
+	}
+
+
+	/**
+	 * Calling this method will result in an
+	 * {@link UnsupportedOperationException} being thrown.  To set the
+	 * parameter completion parameters, do so on the provider returned by
+	 * {@link #getDefaultCompletionProvider()}.
+	 *
+	 * @throws UnsupportedOperationException Always.
+	 * @see #clearParameterizedCompletionParams()
+	 */
+	public void setParameterizedCompletionParams(char listStart,
+										String separator, char listEnd) {
+		throw new UnsupportedOperationException();
 	}
 
 

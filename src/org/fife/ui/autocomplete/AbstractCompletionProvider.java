@@ -27,12 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import javax.swing.ListCellRenderer;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.Segment;
 
 
 /**
@@ -44,12 +39,8 @@ import javax.swing.text.Segment;
  * @author Robert Futrell
  * @version 1.0
  */
-public abstract class AbstractCompletionProvider implements CompletionProvider {
-
-	/**
-	 * The parent completion provider.
-	 */
-	private CompletionProvider parent;
+public abstract class AbstractCompletionProvider
+								extends CompletionProviderBase {
 
 	/**
 	 * The completions this provider is aware of.  Subclasses should ensure
@@ -58,32 +49,24 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	protected List completions;
 
 	/**
-	 * The renderer to use for completions from this provider.  If this is
-	 * <code>null</code>, a default renderer is used.
-	 */
-	private ListCellRenderer listCellRenderer;
-
-	/**
 	 * The case-insensitive {@link Completion} comparator.
 	 */
 	private Comparator comparator;
 
 	/**
-	 * Text that marks the beginning of a parameter list, for example, "(".
+	 * Text that marks the beginning of a parameter list, for example, '('.
 	 */
-	private String paramListStart;
+	private char paramListStart;
 
 	/**
-	 * Text that marks the end of a parameter list, for example, ")".
+	 * Text that marks the end of a parameter list, for example, ')'.
 	 */
-	private String paramListEnd;
+	private char paramListEnd;
 
 	/**
 	 * Text that separates items in a parameter list, for example, ", ".
 	 */
 	private String paramListSeparator;
-
-	protected static final String EMPTY_STRING = "";
 
 
 	/**
@@ -91,8 +74,8 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	 */
 	public AbstractCompletionProvider() {
 		comparator = new CaseInsensitiveComparator();
-		paramListStart = "(";
-		paramListEnd = ")";
+		paramListStart = '(';
+		paramListEnd = ')';
 		paramListSeparator = ", ";
 	}
 
@@ -173,44 +156,47 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 
 
 	/**
-	 * Returns the first <tt>Completion</tt> in this provider with the
+	 * {@inheritDoc}
+	 */
+	public void clearParameterizedCompletionParams() {
+		paramListEnd = paramListStart = 0;
+		paramListSeparator = null;
+	}
+
+
+	/**
+	 * Returns a list of <tt>Completion</tt>s in this provider with the
 	 * specified input text.
 	 *
 	 * @param inputText The input text to search for.
-	 * @return The {@link Completion}, or <code>null</code> if there is no such
-	 *         <tt>Completion</tt>.
+	 * @return A list of {@link Completion}s, or <code>null</code> if there
+	 *         are no matching <tt>Completion</tt>s.
 	 */
-	public Completion getCompletionByInputText(String inputText) {
-		// TODO: Do a binary search for performance
-		for (int i=0; i<completions.size(); i++) {
-			Completion c = (Completion)completions.get(i);
-			if (c.getInputText().equals(inputText)) {
-				return c;
-			}
+	public List getCompletionByInputText(String inputText) {
+
+		// Find any entry that matches this input text (there may be > 1).
+		int end = Collections.binarySearch(completions, inputText, comparator);
+		if (end<0) {
+			return null;
 		}
-		return null;
+
+		// There might be multiple entries with the same input text.
+		int start = end;
+		while (start>0 &&
+				comparator.compare(completions.get(start-1), inputText)==0) {
+			start--;
+		}
+		int count = completions.size();
+		while (++end<count &&
+				comparator.compare(completions.get(end), inputText)==0);
+
+		return completions.subList(start, end); // (inclusive, exclusive)
+
 	}
 
 
 	/**
 	 * {@inheritDoc}
-	 */
-	public final List getCompletions(JTextComponent comp) {
-		List completions = getCompletionsImpl(comp);
-		if (parent!=null) {
-			completions.addAll(parent.getCompletions(comp));
-			Collections.sort(completions);
-		}
-		return completions;
-	}
-
-
-	/**
-	 * Does the dirty work of creating a list of completions.
-	 *
-	 * @param comp The text component to look in.
-	 * @return The list of possible completions, or an empty list if there
-	 *         are none.
 	 */
 	protected List getCompletionsImpl(JTextComponent comp) {
 
@@ -242,15 +228,7 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public ListCellRenderer getListCellRenderer() {
-		return listCellRenderer;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getParameterListEnd() {
+	public char getParameterListEnd() {
 		return paramListEnd;
 	}
 
@@ -266,16 +244,8 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getParameterListStart() {
+	public char getParameterListStart() {
 		return paramListStart;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public CompletionProvider getParent() {
-		return parent;
 	}
 
 
@@ -304,16 +274,11 @@ public abstract class AbstractCompletionProvider implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setListCellRenderer(ListCellRenderer r) {
-		listCellRenderer = r;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setParent(CompletionProvider parent) {
-		this.parent = parent;
+	public void setParameterizedCompletionParams(char listStart,
+										String separator, char listEnd) {
+		paramListStart = listStart;
+		paramListSeparator = separator;
+		paramListEnd = listEnd;
 	}
 
 

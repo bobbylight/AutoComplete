@@ -125,8 +125,10 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 		List list = null;
 
-		String paramListStart = getParameterListStart();
-		if (paramListStart==null) {
+		// If this provider doesn't support parameterized completions,
+		// bail out now.
+		char paramListStart = getParameterListStart();
+		if (paramListStart==0) {
 			return list; // null
 		}
 
@@ -137,7 +139,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		int line = root.getElementIndex(dot);
 		Element elem = root.getElement(line);
 		int offs = elem.getStartOffset();
-		int len = dot - offs - paramListStart.length();
+		int len = dot - offs - 1/*paramListStart.length()*/;
 		if (len<=0) { // Not enough chars on line for a method.
 			return list; // null
 		}
@@ -145,25 +147,34 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		try {
 
 			doc.getText(offs, len, s);
+
+			// Get the identifier preceeding the '(', ignoring any whitespace
+			// between them.
 			offs = s.offset + len - 1;
 			while (offs>=s.offset && Character.isWhitespace(s.array[offs])) {
 				offs--;
 			}
 			int end = offs;
 			while (offs>=s.offset && isValidChar(s.array[offs])) {
-				System.out.println("... Examining '" + s.array[offs] + "'");
 				offs--;
 			}
 
 			String text = new String(s.array, offs+1, end-offs);
 			System.out.println("... ... \"" + text + "\"");
 
-			Completion c = getCompletionByInputText(text);
-			if (c instanceof ParameterizedCompletion) {
-				if (list==null) {
-					list = new ArrayList(1);
+			// Get a list of all Completions matching the text, but then
+			// narrow it down to just the ParameterizedCompletions.
+			List l = getCompletionByInputText(text);
+			if (l!=null && !l.isEmpty()) {
+				for (int i=0; i<l.size(); i++) {
+					Object o = l.get(i);
+					if (o instanceof ParameterizedCompletion) {
+						if (list==null) {
+							list = new ArrayList(1);
+						}
+						list.add(o);
+					}
 				}
-				list.add(c);
 			}
 
 		} catch (BadLocationException ble) {

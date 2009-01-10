@@ -45,10 +45,12 @@ import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
@@ -226,15 +228,13 @@ class ParameterizedCompletionDescriptionToolTip {
 		oldEscapeAction = am.get(IM_KEY_ESCAPE);
 		am.put(IM_KEY_ESCAPE, new HideAction());
 
-		String end = pc.getProvider().getParameterListEnd();
-		if (end.length()==1) { // Practically always true, usually ')'
-			char ch = end.charAt(0);
-			ks = KeyStroke.getKeyStroke(ch);
-			oldClosingKey = im.get(ks);
-			im.put(ks, IM_KEY_CLOSING);
-			oldClosingAction = am.get(IM_KEY_CLOSING);
-			am.put(IM_KEY_CLOSING, new ClosingAction());
-		}
+		char end = pc.getProvider().getParameterListEnd();
+		ks = KeyStroke.getKeyStroke(end);
+		oldClosingKey = im.get(ks);
+		im.put(ks, IM_KEY_CLOSING);
+		oldClosingAction = am.get(IM_KEY_CLOSING);
+		am.put(IM_KEY_CLOSING, new ClosingAction());
+
 	}
 
 
@@ -251,7 +251,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		int tagCount = tags.size();
 		if (tagCount==0) {
 			tc.setCaretPosition(maxPos.getOffset());
-			tooltip.setVisible(false);
+			setVisible(false, false);
 		}
 
 		Highlight currentNext = null;
@@ -275,7 +275,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		}
 		else {
 			tc.setCaretPosition(maxPos.getOffset());
-			tooltip.setVisible(false);
+			setVisible(false, false);
 		}
 
 	}
@@ -293,7 +293,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		int tagCount = tags.size();
 		if (tagCount==0) { // Should never happen
 			tc.setCaretPosition(maxPos.getOffset());
-			tooltip.setVisible(false);
+			setVisible(false, false);
 		}
 
 		int dot = tc.getCaretPosition();
@@ -322,7 +322,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		}
 		else {
 			tc.setCaretPosition(maxPos.getOffset());
-			tooltip.setVisible(false);
+			setVisible(false, false);
 		}
 
 	}
@@ -417,13 +417,10 @@ class ParameterizedCompletionDescriptionToolTip {
 		im.put(ks, oldEscapeKey);
 		am.put(IM_KEY_ESCAPE, oldEscapeAction);
 
-		String end = pc.getProvider().getParameterListEnd();
-		if (end.length()==1) { // Practically always true, usually ')'
-			char ch = end.charAt(0);
-			ks = KeyStroke.getKeyStroke(ch);
-			im.put(ks, oldClosingKey);
-			am.put(IM_KEY_CLOSING, oldClosingAction);
-		}
+		char end = pc.getProvider().getParameterListEnd();
+		ks = KeyStroke.getKeyStroke(end);
+		im.put(ks, oldClosingKey);
+		am.put(IM_KEY_CLOSING, oldClosingAction);
 
 	}
 
@@ -486,9 +483,28 @@ class ParameterizedCompletionDescriptionToolTip {
 			}
 		}
 
+		if (selectedParam>=0 && selectedParam<paramCount) {
+			ParameterizedCompletion.Parameter param =
+							pc.getParam(selectedParam);
+			String desc = param.getDescription();
+			if (desc!=null) {
+				sb.append("<br>");
+				sb.append(desc);
+			}
+		}
+
 		descLabel.setText(sb.toString());
 		tooltip.pack();
 
+	}
+
+
+	/**
+	 * Updates the <tt>LookAndFeel</tt> of this window and the description
+	 * window.
+	 */
+	public void updateUI() {
+		SwingUtilities.updateComponentTreeUI(tooltip);
 	}
 
 
@@ -503,8 +519,42 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		public void actionPerformed(ActionEvent e) {
 			JTextComponent tc = ac.getTextComponent();
-			tc.setCaretPosition(maxPos.getOffset());
-			tooltip.setVisible(false);
+			int dot = tc.getCaretPosition();
+			if (dot>=maxPos.getOffset()-1) { // ">=" for overwrite mode
+				if (dot==maxPos.getOffset()) { // Happens in overwrite mode
+					char ch = pc.getProvider().getParameterListEnd();
+					tc.replaceSelection(Character.toString(ch));
+				}
+				else {
+					tc.setCaretPosition(maxPos.getOffset());
+				}
+				setVisible(false, false);
+			}
+			else {
+				char ch = pc.getProvider().getParameterListEnd();
+				tc.replaceSelection(Character.toString(ch));
+			}
+		}
+
+		public String getArgumentText(int arg) {
+			if (arg<0 || arg>=pc.getParamCount()) {
+				return null;
+			}
+			List paramHighlights = getParameterHighlights();
+			if (paramHighlights==null || arg>=paramHighlights.size()) {
+				return null;
+			}
+			Highlight h = (Highlight)paramHighlights.get(arg);
+			int len = h.getEndOffset() - h.getStartOffset();
+			JTextComponent tc = ac.getTextComponent();
+			Document doc = tc.getDocument();
+			try {
+				return doc.getText(h.getStartOffset(), len);
+			} catch (BadLocationException ble) {
+				UIManager.getLookAndFeel().provideErrorFeedback(tc);
+				ble.printStackTrace();
+				return null;
+			}
 		}
 
 	}
@@ -519,7 +569,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	private class HideAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
-			tooltip.setVisible(false);
+			setVisible(false, false);
 		}
 
 	}
@@ -541,11 +591,11 @@ class ParameterizedCompletionDescriptionToolTip {
 		 */
 		public void caretUpdate(CaretEvent e) {
 			if (maxPos==null) { // Sanity check
-				tooltip.setVisible(false);
+				setVisible(false, false);
 			}
 			int dot = e.getDot();
 			if (dot<minPos || dot>maxPos.getOffset()) {
-				tooltip.setVisible(false);
+				setVisible(false, false);
 			}
 			updateText();
 		}
@@ -567,7 +617,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		 * @param e The event.
 		 */
 		public void focusLost(FocusEvent e) {
-			tooltip.setVisible(false);
+			setVisible(false, false);
 		}
 
 

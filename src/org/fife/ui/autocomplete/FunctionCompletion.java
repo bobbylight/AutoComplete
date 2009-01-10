@@ -40,6 +40,11 @@ public class FunctionCompletion extends VariableCompletion
 	 */
 	private List params;
 
+	/**
+	 * A description of the return value of this function.
+	 */
+	private String returnValDesc;
+
 
 	/**
 	 * Constructor.
@@ -68,8 +73,11 @@ public class FunctionCompletion extends VariableCompletion
 	 */
 	protected void addParameters(StringBuffer sb) {
 
+		// TODO: Localize me
+		// TODO: Use tables (?) to improve indentation of long descriptions
+
 		if (params!=null && params.size()>0) {
-			sb.append("<b>Parameters:</b><br>"); // TODO: Localize me
+			sb.append("<b>Parameters:</b><br>");
 			for (int i=0; i<getParamCount(); i++) {
 				Parameter param = getParam(i);
 				sb.append("&nbsp;&nbsp;&nbsp;<b>");
@@ -85,7 +93,11 @@ public class FunctionCompletion extends VariableCompletion
 			sb.append("<br><br>");
 		}
 
-		// TODO: Add description of return type.
+		if (returnValDesc!=null) {
+			sb.append("<b>Returns:</b><br>&nbsp;&nbsp;&nbsp;");
+			sb.append(returnValDesc);
+			sb.append("<br><br>");
+		}
 
 	}
 
@@ -162,6 +174,17 @@ public class FunctionCompletion extends VariableCompletion
 
 
 	/**
+	 * Returns the description of the return value of this function.
+	 *
+	 * @return The description, or <code>null</code> if there is none.
+	 * @see #setReturnValueDescription(String)
+	 */
+	public String getReturnValueDescription() {
+		return returnValDesc;
+	}
+
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public String getSummary() {
@@ -185,6 +208,17 @@ public class FunctionCompletion extends VariableCompletion
 	public void setParams(List params) {
 		// Deep copy so parsing can re-use its array.
 		this.params = new ArrayList(params);
+	}
+
+
+	/**
+	 * Sets the description of the return value of this function.
+	 *
+	 * @param desc The description.
+	 * @see #getReturnValueDescription()
+	 */
+	public void setReturnValueDescription(String desc) {
+		this.returnValDesc = desc;
 	}
 
 

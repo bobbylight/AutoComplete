@@ -27,6 +27,7 @@ class CompletionXMLParser extends DefaultHandler {
 	private String name;
 	private String type;
 	private String returnType;
+	private StringBuffer returnValDesc;
 	private StringBuffer desc;
 	private String paramName;
 	private String paramType;
@@ -35,6 +36,7 @@ class CompletionXMLParser extends DefaultHandler {
 	private String definedIn;
 	private boolean doingKeywords;
 	private boolean inKeyword;
+	private boolean gettingReturnValDesc;
 	private boolean gettingDesc;
 	private boolean gettingParams;
 	private boolean inParam;
@@ -53,6 +55,7 @@ class CompletionXMLParser extends DefaultHandler {
 		params = new ArrayList(1);
 		desc = new StringBuffer();
 		paramDesc = new StringBuffer();
+		returnValDesc = new StringBuffer();
 	}
 
 
@@ -66,6 +69,9 @@ class CompletionXMLParser extends DefaultHandler {
 		else if (gettingParamDesc) {
 			paramDesc.append(ch, start, length);
 		}
+		else if (gettingReturnValDesc) {
+			returnValDesc.append(ch, start, length);
+		}
 	}
 
 
@@ -78,6 +84,10 @@ class CompletionXMLParser extends DefaultHandler {
 		}
 		fc.setParams(params);
 		fc.setDefinedIn(definedIn);
+		if (returnValDesc.length()>0) {
+			fc.setReturnValueDescription(returnValDesc.toString());
+			returnValDesc.setLength(0);
+		}
 		return fc;
 	}
 
@@ -136,8 +146,8 @@ class CompletionXMLParser extends DefaultHandler {
 				inKeyword = false;
 			}
 			else if (inKeyword) {
-				if ("desc".equals(qName)) {
-					gettingDesc = false;
+				if ("returnValDesc".equals(qName)) {
+					gettingReturnValDesc = false;
 				}
 				else if (gettingParams) {
 					if ("params".equals(qName)) {
@@ -159,6 +169,9 @@ class CompletionXMLParser extends DefaultHandler {
 							gettingParamDesc = false;
 						}
 					}
+				}
+				else if ("desc".equals(qName)) {
+					gettingDesc = false;
 				}
 			}
 
@@ -208,7 +221,10 @@ class CompletionXMLParser extends DefaultHandler {
 				inKeyword = true;
 			}
 			else if (inKeyword) {
-				if ("params".equals(qName)) {
+				if ("returnValDesc".equals(qName)) {
+					gettingReturnValDesc = true;
+				}
+				else if ("params".equals(qName)) {
 					gettingParams = true;
 				}
 				else if (gettingParams) {

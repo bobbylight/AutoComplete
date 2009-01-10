@@ -294,9 +294,16 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 				CompletionProvider p = parent.getSelection().getProvider();
 				if (p instanceof AbstractCompletionProvider) {
 					String name = e.getDescription();
-					Completion c = ((AbstractCompletionProvider)p).
+					List l = ((AbstractCompletionProvider)p).
 										getCompletionByInputText(name);
-					setDescriptionFor(c, true);
+					if (l!=null && !l.isEmpty()) {
+						// Just use the 1st one if there's more than 1
+						Completion c = (Completion)l.get(0);
+						setDescriptionFor(c, true);
+					}
+					else {
+						UIManager.getLookAndFeel().provideErrorFeedback(descArea);
+					}
 				}
 			}
 		}

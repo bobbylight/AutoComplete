@@ -33,6 +33,21 @@ import javax.swing.text.*;
  * Adds autocompletion to a text component.  Provides a popup window with a
  * list of autocomplete choices on a given keystroke, such as Crtrl+Space.<p>
  *
+ * Depending on the {@link CompletionProvider} installed, the following
+ * auto-completion features may be enabled:
+ * 
+ * <ul>
+ *    <li>An auto-complete choices list made visible via e.g. Ctrl+Space</li>
+ *    <li>A "description" window displayed alongside the choices list that
+ *        provides documentation on the currently selected completion choice
+ *        (as seen in Eclipse and NetBeans).</li>
+ *    <li>Parameter assistance.  If this is enabled, if the user enters a
+ *        "parameterized" completion, such as a method or a function, then
+ *        they will receive a tooltip describing the arguments they have to
+ *        enter to the completion.  Also, the arguments can be navigated via
+ *        tab and shift+tab (ala Eclipse and NetBeans).</li>
+ * </ul>
+ *
  * @author Robert Futrell
  * @version 1.0
  */
@@ -100,6 +115,11 @@ public class AutoCompletion implements HierarchyListener {
 	private boolean autoCompleteSingleChoices;
 
 	/**
+	 * Whether parameter assistance is enabled.
+	 */
+	private boolean parameterAssistanceEnabled;
+
+	/**
 	 * The keystroke that triggers the completion window.
 	 */
 	private KeyStroke trigger;
@@ -161,8 +181,11 @@ public class AutoCompletion implements HierarchyListener {
 		// Don't bother with a tooltip if there are no parameters.
 		if (pc.getParamCount()==0) {
 			CompletionProvider p = pc.getProvider();
-			textComponent.replaceSelection(p.getParameterListStart() +
-									p.getParameterListEnd());
+			String text = Character.toString(p.getParameterListEnd());
+			if (addParamListStart) {
+				text = p.getParameterListStart() + text;
+			}
+			textComponent.replaceSelection(text);
 			return;
 		}
 
@@ -381,12 +404,7 @@ public class AutoCompletion implements HierarchyListener {
 		caret.setDot(start);
 		caret.moveDot(dot);
 		textComp.replaceSelection(replacement);
-
-		if (c instanceof ParameterizedCompletion) {
-			ParameterizedCompletion pc = (ParameterizedCompletion)c;
-			displayDescriptionToolTip(pc, true);
-		}
-/*
+		/*
 		Document doc = textComp.getDocument();
 try {
 		if (doc instanceof AbstractDocument) {
@@ -398,6 +416,13 @@ try {
 		}
 } catch (javax.swing.text.BadLocationException ble) { ble.printStackTrace(); }
 */
+
+		if (isParameterAssistanceEnabled() &&
+				(c instanceof ParameterizedCompletion)) {
+			ParameterizedCompletion pc = (ParameterizedCompletion)c;
+			displayDescriptionToolTip(pc, true);
+		}
+
 	}
 
 
@@ -418,6 +443,7 @@ try {
 		this.textComponent = c;
 		installTriggerKey(getTriggerKey());
 
+		// TODO: Fix me
 		InputMap im = c.getInputMap();
 		ActionMap am = c.getActionMap();
 		KeyStroke ks = KeyStroke.getKeyStroke('(');
@@ -427,6 +453,9 @@ try {
 		am.put("AutoCompletion.FunctionStart", new javax.swing.AbstractAction() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				textComponent.replaceSelection("(");
+				if (!isParameterAssistanceEnabled()) {
+					return;
+				}
 				List completions = provider.getParameterizedCompletionsAt(textComponent);
 				if (completions!=null && completions.size()>0) {
 					// TODO: Have tooltip let you select between multiple, like VS
@@ -466,6 +495,17 @@ try {
 	 */
 	public boolean isAutoCompleteEnabled() {
 		return autoCompleteEnabled;
+	}
+
+
+	/**
+	 * Returns whether parameter assistance is enabled.
+	 *
+	 * @return Whether parameter assistance is enabled.
+	 * @see #setParameterAssistanceEnabled(boolean)
+	 */
+	public boolean isParameterAssistanceEnabled() {
+		return parameterAssistanceEnabled;
 	}
 
 
@@ -620,6 +660,21 @@ try {
 
 
 	/**
+	 * Sets whether parameter assistance is enabled.  If parameter assistance
+	 * is enabled, and a "parameterized" completion (such as a function or
+	 * method) is inserted, the user will get "assistance" in inserting the
+	 * parameters in the form of a popup window with documentation and easy
+	 * tabbing through the arguments (as seen in Eclipse and NetBeans).
+	 *
+	 * @param enabled Whether parameter assistance should be enabled.
+	 * @see #isParameterAssistanceEnabled()
+	 */
+	public void setParameterAssistanceEnabled(boolean enabled) {
+		parameterAssistanceEnabled = enabled;
+	}
+
+
+	/**
 	 * Sets whether the "description window" should be shown beside the
 	 * completion window.
 	 *
@@ -697,6 +752,9 @@ try {
 	public void updateUI() {
 		if (popupWindow!=null) {
 			popupWindow.updateUI();
+		}
+		if (descToolTip!=null) {
+			descToolTip.updateUI();
 		}
 	}
 
