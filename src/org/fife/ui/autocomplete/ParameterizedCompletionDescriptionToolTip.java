@@ -122,15 +122,18 @@ class ParameterizedCompletionDescriptionToolTip {
 	private Action oldTabAction;
 	private Object oldShiftTabKey;
 	private Action oldShiftTabAction;
+	private Object oldEnterKey;
+	private Action oldEnterAction;
 	private Object oldEscapeKey;
 	private Action oldEscapeAction;
 	private Object oldClosingKey;
 	private Action oldClosingAction;
 
-	private static final String IM_KEY_TAB = "ParamCompDescToolTip.Tab";
-	private static final String IM_KEY_SHIFT_TAB = "ParamCompDescToolTip.ShiftTab";
-	private static final String IM_KEY_ESCAPE = "ParamCompDescToolTip.Escape";
-	private static final String IM_KEY_CLOSING = "ParamCompDescToolTip.Closing";
+	private static final String IM_KEY_TAB = "ParamCompDescTip.Tab";
+	private static final String IM_KEY_SHIFT_TAB = "ParamCompDescTip.ShiftTab";
+	private static final String IM_KEY_ESCAPE = "ParamCompDescTip.Escape";
+	private static final String IM_KEY_ENTER = "ParamCompDescTip.Enter";
+	private static final String IM_KEY_CLOSING = "ParamCompDescTip.Closing";
 
 
 	/**
@@ -221,6 +224,12 @@ class ParameterizedCompletionDescriptionToolTip {
 		im.put(ks, IM_KEY_SHIFT_TAB);
 		oldShiftTabAction = am.get(IM_KEY_SHIFT_TAB);
 		am.put(IM_KEY_SHIFT_TAB, new PrevParamAction());
+
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+		oldEnterKey = im.get(ks);
+		im.put(ks, IM_KEY_ENTER);
+		oldEnterAction = am.get(IM_KEY_ENTER);
+		am.put(IM_KEY_ENTER, new GotoEndAction());
 
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 		oldEscapeKey = im.get(ks);
@@ -413,6 +422,10 @@ class ParameterizedCompletionDescriptionToolTip {
 		im.put(ks, oldShiftTabKey);
 		am.put(IM_KEY_SHIFT_TAB, oldShiftTabAction);
 
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+		im.put(ks, oldEnterKey);
+		am.put(IM_KEY_ENTER, oldEnterAction);
+
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 		im.put(ks, oldEscapeKey);
 		am.put(IM_KEY_ESCAPE, oldEscapeAction);
@@ -505,6 +518,23 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(tooltip);
+	}
+
+
+	/**
+	 * Called when the user presses Enter while entering parameters.
+	 *
+	 * @author Robert Futrell
+	 * @version 1.0
+	 */
+	private class GotoEndAction extends AbstractAction {
+
+		public void actionPerformed(ActionEvent e) {
+			JTextComponent tc = ac.getTextComponent();
+			tc.setCaretPosition(maxPos.getOffset());
+			setVisible(false, false);
+		}
+
 	}
 
 

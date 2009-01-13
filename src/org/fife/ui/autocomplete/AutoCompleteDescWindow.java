@@ -48,6 +48,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -72,6 +73,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 * Renders the HTML description.
 	 */
 	private JEditorPane descArea;
+
+	/**
+	 * The scroll pane that {@link #descArea} is in.
+	 */
+	private JScrollPane scrollPane;
 
 	/**
 	 * The toolbar with "back" and "forward" buttons.
@@ -127,12 +133,13 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		JPanel cp = new JPanel(new BorderLayout());
 		cp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-		descArea = createDescArea();
-		JScrollPane sp = new JScrollPane(descArea);
-		sp.setViewportBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		sp.setBackground(descArea.getBackground());
-		sp.getViewport().setBackground(descArea.getBackground());
-		cp.add(sp);
+		descArea = new JEditorPane("text/html", null);
+		tweakDescArea();
+		scrollPane = new JScrollPane(descArea);
+		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		scrollPane.setBackground(descArea.getBackground());
+		scrollPane.getViewport().setBackground(descArea.getBackground());
+		cp.add(scrollPane);
 
 		descWindowNavBar = new JToolBar();
 		backAction = new ToolBarBackAction();
@@ -189,43 +196,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			history.remove(i);
 		}
 		setActionStates();
-	}
-
-
-	/**
-	 * Creates the customized JEditorPane used to render HTML documentation.
-	 *
-	 * @return The JEditorPane.
-	 */
-	private JEditorPane createDescArea() {
-
-		JEditorPane descArea = new JEditorPane("text/html", null);
-
-		// Jump through a few hoops to get things looking nice in Nimbus
-		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-			System.out.println("DEBUG: Creating Nimbus-specific changes");
-			Color selBG = descArea.getSelectionColor();
-			Color selFG = descArea.getSelectedTextColor();
-			descArea.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
-			descArea.setSelectedTextColor(selFG);
-			descArea.setSelectionColor(selBG);
-		}
-
-		descArea.getCaret().setSelectionVisible(true);
-		descArea.setEditable(false);
-		descArea.addHyperlinkListener(this);
-
-		// Make it use "tooltip" background color.
-		descArea.setBackground(getDefaultBackground());
-
-		// Force JEditorPane to use a certain font even in HTML.
-		Font font = UIManager.getFont("Label.font");
-		HTMLDocument doc = (HTMLDocument)descArea.getDocument();
-		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() +
-				"; font-size: " + font.getSize() + "pt; }");
-
-		return descArea;
-
 	}
 
 
@@ -362,6 +332,56 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			clearHistory();
 		}
 		super.setVisible(visible);
+	}
+
+
+	/**
+	 * Tweaks the description text area to look good in the current Look
+	 * and Feel.
+	 */
+	private void tweakDescArea() {
+
+		// Jump through a few hoops to get things looking nice in Nimbus
+		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+			System.out.println("DEBUG: Creating Nimbus-specific changes");
+			Color selBG = descArea.getSelectionColor();
+			Color selFG = descArea.getSelectedTextColor();
+			descArea.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
+			descArea.setSelectedTextColor(selFG);
+			descArea.setSelectionColor(selBG);
+		}
+
+		descArea.setEditable(false);
+
+		// Make selection visible even though we are not editable.
+		descArea.getCaret().setSelectionVisible(true);
+
+		descArea.addHyperlinkListener(this);
+
+		// Make it use "tooltip" background color.
+		descArea.setBackground(getDefaultBackground());
+
+		// Force JEditorPane to use a certain font even in HTML.
+		// All standard LookAndFeels, even Nimbus (!), define Label.font.
+		Font font = UIManager.getFont("Label.font");
+		if (font==null) { // Try to make a sensible default
+			font = new Font("SansSerif", Font.PLAIN, 12);
+		}
+		HTMLDocument doc = (HTMLDocument)descArea.getDocument();
+		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() +
+				"; font-size: " + font.getSize() + "pt; }");
+
+	}
+
+
+	/**
+	 * Called by the parent completion popup window the LookAndFeel is updated.
+	 */
+	public void updateUI() {
+		SwingUtilities.updateComponentTreeUI(this);
+		tweakDescArea(); // Update the editor pane (font in HTML, etc.)
+		scrollPane.setBackground(descArea.getBackground());
+		scrollPane.getViewport().setBackground(descArea.getBackground());
 	}
 
 

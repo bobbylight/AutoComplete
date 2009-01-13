@@ -34,6 +34,8 @@ import java.awt.event.MouseListener;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -46,7 +48,6 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.Caret;
-import javax.swing.text.Keymap;
 import javax.swing.text.JTextComponent;
 
 
@@ -66,11 +67,22 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private AutoCompletion ac;
 	private JList list;
 	private /*DefaultListModel*/CompletionListModel model;
-	private Action oldUpAction, oldDownAction, oldLeftAction, oldRightAction,
-			oldEnterAction, oldTabAction, oldEscapeAction, oldHomeAction,
-			oldEndAction, oldPageUpAction, oldPageDownAction;
-	private Action upAction, downAction, leftAction ,rightAction, enterAction,
-			escapeAction, homeAction, endAction, pageUpAction, pageDownAction;
+
+	private KeyActionPair escapeKap;
+	private KeyActionPair upKap;
+	private KeyActionPair downKap;
+	private KeyActionPair leftKap;
+	private KeyActionPair rightKap;
+	private KeyActionPair enterKap;
+	private KeyActionPair tabKap;
+	private KeyActionPair homeKap;
+	private KeyActionPair endKap;
+	private KeyActionPair pageUpKap;
+	private KeyActionPair pageDownKap;
+
+	private KeyActionPair oldEscape, oldUp, oldDown, oldLeft, oldRight,
+			oldEnter, oldTab, oldHome, oldEnd, oldPageUp, oldPageDown;
+
 	private int lastLine;
 
 	private AutoCompleteDescWindow descWindow;
@@ -140,22 +152,39 @@ lastLine = -1;
 	}
 
 
-//	public void clear() {
-//		model.clear();
-//	}
+	/**
+	 * Creates the mappings from keys to Actions we'll be putting into the
+	 * text component's ActionMap and InputMap.
+	 */
+	private void createKeyActionPairs() {
 
+		// Actions we'll install.
+		EnterAction enterAction = new EnterAction();
+		escapeKap = new KeyActionPair("Escape", new EscapeAction());
+		upKap = new KeyActionPair("Up", new UpAction());
+		downKap = new KeyActionPair("Down", new DownAction());
+		leftKap = new KeyActionPair("Left", new LeftAction());
+		rightKap = new KeyActionPair("Right", new RightAction());
+		enterKap = new KeyActionPair("Enter", enterAction);
+		tabKap = new KeyActionPair("Tab", enterAction);
+		homeKap = new KeyActionPair("Home", new HomeAction());
+		endKap = new KeyActionPair("End", new EndAction());
+		pageUpKap = new KeyActionPair("PageUp", new PageUpAction());
+		pageDownKap = new KeyActionPair("PageDown", new PageDownAction());
 
-	private void createActions() {
-		escapeAction = new EscapeAction();
-		upAction = new UpAction();
-		downAction = new DownAction();
-		leftAction = new LeftAction();
-		rightAction = new RightAction();
-		enterAction = new EnterAction();
-		homeAction = new HomeAction();
-		endAction = new EndAction();
-		pageUpAction = new PageUpAction();
-		pageDownAction = new PageDownAction();
+		// Buffers for the actions we replace.
+		oldEscape = new KeyActionPair();
+		oldUp = new KeyActionPair();
+		oldDown = new KeyActionPair();
+		oldLeft = new KeyActionPair();
+		oldRight = new KeyActionPair();
+		oldEnter = new KeyActionPair();
+		oldTab = new KeyActionPair();
+		oldHome = new KeyActionPair();
+		oldEnd = new KeyActionPair();
+		oldPageUp = new KeyActionPair();
+		oldPageDown = new KeyActionPair();
+
 	}
 
 
@@ -196,6 +225,46 @@ lastLine = -1;
 	public void insertSelectedCompletion() {
 		Completion comp = getSelection();
 		ac.insertCompletion(comp);
+	}
+
+
+	/**
+	 * Registers keyboard actions to listen for in the text component and
+	 * intercept.
+	 *
+	 * @see #uninstallKeyBindings()
+	 */
+	private void installKeyBindings() {
+
+		if (DEBUG) {
+			System.out.println("PopupWindow: Installing keybindings");
+		}
+
+		if (escapeKap==null) { // Lazily create actions.
+			createKeyActionPairs();
+		}
+
+		JTextComponent comp = ac.getTextComponent();
+		InputMap im = comp.getInputMap();
+		ActionMap am = comp.getActionMap();
+
+		replaceAction(im, am, KeyEvent.VK_ESCAPE, escapeKap, oldEscape);
+		if (DEBUG && oldEscape.action==escapeKap.action) {
+			Thread.dumpStack();
+		}
+		replaceAction(im, am, KeyEvent.VK_UP, upKap, oldUp);
+		replaceAction(im, am, KeyEvent.VK_LEFT, leftKap, oldLeft);
+		replaceAction(im, am, KeyEvent.VK_DOWN, downKap, oldDown);
+		replaceAction(im, am, KeyEvent.VK_RIGHT, rightKap, oldRight);
+		replaceAction(im, am, KeyEvent.VK_ENTER, enterKap, oldEnter);
+		replaceAction(im, am, KeyEvent.VK_TAB, tabKap, oldTab);
+		replaceAction(im, am, KeyEvent.VK_HOME, homeKap, oldHome);
+		replaceAction(im, am, KeyEvent.VK_END, endKap, oldEnd);
+		replaceAction(im, am, KeyEvent.VK_PAGE_UP, pageUpKap, oldPageUp);
+		replaceAction(im, am, KeyEvent.VK_PAGE_DOWN, pageDownKap, oldPageDown);
+
+		comp.addCaretListener(this);
+
 	}
 
 
@@ -255,64 +324,41 @@ lastLine = -1;
 
 
 	/**
-	 * Registers keyboard actions to listen for in the text component and
-	 * intercept.
+	 * "Puts back" the original kay/Action pair for a keystroke.  This is used
+	 * when this popup is hidden.
 	 *
-	 * @see #unregisterActions()
+	 * @param im The input map.
+	 * @param am The action map.
+	 * @param key The keystroke whose key/Action pair to change.
+	 * @param kap The (original) key/Action pair.
+	 * @see #replaceAction(InputMap, ActionMap, int, KeyActionPair, KeyActionPair)
 	 */
-	private void registerActions() {
-		System.err.println("Registering actions");
-
-		if (escapeAction == null) {
-			createActions();
-		}
-
-		JTextComponent comp = ac.getTextComponent();
-		Keymap km = comp.getKeymap();
-
-		KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-		oldEscapeAction = km.getAction(ks);
-		if (DEBUG && oldEscapeAction==escapeAction) {
-			Thread.dumpStack();
-			return;
-		}
-		km.addActionForKeyStroke(ks, escapeAction);
-
-		oldUpAction = replaceAction(km, KeyEvent.VK_UP, upAction);
-		oldDownAction = replaceAction(km, KeyEvent.VK_DOWN, downAction);
-		oldLeftAction = replaceAction(km, KeyEvent.VK_LEFT, leftAction);
-		oldRightAction = replaceAction(km, KeyEvent.VK_RIGHT, rightAction);
-		oldEnterAction = replaceAction(km, KeyEvent.VK_ENTER, enterAction);
-		oldTabAction = replaceAction(km, KeyEvent.VK_TAB, enterAction);
-		oldHomeAction = replaceAction(km, KeyEvent.VK_HOME, homeAction);
-		oldEndAction = replaceAction(km, KeyEvent.VK_END, endAction);
-		oldPageUpAction = replaceAction(km, KeyEvent.VK_PAGE_UP, pageUpAction);
-		oldPageDownAction = replaceAction(km, KeyEvent.VK_PAGE_DOWN, pageDownAction);
-
-		comp.addCaretListener(this);
-
+	private void putBackAction(InputMap im, ActionMap am, int key,
+								KeyActionPair kap) {
+		KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
+		am.put(im.get(ks), kap.action); // Original action for the "new" key
+		im.put(ks, kap.key); // Original key for the keystroke.
 	}
 
 
 	/**
-	 * Replaces the action binded to a keystroke.
+	 * Replaces a key/Action pair in an InputMap and ActionMap with a new
+	 * pair.
 	 *
-	 * @param km The map in which to replace the action.
-	 * @param key The keystroke whose action to replace.
-	 * @param a The action to associate with <code>key</code>.  If this is
-	 *        <code>null</code>, no keystroke will be associated with the key.
-	 * @return The previous action associated with the key, or <code>null</code>
-	 *         if there was none.
+	 * @param im The input map.
+	 * @param am The action map.
+	 * @param key The keystroke whose information to replace.
+	 * @param kap The new key/Action pair for <code>key</code>.
+	 * @param old A buffer in which to place the old key/Action pair.
+	 * @see #putBackAction(InputMap, ActionMap, int, KeyActionPair)
 	 */
-	private Action replaceAction(Keymap km, int key, Action a) {
+	private void replaceAction(InputMap im, ActionMap am, int key,
+						KeyActionPair kap, KeyActionPair old) {
 		KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
-		Action old = km.getAction(ks);
-		if (a!=null) {
-			km.addActionForKeyStroke(ks, a);
-		} else {
-			km.removeKeyStrokeBinding(ks);
-		}
-		return old;
+		old.key = im.get(ks);
+		im.put(ks, kap.key);
+		old.action = am.get(kap.key);
+		am.put(kap.key, kap.action);
 	}
 
 
@@ -442,7 +488,7 @@ lastLine = -1;
 	public void setVisible(boolean visible) {
 		if (visible!=isVisible()) {
 			if (visible) {
-				registerActions();
+				installKeyBindings();
 				lastLine = ac.getLineOfCaret();
 				selectFirstItem();
 				if (descWindow==null && ac.getShowDescWindow()) {
@@ -456,7 +502,7 @@ lastLine = -1;
 				}
 			}
 			else {
-				unregisterActions();
+				uninstallKeyBindings();
 			}
 			super.setVisible(visible);
 			// Must set descWindow's visibility one way or the other each time,
@@ -472,30 +518,34 @@ lastLine = -1;
 	/**
 	 * Stops intercepting certain keystrokes from the text component.
 	 *
-	 * @see #registerActions()
+	 * @see #installKeyBindings()
 	 */
-	public void unregisterActions() {
+	public void uninstallKeyBindings() {
 
-		System.err.println("Unregistering actions");
+		if (DEBUG) {
+			System.out.println("PopupWindow: Removing keybindings");
+		}
+
 		JTextComponent comp = ac.getTextComponent();
-		Keymap km = comp.getKeymap();
+		InputMap im = comp.getInputMap();
+		ActionMap am = comp.getActionMap();
 
-		replaceAction(km, KeyEvent.VK_ESCAPE, oldEscapeAction);
-		replaceAction(km, KeyEvent.VK_UP, oldUpAction);
-		replaceAction(km, KeyEvent.VK_DOWN, oldDownAction);
-		replaceAction(km, KeyEvent.VK_LEFT, oldLeftAction);
-		replaceAction(km, KeyEvent.VK_RIGHT, oldRightAction);
-		replaceAction(km, KeyEvent.VK_ENTER, oldEnterAction);
-		replaceAction(km, KeyEvent.VK_TAB, oldTabAction);
-		replaceAction(km, KeyEvent.VK_HOME, oldHomeAction);
-		replaceAction(km, KeyEvent.VK_END, oldEndAction);
-		replaceAction(km, KeyEvent.VK_PAGE_UP, oldPageUpAction);
-		replaceAction(km, KeyEvent.VK_PAGE_DOWN, oldPageDownAction);
+		putBackAction(im, am, KeyEvent.VK_ESCAPE, oldEscape);
+		putBackAction(im, am, KeyEvent.VK_ESCAPE, oldEscape);
+		putBackAction(im, am, KeyEvent.VK_UP, oldUp);
+		putBackAction(im, am, KeyEvent.VK_DOWN, oldDown);
+		putBackAction(im, am, KeyEvent.VK_LEFT, oldLeft);
+		putBackAction(im, am, KeyEvent.VK_RIGHT, oldRight);
+		putBackAction(im, am, KeyEvent.VK_ENTER, oldEnter);
+		putBackAction(im, am, KeyEvent.VK_TAB, oldTab);
+		putBackAction(im, am, KeyEvent.VK_HOME, oldHome);
+		putBackAction(im, am, KeyEvent.VK_END, oldEnd);
+		putBackAction(im, am, KeyEvent.VK_PAGE_UP, oldPageUp);
+		putBackAction(im, am, KeyEvent.VK_PAGE_DOWN, oldPageDown);
 
 		comp.removeCaretListener(this);
 
 	}
-
 
 	/**
 	 * Updates the <tt>LookAndFeel</tt> of this window and the description
@@ -504,7 +554,7 @@ lastLine = -1;
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(this);
 		if (descWindow!=null) {
-			SwingUtilities.updateComponentTreeUI(descWindow);
+			descWindow.updateUI();
 		}
 	}
 
@@ -575,6 +625,28 @@ lastLine = -1;
 			if (isVisible()) {
 				selectFirstItem();
 			}
+		}
+
+	}
+
+
+	/**
+	 * A mapping from a key (an Object) to an Action.
+	 *
+	 * @author Robert Futrell
+	 * @version 1.0
+	 */
+	private static class KeyActionPair {
+
+		public Object key;
+		public Action action;
+
+		public KeyActionPair() {
+		}
+
+		public KeyActionPair(Object key, Action a) {
+			this.key = key;
+			this.action = a;
 		}
 
 	}

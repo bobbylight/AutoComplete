@@ -25,6 +25,7 @@ package org.fife.ui.autocomplete;
 
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
@@ -88,6 +89,16 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 */
 	public void setFallbackCellRenderer(ListCellRenderer fallback) {
 		this.fallback = fallback;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void updateUI() {
+		if ((fallback instanceof JComponent) && fallback!=this) {
+			((JComponent)fallback).updateUI();
+		}
 	}
 
 
