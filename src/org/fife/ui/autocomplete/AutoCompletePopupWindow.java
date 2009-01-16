@@ -88,8 +88,6 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private AutoCompleteDescWindow descWindow;
 	private boolean aboveCaret;
 
-	private static final boolean DEBUG = true;
-
 
 	public AutoCompletePopupWindow(Window parent, AutoCompletion ac) {
 
@@ -146,7 +144,7 @@ lastLine = -1;
 				doAutocomplete();
 			}
 		}
-		else if (DEBUG) {
+		else if (AutoCompletion.DEBUG) {
 			Thread.dumpStack();
 		}
 	}
@@ -236,7 +234,7 @@ lastLine = -1;
 	 */
 	private void installKeyBindings() {
 
-		if (DEBUG) {
+		if (AutoCompletion.DEBUG) {
 			System.out.println("PopupWindow: Installing keybindings");
 		}
 
@@ -249,7 +247,7 @@ lastLine = -1;
 		ActionMap am = comp.getActionMap();
 
 		replaceAction(im, am, KeyEvent.VK_ESCAPE, escapeKap, oldEscape);
-		if (DEBUG && oldEscape.action==escapeKap.action) {
+		if (AutoCompletion.DEBUG && oldEscape.action==escapeKap.action) {
 			Thread.dumpStack();
 		}
 		replaceAction(im, am, KeyEvent.VK_UP, upKap, oldUp);
@@ -522,7 +520,7 @@ lastLine = -1;
 	 */
 	public void uninstallKeyBindings() {
 
-		if (DEBUG) {
+		if (AutoCompletion.DEBUG) {
 			System.out.println("PopupWindow: Removing keybindings");
 		}
 

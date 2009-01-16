@@ -137,6 +137,18 @@ public class AutoCompletion implements HierarchyListener {
 	private Action oldTriggerAction;
 
 	/**
+	 * The previous key in the text component's <code>InputMap</code> for the
+	 * parameter completion trigger key.
+	 */
+	private Object oldParenKey;
+
+	/**
+	 * The action previously assigned to the parameter completion key, so we
+	 * can reset it when we uninstall.
+	 */
+	private Action oldParenAction;
+
+	/**
 	 * Listens for events in the parent window that affect the visibility of
 	 * the popup window.
 	 */
@@ -145,7 +157,14 @@ public class AutoCompletion implements HierarchyListener {
 	/**
 	 * The key used in the input map for the AutoComplete action.
 	 */
-	private static final String ACTION_MAP_KEY	= "AutoComplete";
+	private static final String PARAM_TRIGGER_KEY	= "AutoComplete";
+
+	/**
+	 * Key used in the input map for the parameter completion action.
+	 */
+	private static final String PARAM_COMPLETE_KEY = "AutoCompletion.FunctionStart";
+
+	static final boolean DEBUG = true;
 
 
 	/**
@@ -443,27 +462,18 @@ try {
 		this.textComponent = c;
 		installTriggerKey(getTriggerKey());
 
-		// TODO: Fix me
-		InputMap im = c.getInputMap();
-		ActionMap am = c.getActionMap();
-		KeyStroke ks = KeyStroke.getKeyStroke('(');
-		Object oldParenKey = im.get(ks);
-		im.put(ks, "AutoCompletion.FunctionStart");
-		Action oldParenAction = am.get("AutoCompletion.FunctionStart");
-		am.put("AutoCompletion.FunctionStart", new javax.swing.AbstractAction() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				textComponent.replaceSelection("(");
-				if (!isParameterAssistanceEnabled()) {
-					return;
-				}
-				List completions = provider.getParameterizedCompletionsAt(textComponent);
-				if (completions!=null && completions.size()>0) {
-					// TODO: Have tooltip let you select between multiple, like VS
-					ParameterizedCompletion pc = (ParameterizedCompletion)completions.get(0);
-					displayDescriptionToolTip(pc, false);
-				}
-			}
-		});
+		// Install the function completion key, if there is one.
+		char start = provider.getParameterListStart();
+		if (start!=0) {
+			InputMap im = c.getInputMap();
+			ActionMap am = c.getActionMap();
+			KeyStroke ks = KeyStroke.getKeyStroke(start);
+			oldParenKey = im.get(ks);
+			im.put(ks, PARAM_COMPLETE_KEY);
+			oldParenAction = am.get(PARAM_COMPLETE_KEY);
+			am.put(PARAM_COMPLETE_KEY,
+							new ParameterizedCompletionStartAction(start));
+		}
 
 		this.textComponent.addHierarchyListener(this);
 		hierarchyChanged(null); // In case textComponent is already in a window
@@ -480,10 +490,10 @@ try {
 	private void installTriggerKey(KeyStroke ks) {
 		InputMap im = textComponent.getInputMap();
 		oldTriggerKey = im.get(ks);
-		im.put(ks, ACTION_MAP_KEY);
+		im.put(ks, PARAM_TRIGGER_KEY);
 		ActionMap am = textComponent.getActionMap();
-		oldTriggerAction = am.get(ACTION_MAP_KEY);
-		am.put(ACTION_MAP_KEY, new AutoCompleteAction());
+		oldTriggerAction = am.get(PARAM_TRIGGER_KEY);
+		am.put(PARAM_TRIGGER_KEY, new AutoCompleteAction());
 	}
 
 
@@ -718,15 +728,32 @@ try {
 	 * @see #install(JTextComponent)
 	 */
 	public void uninstall() {
+
 		if (textComponent!=null) {
+
 			hidePopupWindow(); // Unregisters listeners, actions, etc.
+
 			uninstallTriggerKey();
+
+			// Uninstall the function completion key.
+			char start = provider.getParameterListStart();
+			if (start!=0) {
+				KeyStroke ks = KeyStroke.getKeyStroke(start);
+				InputMap im = textComponent.getInputMap();
+				im.put(ks, oldParenKey);
+				ActionMap am = textComponent.getActionMap();
+				am.put(PARAM_COMPLETE_KEY, oldParenAction);
+			}
+
 			textComponent.removeHierarchyListener(this);
 			if (parentWindow!=null) {
 				parentWindowListener.removeFrom(parentWindow);
 			}
+
 			textComponent = null;
+
 		}
+
 	}
 
 
@@ -740,7 +767,7 @@ try {
 		InputMap im = textComponent.getInputMap();
 		im.put(trigger, oldTriggerKey);
 		ActionMap am = textComponent.getActionMap();
-		am.put(ACTION_MAP_KEY, oldTriggerAction);
+		am.put(PARAM_TRIGGER_KEY, oldTriggerAction);
 	}
 
 
@@ -821,6 +848,40 @@ try {
 		public void windowLostFocus(WindowEvent e) {
 			hidePopupWindow();
 			hideToolTipWindow();
+		}
+
+	}
+
+
+	/**
+	 * Action that starts a parameterized completion, e.g. after '(' is
+	 * typed.
+	 *
+	 * @author Robert Futrell
+	 * @version 1.0
+	 */
+	private class ParameterizedCompletionStartAction extends AbstractAction {
+
+		private String start;
+
+		public ParameterizedCompletionStartAction(char ch) {
+			this.start = Character.toString(ch);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			hidePopupWindow(); // Prevents keystrokes from messing up
+			textComponent.replaceSelection(start);
+			if (!isParameterAssistanceEnabled()) {
+				return;
+			}
+			List completions = provider.
+								getParameterizedCompletionsAt(textComponent);
+			if (completions!=null && completions.size()>0) {
+				// TODO: Have tooltip let you select between multiple, like VS
+				ParameterizedCompletion pc =
+								(ParameterizedCompletion)completions.get(0);
+				displayDescriptionToolTip(pc, false);
+			}
 		}
 
 	}

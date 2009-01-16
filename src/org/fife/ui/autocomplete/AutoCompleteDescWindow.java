@@ -115,9 +115,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	private static final String MSG =
 					"org.fife.ui.autocomplete.AutoCompleteDescWindow";
 
-//	private static final boolean IS_OS_X = System.getProperty("os.name").
-//													indexOf("OS X")>-1;
-
 
 	/**
 	 * Constructor.
@@ -131,7 +128,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		this.ac = ac;
 
 		JPanel cp = new JPanel(new BorderLayout());
-		cp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//		cp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		descArea = new JEditorPane("text/html", null);
 		tweakDescArea();

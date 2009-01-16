@@ -209,6 +209,10 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private void installKeyBindings() {
 
+		if (AutoCompletion.DEBUG) {
+			System.out.println("ToolTip: Installing keybindings");
+		}
+
 		JTextComponent tc = ac.getTextComponent();
 		InputMap im = tc.getInputMap();
 		ActionMap am = tc.getActionMap();
@@ -409,6 +413,11 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @see #installKeyBindings()
 	 */
 	private void uninstallKeyBindings() {
+
+		if (AutoCompletion.DEBUG) {
+			System.out.println("PopupWindow: Installing keybindings");
+		}
+
 
 		JTextComponent tc = ac.getTextComponent();
 		InputMap im = tc.getInputMap();

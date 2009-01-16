@@ -28,9 +28,16 @@ import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -45,6 +52,11 @@ import javax.swing.UIManager;
  */
 class SizeGrip extends JPanel {
 
+	/**
+	 * The size grip to use if we're on OS X.
+	 */
+	private Image osxSizeGrip;
+
 
 	public SizeGrip() {
 		MouseHandler adapter = new MouseHandler();
@@ -52,6 +64,52 @@ class SizeGrip extends JPanel {
 		addMouseMotionListener(adapter);
 		possiblyFixCursor(ComponentOrientation.getOrientation(getLocale()));
 		setPreferredSize(new Dimension(16, 16));
+	}
+
+
+	/**
+	 * Overridden to ensure that the cursor for this component is appropriate
+	 * for the orientation.
+	 *
+	 * @param o The new orientation.
+	 */
+	public void applyComponentOrientation(ComponentOrientation o) {
+		possiblyFixCursor(o);
+		super.applyComponentOrientation(o);
+	}
+
+
+	/**
+	 * Creates and returns the OS X size grip image.
+	 *
+	 * @return The OS X size grip.
+	 */
+	private Image createOSXSizeGrip() {
+		ClassLoader cl = getClass().getClassLoader();
+		URL url = cl.getResource("org.fife.ui.autocomplete.osx_sizegrip.png");
+		if (url==null) {
+			// We're not running in a jar - we may be debugging in Eclipse,
+			// for example
+			File f = new File("../AutoComplete/src/org/fife/ui/autocomplete/osx_sizegrip.png");
+			if (f.isFile()) {
+				try {
+					url = f.toURI().toURL();
+				} catch (MalformedURLException mue) { // Never happens
+					mue.printStackTrace();
+					return null;
+				}
+			}
+			else {
+				return null; // Can't find resource or image file
+			}
+		}
+		Image image = null;
+		try {
+			image = ImageIO.read(url);
+		} catch (IOException ioe) { // Never happens
+			ioe.printStackTrace();
+		}
+		return image;
 	}
 
 
@@ -67,6 +125,11 @@ class SizeGrip extends JPanel {
 		Dimension dim = getSize();
 		Color c1 = UIManager.getColor("Label.disabledShadow");
 		Color c2 = UIManager.getColor("Label.disabledForeground");
+
+		if (osxSizeGrip!=null) {
+			g.drawImage(osxSizeGrip, dim.width-16, dim.height-16, null);
+			return;
+		}
 
 		ComponentOrientation orientation = getComponentOrientation();
 
@@ -110,18 +173,6 @@ class SizeGrip extends JPanel {
 
 
 	/**
-	 * Overridden to ensure that the cursor for this component is appropriate
-	 * for the orientation.
-	 *
-	 * @param o The new orientation.
-	 */
-	public void applyComponentOrientation(ComponentOrientation o) {
-		possiblyFixCursor(o);
-		super.applyComponentOrientation(o);
-	}
-
-
-	/**
 	 * Ensures that the cursor for this component is appropriate for the
 	 * orientation.
 	 *
@@ -135,6 +186,22 @@ class SizeGrip extends JPanel {
 		if (cursor!=getCursor().getType()) {
 			setCursor(Cursor.getPredefinedCursor(cursor));
 		}
+	}
+
+
+	public void updateUI() {
+		super.updateUI();
+		// TODO: Key off of Aqua LaF, not just OS X, as this size grip looks
+		// bad on other LaFs on Mac such as Nimbus.
+		if (System.getProperty("os.name").indexOf("OS X")>-1) {
+			if (osxSizeGrip==null) {
+				osxSizeGrip = createOSXSizeGrip();
+			}
+		}
+		else { // Clear memory in case of runtime LaF change.
+			osxSizeGrip = null;
+		}
+
 	}
 
 
