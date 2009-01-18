@@ -36,11 +36,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.MouseInputAdapter;
 
 
 /**
@@ -218,7 +218,7 @@ class SizeGrip extends JPanel {
 	 * buggy - stretch the window too wide and some kind of arithmetic error
 	 * started happening somewhere - our window would grow way too large.
 	 */
-	private class MouseHandler extends javax.swing.event.MouseInputAdapter {
+	private class MouseHandler extends MouseInputAdapter {
 
 		private Point origPos;
 

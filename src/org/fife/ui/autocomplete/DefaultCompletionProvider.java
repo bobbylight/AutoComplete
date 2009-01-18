@@ -160,7 +160,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 			}
 
 			String text = new String(s.array, offs+1, end-offs);
-			System.out.println("... ... \"" + text + "\"");
 
 			// Get a list of all Completions matching the text, but then
 			// narrow it down to just the ParameterizedCompletions.
@@ -246,6 +245,14 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 			saxParser.parse(bin, handler);
 			List completions =  handler.getCompletions();
 			addCompletions(completions);
+			char startChar = handler.getParamStartChar();
+			if (startChar!=0) {
+				char endChar = handler.getParamEndChar();
+				String sep = handler.getParamSeparator();
+				if (endChar!=0 && sep!=null && sep.length()>0) { // Sanity
+					setParameterizedCompletionParams(startChar, sep, endChar);
+				}
+			}
 		} catch (SAXException se) {
 			throw new IOException(se.toString());
 		} catch (ParserConfigurationException pce) {

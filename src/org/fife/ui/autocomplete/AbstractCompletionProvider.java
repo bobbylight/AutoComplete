@@ -74,9 +74,7 @@ public abstract class AbstractCompletionProvider
 	 */
 	public AbstractCompletionProvider() {
 		comparator = new CaseInsensitiveComparator();
-		paramListStart = '(';
-		paramListEnd = ')';
-		paramListSeparator = ", ";
+		clearParameterizedCompletionParams();
 	}
 
 
@@ -276,6 +274,15 @@ public abstract class AbstractCompletionProvider
 	 */
 	public void setParameterizedCompletionParams(char listStart,
 										String separator, char listEnd) {
+		if (listStart<0x20 || listStart==0x7F) {
+			throw new IllegalArgumentException("Invalid listStart");
+		}
+		if (listEnd<0x20 || listEnd==0x7F) {
+			throw new IllegalArgumentException("Invalid listEnd");
+		}
+		if (separator==null || separator.length()==0) {
+			throw new IllegalArgumentException("Invalid separator");
+		}
 		paramListStart = listStart;
 		paramListSeparator = separator;
 		paramListEnd = listEnd;

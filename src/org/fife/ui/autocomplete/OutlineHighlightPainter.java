@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.Serializable;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.JTextComponent;
@@ -28,7 +27,7 @@ import javax.swing.text.View;
  * paint the Highlight from the 2nd char on.
  */
 class OutlineHighlightPainter extends
-			DefaultHighlighter.DefaultHighlightPainter implements Serializable {
+							DefaultHighlighter.DefaultHighlightPainter {
 
 	/**
 	 * DefaultHighlightPainter doesn't allow changing color, so we must cache

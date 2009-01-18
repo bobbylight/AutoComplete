@@ -66,9 +66,13 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 */
 	protected void addAttributes(StringBuffer sb) {
 
-		if (attrs!=null && attrs.size()>0) {
-			sb.append("<b>Attributes:</b><br>"); // TODO: Localize me
-			for (int i=0; i<getAttributeCount(); i++) {
+		// TODO: Localize me.
+
+		int attrCount = getAttributeCount();
+		if (attrCount>0) {
+			sb.append("<b>Attributes:</b><br>");
+			sb.append("<center><table width='90%'><tr><td>");
+			for (int i=0; i<attrCount; i++) {
 				Parameter attr = getAttribute(i);
 				sb.append("&nbsp;&nbsp;&nbsp;<b>");
 				sb.append(attr.getName()!=null ? attr.getName() :
@@ -80,7 +84,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 				}
 				sb.append("<br>");
 			}
-			sb.append("<br><br>");
+			sb.append("</td></tr></table></center><br><br>");
 		}
 
 	}

@@ -162,6 +162,9 @@ public interface CompletionProvider {
 	 *        list when one is inserted.  For example, "<tt>, </tt>".
 	 * @param listEnd The character that marks the end of a list of parameters,
 	 *        such as '<tt>)</tt>' in C or Java.
+	 * @throws IllegalArgumentException If either <tt>listStart</tt> or
+	 *         <tt>listEnd</tt> is not printable ASCII, or if
+	 *         <tt>separator</tt> is <code>null</code> or an empty string.
 	 * @see #clearParameterizedCompletionParams()
 	 */
 	public void setParameterizedCompletionParams(char listStart,

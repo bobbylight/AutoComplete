@@ -144,7 +144,7 @@ lastLine = -1;
 				doAutocomplete();
 			}
 		}
-		else if (AutoCompletion.DEBUG) {
+		else if (AutoCompletion.getDebug()) {
 			Thread.dumpStack();
 		}
 	}
@@ -234,7 +234,7 @@ lastLine = -1;
 	 */
 	private void installKeyBindings() {
 
-		if (AutoCompletion.DEBUG) {
+		if (AutoCompletion.getDebug()) {
 			System.out.println("PopupWindow: Installing keybindings");
 		}
 
@@ -247,7 +247,7 @@ lastLine = -1;
 		ActionMap am = comp.getActionMap();
 
 		replaceAction(im, am, KeyEvent.VK_ESCAPE, escapeKap, oldEscape);
-		if (AutoCompletion.DEBUG && oldEscape.action==escapeKap.action) {
+		if (AutoCompletion.getDebug() && oldEscape.action==escapeKap.action) {
 			Thread.dumpStack();
 		}
 		replaceAction(im, am, KeyEvent.VK_UP, upKap, oldUp);
@@ -520,7 +520,7 @@ lastLine = -1;
 	 */
 	public void uninstallKeyBindings() {
 
-		if (AutoCompletion.DEBUG) {
+		if (AutoCompletion.getDebug()) {
 			System.out.println("PopupWindow: Removing keybindings");
 		}
 

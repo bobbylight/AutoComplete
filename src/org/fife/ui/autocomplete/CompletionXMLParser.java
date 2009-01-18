@@ -41,6 +41,9 @@ class CompletionXMLParser extends DefaultHandler {
 	private boolean gettingParams;
 	private boolean inParam;
 	private boolean gettingParamDesc;
+	private char paramStartChar;
+	private char paramEndChar;
+	private String paramSeparator;
 
 
 	/**
@@ -56,6 +59,8 @@ class CompletionXMLParser extends DefaultHandler {
 		desc = new StringBuffer();
 		paramDesc = new StringBuffer();
 		returnValDesc = new StringBuffer();
+		paramStartChar = paramEndChar = 0;
+		paramSeparator = null;
 	}
 
 
@@ -191,6 +196,36 @@ class CompletionXMLParser extends DefaultHandler {
 
 
 	/**
+	 * Returns the parameter end character specified.
+	 *
+	 * @return The character, or 0 if none was specified.
+	 */
+	public char getParamEndChar() {
+		return paramEndChar;
+	}
+
+
+	/**
+	 * Returns the parameter end string specified.
+	 *
+	 * @return The string, or <code>null</code> if none was specified.
+	 */
+	public String getParamSeparator() {
+		return paramSeparator;
+	}
+
+
+	/**
+	 * Returns the parameter start character specified.
+	 *
+	 * @return The character, or 0 if none was specified.
+	 */
+	public char getParamStartChar() {
+		return paramStartChar;
+	}
+
+
+	/**
 	 * Resets this parser to grab more completions.
 	 *
 	 * @param provider The new provider to get completions for.
@@ -200,6 +235,8 @@ class CompletionXMLParser extends DefaultHandler {
 		completions.clear();
 		doingKeywords = inKeyword = gettingDesc = gettingParams =  inParam = 
 				gettingParamDesc = false;
+		paramStartChar = paramEndChar = 0;
+		paramSeparator = null;
 	}
 
 
@@ -243,6 +280,12 @@ class CompletionXMLParser extends DefaultHandler {
 					gettingDesc = true;
 				}
 			}
+		}
+		else if ("environment".equals(qName)) {
+			paramStartChar = attrs.getValue("paramStartChar").charAt(0);
+			paramEndChar = attrs.getValue("paramEndChar").charAt(0);
+			paramSeparator = attrs.getValue("paramSeparator");
+			//paramTerminal = attrs.getValua("terminal");
 		}
 	}
 

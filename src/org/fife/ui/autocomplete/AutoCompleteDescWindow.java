@@ -80,6 +80,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	private JScrollPane scrollPane;
 
 	/**
+	 * The bottom panel, containing the toolbar and size grip.
+	 */
+	private JPanel bottomPanel;
+
+	/**
 	 * The toolbar with "back" and "forward" buttons.
 	 */
 	private JToolBar descWindowNavBar;
@@ -132,6 +137,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 
 		descArea = new JEditorPane("text/html", null);
 		tweakDescArea();
+		descArea.addHyperlinkListener(this);
 		scrollPane = new JScrollPane(descArea);
 		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 		scrollPane.setBackground(descArea.getBackground());
@@ -145,12 +151,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		descWindowNavBar.add(new JButton(backAction));
 		descWindowNavBar.add(new JButton(forwardAction));
 
-		JPanel temp = new JPanel(new BorderLayout());
+		bottomPanel = new JPanel(new BorderLayout());
 		SizeGrip rp = new SizeGrip();
-		temp.add(descWindowNavBar, BorderLayout.LINE_START);
-		temp.add(rp, BorderLayout.LINE_END);
-		cp.add(temp, BorderLayout.SOUTH);
-
+		bottomPanel.add(descWindowNavBar, BorderLayout.LINE_START);
+		bottomPanel.add(rp, BorderLayout.LINE_END);
+		cp.add(bottomPanel, BorderLayout.SOUTH);
 		setContentPane(cp);
 
 		setFocusableWindowState(false);
@@ -331,7 +336,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		super.setVisible(visible);
 	}
 
-
 	/**
 	 * Tweaks the description text area to look good in the current Look
 	 * and Feel.
@@ -340,7 +344,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 
 		// Jump through a few hoops to get things looking nice in Nimbus
 		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-			System.out.println("DEBUG: Creating Nimbus-specific changes");
 			Color selBG = descArea.getSelectionColor();
 			Color selFG = descArea.getSelectedTextColor();
 			descArea.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
@@ -352,8 +355,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 
 		// Make selection visible even though we are not editable.
 		descArea.getCaret().setSelectionVisible(true);
-
-		descArea.addHyperlinkListener(this);
 
 		// Make it use "tooltip" background color.
 		descArea.setBackground(getDefaultBackground());

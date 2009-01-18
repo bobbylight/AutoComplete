@@ -164,7 +164,11 @@ public class AutoCompletion implements HierarchyListener {
 	 */
 	private static final String PARAM_COMPLETE_KEY = "AutoCompletion.FunctionStart";
 
-	static final boolean DEBUG = true;
+	/**
+	 * Whether debug messages should be printed to stdout as AutoCompletion
+	 * runs.
+	 */
+	private static final boolean DEBUG = initDebug();
 
 
 	/**
@@ -255,6 +259,16 @@ public class AutoCompletion implements HierarchyListener {
 	 */
 	public CompletionProvider getCompletionProvider() {
 		return provider;
+	}
+
+
+	/**
+	 * Returns whether debug is enabled for AutoCompletion.
+	 *
+	 * @return Whether debug is enabled.
+	 */
+	static boolean getDebug() {
+		return DEBUG;
 	}
 
 
@@ -399,6 +413,24 @@ public class AutoCompletion implements HierarchyListener {
 			descToolTip.setVisible(false, false);
 			descToolTip = null;
 		}
+	}
+
+
+	/**
+	 * Determines whether debug should be enabled for the AutoCompletion
+	 * library.  This method checks a system property, but takes care of
+	 * {@link SecurityException}s in case we're in an applet or WebStart.
+	 *
+	 * @return Whether debug should be enabled.
+	 */
+	private static final boolean initDebug() {
+		boolean debug = false;
+		try {
+			debug = Boolean.getBoolean("AutoCompletion.debug");
+		} catch (SecurityException se) { // We're in an applet or WebStart.
+			debug = false;
+		}
+		return debug;
 	}
 
 

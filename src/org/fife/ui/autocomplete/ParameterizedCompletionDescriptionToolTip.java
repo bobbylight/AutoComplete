@@ -209,7 +209,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private void installKeyBindings() {
 
-		if (AutoCompletion.DEBUG) {
+		if (AutoCompletion.getDebug()) {
 			System.out.println("ToolTip: Installing keybindings");
 		}
 
@@ -414,8 +414,8 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private void uninstallKeyBindings() {
 
-		if (AutoCompletion.DEBUG) {
-			System.out.println("PopupWindow: Installing keybindings");
+		if (AutoCompletion.getDebug()) {
+			System.out.println("ToolTip: Uninstalling keybindings");
 		}
 
 
@@ -557,43 +557,78 @@ class ParameterizedCompletionDescriptionToolTip {
 	private class ClosingAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
+
 			JTextComponent tc = ac.getTextComponent();
 			int dot = tc.getCaretPosition();
+			char end = pc.getProvider().getParameterListEnd();
+		
+			// Are they at or past the end of the parameters?
 			if (dot>=maxPos.getOffset()-1) { // ">=" for overwrite mode
+
 				if (dot==maxPos.getOffset()) { // Happens in overwrite mode
-					char ch = pc.getProvider().getParameterListEnd();
-					tc.replaceSelection(Character.toString(ch));
+					tc.replaceSelection(Character.toString(end));
 				}
-				else {
+
+				else { // Typical case.
+					// Try to decide if we're closing a paren that is a part
+					// of the (last) arg being typed.
+					String text = getArgumentText(dot);
+					if (text!=null) {
+						char start = pc.getProvider().getParameterListStart();
+						int startCount = getCount(text, start);
+						int endCount = getCount(text, end);
+						if (startCount>endCount) { // Just closing a paren
+							tc.replaceSelection(Character.toString(end));
+							return;
+						}
+					}
 					tc.setCaretPosition(maxPos.getOffset());
 				}
+
 				setVisible(false, false);
+
 			}
+
+			// If not (in the middle of parameters), just insert the paren.
 			else {
-				char ch = pc.getProvider().getParameterListEnd();
-				tc.replaceSelection(Character.toString(ch));
+				tc.replaceSelection(Character.toString(end));
 			}
+
 		}
 
-		public String getArgumentText(int arg) {
-			if (arg<0 || arg>=pc.getParamCount()) {
-				return null;
-			}
+		public String getArgumentText(int offs) {
 			List paramHighlights = getParameterHighlights();
-			if (paramHighlights==null || arg>=paramHighlights.size()) {
+			if (paramHighlights==null || paramHighlights.size()==0) {
 				return null;
 			}
-			Highlight h = (Highlight)paramHighlights.get(arg);
-			int len = h.getEndOffset() - h.getStartOffset();
-			JTextComponent tc = ac.getTextComponent();
-			Document doc = tc.getDocument();
-			try {
-				return doc.getText(h.getStartOffset(), len);
-			} catch (BadLocationException ble) {
-				UIManager.getLookAndFeel().provideErrorFeedback(tc);
-				ble.printStackTrace();
-				return null;
+			for (int i=0; i<paramHighlights.size(); i++) {
+				Highlight h = (Highlight)paramHighlights.get(i);
+				if (offs>=h.getStartOffset() && offs<=h.getEndOffset()) {
+					int len = h.getEndOffset() - h.getStartOffset();
+					JTextComponent tc = ac.getTextComponent();
+					Document doc = tc.getDocument();
+					try {
+						return doc.getText(h.getStartOffset(), len);
+					} catch (BadLocationException ble) {
+						UIManager.getLookAndFeel().provideErrorFeedback(tc);
+						ble.printStackTrace();
+						return null;
+					}
+				}
 			}
+			return null;
+		}
+
+		public int getCount(String text, char ch) {
+			int count = 0;
+			int old = 0;
+			int pos = 0;
+			while ((pos=text.indexOf(ch, old))>-1) {
+				count++;
+				old = pos + 1;
+			}
+			
+			return count;
 		}
 
 	}

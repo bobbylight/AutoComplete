@@ -74,13 +74,14 @@ public class FunctionCompletion extends VariableCompletion
 	protected void addParameters(StringBuffer sb) {
 
 		// TODO: Localize me
-		// TODO: Use tables (?) to improve indentation of long descriptions
 
-		if (params!=null && params.size()>0) {
+		int paramCount = getParamCount();
+		if (paramCount>0) {
 			sb.append("<b>Parameters:</b><br>");
-			for (int i=0; i<getParamCount(); i++) {
+			sb.append("<center><table width='90%'><tr><td>");
+			for (int i=0; i<paramCount; i++) {
 				Parameter param = getParam(i);
-				sb.append("&nbsp;&nbsp;&nbsp;<b>");
+				sb.append("<b>");
 				sb.append(param.getName()!=null ? param.getName() :
 							param.getType());
 				sb.append("</b>&nbsp;");
@@ -90,13 +91,13 @@ public class FunctionCompletion extends VariableCompletion
 				}
 				sb.append("<br>");
 			}
-			sb.append("<br><br>");
+			sb.append("</td></tr></table></center><br><br>");
 		}
 
 		if (returnValDesc!=null) {
-			sb.append("<b>Returns:</b><br>&nbsp;&nbsp;&nbsp;");
+			sb.append("<b>Returns:</b><br><center><table width='90%'><tr><td>");
 			sb.append(returnValDesc);
-			sb.append("<br><br>");
+			sb.append("</td></tr></table></center><br><br>");
 		}
 
 	}
