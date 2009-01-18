@@ -86,7 +86,7 @@ class SizeGrip extends JPanel {
 	 */
 	private Image createOSXSizeGrip() {
 		ClassLoader cl = getClass().getClassLoader();
-		URL url = cl.getResource("org.fife.ui.autocomplete.osx_sizegrip.png");
+		URL url = cl.getResource("org/fife/ui/autocomplete/osx_sizegrip.png");
 		if (url==null) {
 			// We're not running in a jar - we may be debugging in Eclipse,
 			// for example
