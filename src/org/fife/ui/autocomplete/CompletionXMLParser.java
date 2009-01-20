@@ -84,7 +84,7 @@ class CompletionXMLParser extends DefaultHandler {
 		FunctionCompletion fc = new FunctionCompletion(provider,
 				name, returnType);
 		if (desc.length()>0) {
-			fc.setDescription(desc.toString());
+			fc.setShortDescription(desc.toString());
 			desc.setLength(0);
 		}
 		fc.setParams(params);
@@ -114,7 +114,7 @@ class CompletionXMLParser extends DefaultHandler {
 		VariableCompletion vc = new VariableCompletion(provider,
 				name, returnType);
 		if (desc.length()>0) {
-			vc.setDescription(desc.toString());
+			vc.setShortDescription(desc.toString());
 			desc.setLength(0);
 		}
 		vc.setDefinedIn(definedIn);

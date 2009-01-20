@@ -26,7 +26,22 @@ import javax.swing.text.JTextComponent;
 
 
 /**
- * Represents a completion choice.
+ * Represents a completion choice.  A {@link CompletionProvider} returns lists
+ * of objects implementing this interface.  A <tt>Completion</tt> contains the
+ * following information:
+ * 
+ * <ul>
+ *   <li>The text the user must (begin to) input for this to be a completion
+ *       choice.
+ *   <li>The text that will be filled in if the user chooses this completion.
+ *       Note that often, this is the same as the text the user must (begin to)
+ *       enter, but this doesn't have to be the case.
+ *   <li>Summary HTML that describes this completion.  This is information that
+ *       can be displayed in a helper "tooltip"-style window beside the
+ *       completion list.  This may be <code>null</code>.  It may also be
+ *       lazily generated to cut down on memory usage.
+ *   <li>The <tt>CompletionProvider</tt> that returned this completion.
+ * </ul>
  *
  * @author Robert Futrell
  * @version 1.0

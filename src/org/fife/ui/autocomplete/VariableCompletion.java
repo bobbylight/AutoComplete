@@ -24,16 +24,27 @@ package org.fife.ui.autocomplete;
 
 
 /**
- * A completion for a variable (or constant) in a programming language.
+ * A completion for a variable (or constant) in a programming language.<p>
+ *
+ * This completion type uses its <tt>shortDescription</tt> property as part of
+ * its summary returned by {@link #getSummary()}; for this reason, it may be
+ * a little longer (even much longer), if desired, than what is recommended
+ * for <tt>BasicCompletion</tt>s (where the <tt>shortDescription</tt> is used
+ * in {@link #toString()} for <tt>ListCellRenderers</tt>).
  *
  * @author Robert Futrell
  * @version 1.0
  */
-public class VariableCompletion extends AbstractCompletion {
+public class VariableCompletion extends BasicCompletion {
 
-	private String name;
+	/**
+	 * The variable's type.
+	 */
 	private String type;
-	private String desc;
+
+	/**
+	 * What library (for example) this variable is defined in.
+	 */
 	private String definedIn;
 
 
@@ -47,8 +58,7 @@ public class VariableCompletion extends AbstractCompletion {
 	 */
 	public VariableCompletion(CompletionProvider provider, String name,
 							String type) {
-		super(provider);
-		this.name = name;
+		super(provider, name);
 		this.type = type;
 	}
 
@@ -59,20 +69,14 @@ public class VariableCompletion extends AbstractCompletion {
 
 		// Add the return type if applicable (C macros like NULL have no type).
 		if (type!=null) {
-			appendPossibleDataType(sb, type);
-			sb.append(' ');
+			sb.append(type).append(' ');
 		}
 
 		// Add the item being described's name.
-		sb.append(name);
+		sb.append(getName());
 
 		sb.append("</b>");
 
-	}
-
-
-	protected void appendPossibleDataType(StringBuffer sb, String type) {
-		sb.append(type);
 	}
 
 
@@ -88,25 +92,12 @@ public class VariableCompletion extends AbstractCompletion {
 
 
 	/**
-	 * Returns a short description of this variable.  This should be an
-	 * HTML snippet.
-	 *
-	 * @return A short description of this variable.  This may be
-	 *         <code>null</code>.
-	 * @see #setDescription(String)
-	 */
-	public String getDescription() {
-		return desc;
-	}
-
-
-	/**
 	 * Returns the name of this variable.
 	 *
 	 * @return The name.
 	 */
 	public String getName() {
-		return name;
+		return getReplacementText();
 	}
 
 
@@ -133,16 +124,6 @@ public class VariableCompletion extends AbstractCompletion {
 
 
 	/**
-	 * Returns the name of this variable.
-	 *
-	 * @return The text to autocomplete with.
-	 */
-	public String getReplacementText() {
-		return getName();
-	}
-
-
-	/**
 	 * Adds some HTML describing where this variable is defined, if this
 	 * information is known.
 	 *
@@ -163,9 +144,9 @@ public class VariableCompletion extends AbstractCompletion {
 	 * @param sb The buffer to append to.
 	 */
 	protected void possiblyAddDescription(StringBuffer sb) {
-		if (desc!=null) {
+		if (getShortDescription()!=null) {
 			sb.append("<hr><br>");
-			sb.append(desc);
+			sb.append(getShortDescription());
 			sb.append("<br><br><br>");
 		}
 	}
@@ -183,15 +164,12 @@ public class VariableCompletion extends AbstractCompletion {
 
 
 	/**
-	 * Sets the short description of this variable.  This should be an
-	 * HTML snippet.
+	 * Overridden to return the name of the variable being completed.
 	 *
-	 * @param desc A short description of this variable.  This may be
-	 *        <code>null</code>.
-	 * @see #getDescription()
+	 * @return A string representation of this completion.
 	 */
-	public void setDescription(String desc) {
-		this.desc = desc;
+	public String toString() {
+		return getName();
 	}
 
 

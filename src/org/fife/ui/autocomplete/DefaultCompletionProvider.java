@@ -44,7 +44,7 @@ import org.xml.sax.SAXException;
  * A basic completion provider implementation.  This provider has no
  * understanding of language semantics.  It simply checks the text entered up
  * to the caret position for a match against known completions.  This is all
- * that is needed in the marjority of cases.
+ * that is needed in the majority of cases.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -82,7 +82,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * Returns the text just before the current caret position that could be
 	 * the start of something auto-completable.<p>
 	 *
-	 * This method returns all characters before the caret that are metched
+	 * This method returns all characters before the caret that are matched
 	 * by  {@link #isValidChar(char)}.
 	 *
 	 * @param comp The text component.
@@ -148,7 +148,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 			doc.getText(offs, len, s);
 
-			// Get the identifier preceeding the '(', ignoring any whitespace
+			// Get the identifier preceding the '(', ignoring any whitespace
 			// between them.
 			offs = s.offset + len - 1;
 			while (offs>=s.offset && Character.isWhitespace(s.array[offs])) {

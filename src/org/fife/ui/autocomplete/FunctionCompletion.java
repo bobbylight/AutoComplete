@@ -117,8 +117,7 @@ public class FunctionCompletion extends VariableCompletion
 		// Add the return type if applicable (C macros like NULL have no type).
 		String type = getType();
 		if (type!=null) {
-			appendPossibleDataType(sb, type);
-			sb.append(' ');
+			sb.append(type).append(' ');
 		}
 
 		// Add the item being described's name.
@@ -132,7 +131,7 @@ public class FunctionCompletion extends VariableCompletion
 			type = param.getType();
 			String name = param.getName();
 			if (type!=null) {
-				appendPossibleDataType(sb, type);
+				sb.append(type);
 				if (name!=null) {
 					sb.append(' ');
 				}

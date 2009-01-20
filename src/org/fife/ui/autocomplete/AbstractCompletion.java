@@ -26,7 +26,17 @@ import javax.swing.text.JTextComponent;
 
 
 /**
- * Base class for possible completions.
+ * Base class for possible completions.  Most, if not all, {@link Completion}
+ * implementations can extend this class.  It remembers the
+ * <tt>CompletionProvider</tt> that returns this completion, and also implements
+ * <tt>Comparable</tt>, allowing such completions to be compared
+ * lexicographically (ignoring case).<p>
+ *
+ * This implementation assumes the input text and replacement text are the
+ * same value.  It also returns the input text from its {@link #toString()}
+ * method (which is what <tt>DefaultListCellRenderer</tt> uses to render
+ * objects).  Subclasses that wish to override any of this behavior can simply
+ * override the corresponding method(s) needed to do so.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -50,7 +60,7 @@ public abstract class AbstractCompletion implements Completion, Comparable {
 
 
 	/**
-	 * Compares this completion to another one lexicograhically, ignoring
+	 * Compares this completion to another one lexicographically, ignoring
 	 * case.
 	 *
 	 * @param o Another completion instance.

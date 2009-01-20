@@ -587,7 +587,6 @@ try {
 			}
 
 			popupWindow.setCompletions(completions);
-			popupWindow.selectFirstItem();
 
 			if (!popupWindow.isVisible()) {
 				Rectangle r = null;

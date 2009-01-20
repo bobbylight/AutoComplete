@@ -89,6 +89,12 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private boolean aboveCaret;
 
 
+	/**
+	 * Constructor.
+	 *
+	 * @param parent The parent window (hosting the text component).
+	 * @param ac The auto-completion instance.
+	 */
 	public AutoCompletePopupWindow(Window parent, AutoCompletion ac) {
 
 		super(parent);
@@ -125,13 +131,6 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	}
 
-
-//	public void addItem(Completion item) {
-//		model.addElement(item);
-//	}
-public void setCompletions(List completions) {
-	model.setContents(completions);
-}
 
 	public void caretUpdate(CaretEvent e) {
 		if (isVisible()) { // Should always be true
@@ -290,7 +289,7 @@ lastLine = -1;
 
 
 	/**
-	 * Positions the description window relative to the comletion choices
+	 * Positions the description window relative to the completion choices
 	 * window.
 	 */
 	private void positionDescWindow() {
@@ -322,7 +321,7 @@ lastLine = -1;
 
 
 	/**
-	 * "Puts back" the original kay/Action pair for a keystroke.  This is used
+	 * "Puts back" the original key/Action pair for a keystroke.  This is used
 	 * when this popup is hidden.
 	 *
 	 * @param im The input map.
@@ -360,7 +359,12 @@ lastLine = -1;
 	}
 
 
-	public void selectFirstItem() {
+	/**
+	 * Selects the first item in the completion list.
+	 *
+	 * @see #selectLastItem()
+	 */
+	private void selectFirstItem() {
 		if (model.getSize() > 0) {
 			list.setSelectedIndex(0);
 			list.ensureIndexIsVisible(0);
@@ -368,7 +372,12 @@ lastLine = -1;
 	}
 
 
-	public void selectLastItem() {
+	/**
+	 * Selects the last item in the completion list.
+	 *
+	 * @see #selectFirstItem()
+	 */
+	private void selectLastItem() {
 		int index = model.getSize() - 1;
 		if (index > -1) {
 			list.setSelectedIndex(index);
@@ -377,7 +386,12 @@ lastLine = -1;
 	}
 
 
-	public void selectNextItem() {
+	/**
+	 * Selects the next item in the completion list.
+	 *
+	 * @see #selectPreviousItem()
+	 */
+	private void selectNextItem() {
 		int index = list.getSelectedIndex();
 		if (index > -1) {
 			index = (index + 1) % model.getSize();
@@ -387,7 +401,13 @@ lastLine = -1;
 	}
 
 
-	public void selectPageDownItem() {
+	/**
+	 * Selects the completion item one "page down" from the currently selected
+	 * one.
+	 *
+	 * @see #selectPageUpItem()
+	 */
+	private void selectPageDownItem() {
 		int visibleRowCount = list.getVisibleRowCount();
 		int i = Math.min(list.getModel().getSize()-1,
 						list.getSelectedIndex()+visibleRowCount);
@@ -396,7 +416,13 @@ lastLine = -1;
 	}
 
 
-	public void selectPageUpItem() {
+	/**
+	 * Selects the completion item one "page up" from the currently selected
+	 * one.
+	 *
+	 * @see #selectPageDownItem()
+	 */
+	private void selectPageUpItem() {
 		int visibleRowCount = list.getVisibleRowCount();
 		int i = Math.max(0, list.getSelectedIndex()-visibleRowCount);
 		list.setSelectedIndex(i);
@@ -404,7 +430,12 @@ lastLine = -1;
 	}
 
 
-	public void selectPreviousItem() {
+	/**
+	 * Selects the previous item in the completion list.
+	 *
+	 * @see #selectNextItem()
+	 */
+	private void selectPreviousItem() {
 		int index = list.getSelectedIndex();
 		switch (index) {
 		case 0:
@@ -426,6 +457,18 @@ lastLine = -1;
 
 
 	/**
+	 * Sets the completions to display in the choices list.  The first
+	 * completion is selected.
+	 *
+	 * @param completions The completions to display.
+	 */
+	public void setCompletions(List completions) {
+		model.setContents(completions);
+		selectFirstItem();
+	}
+
+
+	/**
 	 * Sets the default list cell renderer to use when a completion provider
 	 * does not supply its own.
 	 *
@@ -440,6 +483,13 @@ lastLine = -1;
 	}
 
 
+	/**
+	 * Sets the location of this window to be "good" relative to the specified
+	 * rectangle.  That rectangle should be the location of the text
+	 * component's caret, in screen coordinates.
+	 *
+	 * @param r The text component's caret position, in screen coordinates.
+	 */
 	public void setLocationRelativeTo(Rectangle r) {
 
 		boolean showDescWindow = descWindow!=null && ac.getShowDescWindow();
@@ -470,7 +520,7 @@ lastLine = -1;
 
 		setLocation(x, y);
 
-		// Position the description window, if neessary.
+		// Position the description window, if necessary.
 		if (showDescWindow) {
 			positionDescWindow();
 		}
@@ -510,6 +560,7 @@ lastLine = -1;
 				descWindow.setVisible(visible && ac.getShowDescWindow());
 			}
 		}
+
 	}
 
 

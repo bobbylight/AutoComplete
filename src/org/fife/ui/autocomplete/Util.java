@@ -33,7 +33,7 @@ import java.net.URI;
  * @author Robert Futrell
  * @version 1.0
  */
-public class Util {
+class Util {
 
 	private static boolean desktopCreationAttempted;
 	private static Object desktop;

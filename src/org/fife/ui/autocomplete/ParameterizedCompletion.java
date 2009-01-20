@@ -11,7 +11,7 @@ public interface ParameterizedCompletion extends Completion {
 
 
 	/**
-	 * Returns the "definition string" for this completion.  For examle,
+	 * Returns the "definition string" for this completion.  For example,
 	 * for the C "<code>printf</code>" function, this would return
 	 * "<code>int printf(const char *, ...)</code>".
 	 * 

@@ -96,6 +96,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 * {@inheritDoc}
 	 */
 	public void updateUI() {
+		super.updateUI();
 		if ((fallback instanceof JComponent) && fallback!=this) {
 			((JComponent)fallback).updateUI();
 		}

@@ -24,9 +24,13 @@ package org.fife.ui.autocomplete;
 
 
 /**
- * A straightforward completion implementation.  This implementation can be
- * used if you have a relatively short number of static completions with no
- * (or short) summaries.
+ * A straightforward {@link Completion} implementation.  This implementation
+ * can be used if you have a relatively short number of static completions
+ * with no (or short) summaries.<p>
+ *
+ * This implementation uses the replacement text as the input text.  It also
+ * includes a "short description" field, which (if non-<code>null</code>), is
+ * used in the completion choices list. 
  *
  * @author Robert Futrell
  * @version 1.0
@@ -91,10 +95,44 @@ public class BasicCompletion extends AbstractCompletion {
 
 
 	/**
+	 * Returns the short description of this completion, usually used in
+	 * the completion choices list.
+	 *
+	 * @return The short description, or <code>null</code> if there is none.
+	 * @see #setShortDescription(String)
+	 */
+	public String getShortDescription() {
+		return shortDesc;
+	}
+
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public String getSummary() {
 		return summary;
+	}
+
+
+	/**
+	 * Sets the short description of this completion.
+	 *
+	 * @param shortDesc The short description of this completion.
+	 * @see #getShortDescription()
+	 */
+	public void setShortDescription(String shortDesc) {
+		this.shortDesc = shortDesc;
+	}
+
+
+	/**
+	 * Sets the summary for this completion.
+	 *
+	 * @param summary The summary for this completion.
+	 * @see #getSummary()
+	 */
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 
@@ -115,17 +153,6 @@ public class BasicCompletion extends AbstractCompletion {
 		else {
 			return getInputText() + " - " + shortDesc;
 		}
-	}
-
-
-	/**
-	 * Sets the summary for this completion.
-	 *
-	 * @param summary The summary for this completion.
-	 * @see #getSummary()
-	 */
-	public void setSummary(String summary) {
-		this.summary = summary;
 	}
 
 

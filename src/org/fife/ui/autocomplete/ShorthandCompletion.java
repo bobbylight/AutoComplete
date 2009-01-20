@@ -109,8 +109,20 @@ public class ShorthandCompletion extends BasicCompletion {
 	 */
 	public String getSummary() {
 		String summary = super.getSummary();
-		return summary!=null ? summary :
-							"<html><body><tt>" + getReplacementText();
+		return summary!=null ? summary : ("<html><body>" + getSummaryBody());
+	}
+
+
+	/**
+	 * Returns the "body" of the HTML returned by {@link #getSummary()} when
+	 * no summary text has been set.  This is defined to return the replacement
+	 * text in a monospaced font.
+	 *
+	 * @return The summary text's body, if no other summary has been defined.
+	 * @see #getReplacementText()
+	 */
+	protected String getSummaryBody() {
+		return "<tt>" + getReplacementText();
 	}
 
 
