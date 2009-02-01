@@ -75,6 +75,14 @@ public class AutoCompletion implements HierarchyListener {
 	private AutoCompletePopupWindow popupWindow;
 
 	/**
+	 * The preferred size of the optional description window.  This field
+	 * only exists because the user may (and usually will) set the size of
+	 * the description window before it exists (it must be parented to a
+	 * Window).
+	 */
+	private Dimension preferredDescWindowSize;
+
+	/**
 	 * A "tooltip" describing a function just entered.
 	 */
 	private ParameterizedCompletionDescriptionToolTip descToolTip;
@@ -397,6 +405,15 @@ public class AutoCompletion implements HierarchyListener {
 
 
 	/**
+	 * Hides any child windows being displayed by the auto-completion system.
+	 */
+	public void hideChildWindows() {
+		hidePopupWindow();
+		hideToolTipWindow();
+	}
+
+
+	/**
 	 * Hides the popup window, if it is visible.
 	 */
 	private void hidePopupWindow() {
@@ -408,6 +425,9 @@ public class AutoCompletion implements HierarchyListener {
 	}
 
 
+	/**
+	 * Hides the parameter tool tip, if it is visible.
+	 */
 	private void hideToolTipWindow() {
 		if (descToolTip!=null) {
 			descToolTip.setVisible(false, false);
@@ -584,6 +604,10 @@ try {
 				if (renderer!=null) {
 					popupWindow.setListCellRenderer(renderer);
 				}
+				if (preferredDescWindowSize!=null) {
+					popupWindow.setDescriptionWindowSize(
+												preferredDescWindowSize);
+				}
 			}
 
 			popupWindow.setCompletions(completions);
@@ -625,9 +649,9 @@ try {
 
 
 	/**
-	 * Sets whether autocompletion is enabled.
+	 * Sets whether auto-completion is enabled.
 	 *
-	 * @param enabled Whether autocompletion is enabled.
+	 * @param enabled Whether auto-completion is enabled.
 	 * @see #isAutoCompleteEnabled()
 	 */
 	public void setAutoCompleteEnabled(boolean enabled) {
@@ -639,10 +663,10 @@ try {
 
 
 	/**
-	 * Sets whether, if a single autocomplete choice is available, it should
+	 * Sets whether, if a single auto-complete choice is available, it should
 	 * be automatically inserted, without displaying the popup menu.
 	 *
-	 * @param autoComplete Whether to autocomplete single choices.
+	 * @param autoComplete Whether to auto-complete single choices.
 	 * @see #getAutoCompleteSingleChoices()
 	 */
 	public void setAutoCompleteSingleChoices(boolean autoComplete) {
@@ -664,6 +688,20 @@ try {
 		}
 		this.provider = provider;
 		hidePopupWindow(); // In case new choices should be displayed.
+	}
+
+
+	/**
+	 * Sets the size of the description window.
+	 *
+	 * @param w The new width.
+	 * @param h The new height.
+	 */
+	public void setDescriptionWindowSize(int w, int h) {
+		preferredDescWindowSize = new Dimension(w, h);
+		if (popupWindow!=null) {
+			popupWindow.setDescriptionWindowSize(preferredDescWindowSize);
+		}
 	}
 
 
@@ -782,6 +820,7 @@ try {
 			}
 
 			textComponent = null;
+			popupWindow = null;
 
 		}
 
@@ -854,18 +893,15 @@ try {
 		}
 
 		public void componentHidden(ComponentEvent e) {
-			hidePopupWindow();
-			hideToolTipWindow();
+			hideChildWindows();
 		}
 
 		public void componentMoved(ComponentEvent e) {
-			hidePopupWindow();
-			hideToolTipWindow();
+			hideChildWindows();
 		}
 
 		public void componentResized(ComponentEvent e) {
-			hidePopupWindow();
-			hideToolTipWindow();
+			hideChildWindows();
 		}
 
 		public void removeFrom(Window w) {
@@ -877,8 +913,7 @@ try {
 		}
 
 		public void windowLostFocus(WindowEvent e) {
-			hidePopupWindow();
-			hideToolTipWindow();
+			hideChildWindows();
 		}
 
 	}

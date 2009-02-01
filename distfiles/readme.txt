@@ -1,5 +1,9 @@
 AutoComplete Readme
 -------------------
+Please contact me if you are using AutoComplete in your project!  I like to
+know when people are finding it useful.  Please send mail to:
+robert -at- fifesoft dot com.
+
 
 * About AutoComplete
 
@@ -11,7 +15,7 @@ AutoComplete Readme
 
 * Example Usage
 
-  TODO
+  See http://fifesoft.com/autocomplete
 
 * License
 
@@ -30,3 +34,7 @@ AutoComplete Readme
     * http://fifesoft.com/autocomplete
          Project home page, which contains general information and example
          source code.
+
+     * http://javadoc.fifesoft.com/autocomplete/
+         API documentation for the package.  Note that this *will* change as
+         the library matures.

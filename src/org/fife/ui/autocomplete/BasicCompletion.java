@@ -150,9 +150,7 @@ public class BasicCompletion extends AbstractCompletion {
 		if (shortDesc==null) {
 			return getInputText();
 		}
-		else {
-			return getInputText() + " - " + shortDesc;
-		}
+		return getInputText() + " - " + shortDesc;
 	}
 
 

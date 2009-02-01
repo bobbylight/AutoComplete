@@ -235,7 +235,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 */
 	public void loadFromXML(InputStream in) throws IOException {
 
-		long start = System.currentTimeMillis();
+		//long start = System.currentTimeMillis();
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		CompletionXMLParser handler = new CompletionXMLParser(this);
@@ -258,8 +258,8 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		} catch (ParserConfigurationException pce) {
 			throw new IOException(pce.toString());
 		} finally {
-			long time = System.currentTimeMillis() - start;
-			System.out.println("XML loaded in: " + time + "ms");
+			//long time = System.currentTimeMillis() - start;
+			//System.out.println("XML loaded in: " + time + "ms");
 			bin.close();
 		}
 

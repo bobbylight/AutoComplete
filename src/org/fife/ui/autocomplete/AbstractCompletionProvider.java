@@ -53,21 +53,6 @@ public abstract class AbstractCompletionProvider
 	 */
 	private Comparator comparator;
 
-	/**
-	 * Text that marks the beginning of a parameter list, for example, '('.
-	 */
-	private char paramListStart;
-
-	/**
-	 * Text that marks the end of a parameter list, for example, ')'.
-	 */
-	private char paramListEnd;
-
-	/**
-	 * Text that separates items in a parameter list, for example, ", ".
-	 */
-	private String paramListSeparator;
-
 
 	/**
 	 * Constructor.
@@ -154,15 +139,6 @@ public abstract class AbstractCompletionProvider
 
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public void clearParameterizedCompletionParams() {
-		paramListEnd = paramListStart = 0;
-		paramListSeparator = null;
-	}
-
-
-	/**
 	 * Returns a list of <tt>Completion</tt>s in this provider with the
 	 * specified input text.
 	 *
@@ -202,7 +178,6 @@ public abstract class AbstractCompletionProvider
 		String text = getAlreadyEnteredText(comp);
 
 		int index = Collections.binarySearch(completions, text, comparator);
-		//System.out.println(index + "(" + completions.size() + ")");
 		if (index<0) {
 			index = -index - 1;
 		}
@@ -220,30 +195,6 @@ public abstract class AbstractCompletionProvider
 
 		return retVal;
 
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public char getParameterListEnd() {
-		return paramListEnd;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getParameterListSeparator() {
-		return paramListSeparator;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public char getParameterListStart() {
-		return paramListStart;
 	}
 
 
@@ -266,26 +217,6 @@ public abstract class AbstractCompletionProvider
 		}
 		completions.remove(index);
 		return true;
-	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setParameterizedCompletionParams(char listStart,
-										String separator, char listEnd) {
-		if (listStart<0x20 || listStart==0x7F) {
-			throw new IllegalArgumentException("Invalid listStart");
-		}
-		if (listEnd<0x20 || listEnd==0x7F) {
-			throw new IllegalArgumentException("Invalid listEnd");
-		}
-		if (separator==null || separator.length()==0) {
-			throw new IllegalArgumentException("Invalid separator");
-		}
-		paramListStart = listStart;
-		paramListSeparator = separator;
-		paramListEnd = listEnd;
 	}
 
 

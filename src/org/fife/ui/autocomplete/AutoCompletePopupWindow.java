@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -64,9 +65,43 @@ import javax.swing.text.JTextComponent;
 class AutoCompletePopupWindow extends JWindow implements CaretListener,
 									ListSelectionListener, MouseListener {
 
+	/**
+	 * The parent AutoCompletion instance.
+	 */
 	private AutoCompletion ac;
+
+	/**
+	 * The list of completion choices.
+	 */
 	private JList list;
-	private /*DefaultListModel*/CompletionListModel model;
+
+	/**
+	 * The contents of {@link #list()}.
+	 */
+	private CompletionListModel model;
+
+	/**
+	 * Optional popup window containing a description of the currently
+	 * selected completion.
+	 */
+	private AutoCompleteDescWindow descWindow;
+
+	/**
+	 * The preferred size of the optional description window.  This field
+	 * only exists because the user may (and usually will) set the size of
+	 * the description window before it exists (it must be parented to a
+	 * Window).
+	 */
+	private Dimension preferredDescWindowSize;
+
+	/**
+	 * Whether the completion window and the optional description window
+	 * should be displayed above the current caret position (as opposed to
+	 * underneath it, which is preferred unless there is not enough space).
+	 */
+	private boolean aboveCaret;
+
+	private int lastLine;
 
 	private KeyActionPair escapeKap;
 	private KeyActionPair upKap;
@@ -79,14 +114,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private KeyActionPair endKap;
 	private KeyActionPair pageUpKap;
 	private KeyActionPair pageDownKap;
+	private KeyActionPair ctrlCKap;
 
 	private KeyActionPair oldEscape, oldUp, oldDown, oldLeft, oldRight,
-			oldEnter, oldTab, oldHome, oldEnd, oldPageUp, oldPageDown;
-
-	private int lastLine;
-
-	private AutoCompleteDescWindow descWindow;
-	private boolean aboveCaret;
+			oldEnter, oldTab, oldHome, oldEnd, oldPageUp, oldPageDown,
+			oldCtrlC;
 
 
 	/**
@@ -107,8 +139,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		list.addMouseListener(this);
 
 		JPanel contentPane = new JPanel(new BorderLayout());
-		JScrollPane sp = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		JScrollPane sp = new JScrollPane(list,
+							JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+							JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		// In 1.4, JScrollPane.setCorner() has a bug where it won't accept
 		// JScrollPane.LOWER_TRAILING_CORNER, even though that constant is
@@ -136,7 +169,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		if (isVisible()) { // Should always be true
 			int line = ac.getLineOfCaret();
 			if (line!=lastLine) {
-lastLine = -1;
+				lastLine = -1;
 				setVisible(false);
 			}
 			else {
@@ -146,6 +179,22 @@ lastLine = -1;
 		else if (AutoCompletion.getDebug()) {
 			Thread.dumpStack();
 		}
+	}
+
+
+	/**
+	 * Creates the description window.
+	 *
+	 * @return The description window.
+	 */
+	private AutoCompleteDescWindow createDescriptionWindow() {
+		AutoCompleteDescWindow dw = new AutoCompleteDescWindow(this, ac);
+		Dimension size = preferredDescWindowSize;
+		if (size==null) {
+			size = getSize();
+		}
+		dw.setSize(size);
+		return dw;
 	}
 
 
@@ -168,6 +217,7 @@ lastLine = -1;
 		endKap = new KeyActionPair("End", new EndAction());
 		pageUpKap = new KeyActionPair("PageUp", new PageUpAction());
 		pageDownKap = new KeyActionPair("PageDown", new PageDownAction());
+		ctrlCKap = new KeyActionPair("CtrlC", new CopyAction());
 
 		// Buffers for the actions we replace.
 		oldEscape = new KeyActionPair();
@@ -181,6 +231,7 @@ lastLine = -1;
 		oldEnd = new KeyActionPair();
 		oldPageUp = new KeyActionPair();
 		oldPageDown = new KeyActionPair();
+		oldCtrlC = new KeyActionPair();
 
 	}
 
@@ -259,6 +310,16 @@ lastLine = -1;
 		replaceAction(im, am, KeyEvent.VK_END, endKap, oldEnd);
 		replaceAction(im, am, KeyEvent.VK_PAGE_UP, pageUpKap, oldPageUp);
 		replaceAction(im, am, KeyEvent.VK_PAGE_DOWN, pageDownKap, oldPageDown);
+
+		// Make Ctrl+C copy from description window.  This isn't done
+		// automagically because the desc. window is not focusable, and copying
+		// from text components can only be done from focused components.
+		int key = KeyEvent.VK_C;
+		KeyStroke ks = KeyStroke.getKeyStroke(key, InputEvent.CTRL_MASK);
+		oldCtrlC.key = im.get(ks);
+		im.put(ks, ctrlCKap.key);
+		oldCtrlC.action = am.get(ctrlCKap.key);
+		am.put(ctrlCKap.key, ctrlCKap.action);
 
 		comp.addCaretListener(this);
 
@@ -469,6 +530,21 @@ lastLine = -1;
 
 
 	/**
+	 * Sets the size of the description window.
+	 *
+	 * @param size The new size.  This cannot be <code>null</code>.
+	 */
+	public void setDescriptionWindowSize(Dimension size) {
+		if (descWindow!=null) {
+			descWindow.setSize(size);
+		}
+		else {
+			preferredDescWindowSize = size;
+		}
+	}
+
+
+	/**
 	 * Sets the default list cell renderer to use when a completion provider
 	 * does not supply its own.
 	 *
@@ -540,9 +616,8 @@ lastLine = -1;
 				lastLine = ac.getLineOfCaret();
 				selectFirstItem();
 				if (descWindow==null && ac.getShowDescWindow()) {
-					descWindow = new AutoCompleteDescWindow(this, ac);
-					descWindow.setSize(getSize());
-					descWindow.setLocation(getX()+getWidth()+5, getY());
+					descWindow = createDescriptionWindow();
+					positionDescWindow();
 					// descWindow needs a kick-start the first time it's
 					// displayed.
 					Completion c = (Completion)list.getSelectedValue();
@@ -592,6 +667,12 @@ lastLine = -1;
 		putBackAction(im, am, KeyEvent.VK_PAGE_UP, oldPageUp);
 		putBackAction(im, am, KeyEvent.VK_PAGE_DOWN, oldPageDown);
 
+		// Ctrl+C
+		int key = KeyEvent.VK_C;
+		KeyStroke ks = KeyStroke.getKeyStroke(key, InputEvent.CTRL_MASK);
+		am.put(im.get(ks), oldCtrlC.action); // Original action
+		im.put(ks, oldCtrlC.key); // Original key
+
 		comp.removeCaretListener(this);
 
 	}
@@ -621,6 +702,21 @@ lastLine = -1;
 				positionDescWindow();
 			}
 		}
+	}
+
+
+	class CopyAction extends AbstractAction {
+
+		public void actionPerformed(ActionEvent e) {
+			boolean doNormalCopy = false;
+			if (descWindow!=null && descWindow.isVisible()) {
+				doNormalCopy = !descWindow.copy();
+			}
+			if (doNormalCopy) {
+				ac.getTextComponent().copy();
+			}
+		}
+
 	}
 
 
@@ -713,7 +809,9 @@ lastLine = -1;
 					// Ensure moving left hasn't moved us up a line, thus
 					// hiding the popup window.
 					if (comp.isVisible()) {
-if (lastLine!=-1)						doAutocomplete();
+						if (lastLine!=-1) {
+							doAutocomplete();
+						}
 					}
 				}
 			}
@@ -756,7 +854,9 @@ if (lastLine!=-1)						doAutocomplete();
 					// Ensure moving right hasn't moved us up a line, thus
 					// hiding the popup window.
 					if (comp.isVisible()) {
-if (lastLine!=-1)						doAutocomplete();
+						if (lastLine!=-1) {
+							doAutocomplete();
+						}
 					}
 				}
 			}

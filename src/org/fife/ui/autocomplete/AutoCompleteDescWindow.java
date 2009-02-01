@@ -125,7 +125,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 * Constructor.
 	 *
 	 * @param owner The parent window.
-	 * @param ac The parent autocompletion.
+	 * @param ac The parent auto-completion.
 	 */
 	public AutoCompleteDescWindow(Window owner, AutoCompletion ac) {
 
@@ -198,6 +198,22 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			history.remove(i);
 		}
 		setActionStates();
+	}
+
+
+	/**
+	 * Copies from the description text area, if it is visible and there is
+	 * a selection.
+	 *
+	 * @return Whether a copy occurred.
+	 */
+	public boolean copy() {
+		if (isVisible() &&
+				descArea.getSelectionStart()!=descArea.getSelectionEnd()) {
+			descArea.copy();
+			return true;
+		}
+		return false;
 	}
 
 
@@ -351,12 +367,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			descArea.setSelectionColor(selBG);
 		}
 
-		descArea.setEditable(false);
+//		descArea.setEditable(false);
 
-		// Make selection visible even though we are not editable.
+		// Make selection visible even though we are not focusable.
 		descArea.getCaret().setSelectionVisible(true);
 
-		// Make it use "tooltip" background color.
+		// Make it use "tool tip" background color.
 		descArea.setBackground(getDefaultBackground());
 
 		// Force JEditorPane to use a certain font even in HTML.
