@@ -23,6 +23,8 @@
  */
 package org.fife.ui.autocomplete;
 
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.text.JTextComponent;
@@ -31,6 +33,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rtextarea.RTextArea;
+import org.fife.ui.rtextarea.ToolTipSupplier;
 
 
 /**
@@ -39,19 +43,28 @@ import org.fife.ui.rsyntaxtextarea.Token;
  * depending on whether the caret is in:
  * 
  * <ul>
+ *    <li>Code (plain text)</li>
  *    <li>A string</li>
  *    <li>A comment</li>
  *    <li>A documentation comment</li>
- *    <li>Plain text</li>
  * </ul>
  *
  * This allows for different completion choices in comments than  in code,
- * for example.
+ * for example.<p>
+ *
+ * This provider also implements the
+ * <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> interface, which allows it
+ * to display tooltips for completion choices.  Thus the standard
+ * {@link VariableCompletion} and {@link FunctionCompletion} completions should
+ * be able to display tooltips with the variable declaration or function
+ * definition (provided the <tt>RSyntaxTextArea</tt> was registered with the
+ * <tt>javax.swing.ToolTipManager</tt>).
  *
  * @author Robert Futrell
  * @version 1.0
  */
-public class CCompletionProvider extends CompletionProviderBase {
+public class CCompletionProvider extends CompletionProviderBase
+								implements ToolTipSupplier {
 
 	/**
 	 * The provider to use when no provider is assigned to a particular token
@@ -124,6 +137,14 @@ public class CCompletionProvider extends CompletionProviderBase {
 
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public List getCompletionsAt(JTextComponent tc, Point p) {
+		return defaultProvider==null ? null :
+				defaultProvider.getCompletionsAt(tc, p);
+	}
+
+	/**
 	 * Does the dirty work of creating a list of completions.
 	 *
 	 * @param comp The text component to look in.
@@ -166,13 +187,13 @@ public class CCompletionProvider extends CompletionProviderBase {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getParameterizedCompletionsAt(JTextComponent tc) {
+	public List getParameterizedCompletions(JTextComponent tc) {
 		// Parameterized completions can only come from the "code" completion
 		// provider.  We do not do function/method completions while editing
 		// strings or comments.
 		CompletionProvider provider = getProviderFor(tc);
 		return provider==defaultProvider ?
-				provider.getParameterizedCompletionsAt(tc) : null;
+				provider.getParameterizedCompletions(tc) : null;
 	}
 
 
@@ -347,6 +368,36 @@ public class CCompletionProvider extends CompletionProviderBase {
 	 */
 	public void setStringCompletionProvider(CompletionProvider provider) {
 		stringCompletionProvider = provider;
+	}
+
+
+	/**
+	 * Returns the tool tip to display for a mouse event.<p>
+	 *
+	 * For this method to be called, the <tt>RSyntaxTextArea</tt> must be
+	 * registered with the <tt>javax.swing.ToolTipManager</tt> like so:
+	 * 
+	 * <pre>
+	 * ToolTipManager.sharedInstance().registerComponent(textArea);
+	 * </pre>
+	 *
+	 * @param textArea The text area.
+	 * @param e The mouse event.
+	 * @return The tool tip text, or <code>null</code> if none.
+	 */
+	public String getToolTipText(RTextArea textArea, MouseEvent e) {
+
+		String tip = null;
+
+		List completions = getCompletionsAt(textArea, e.getPoint());
+		if (completions!=null && completions.size()>0) {
+			// Only ever 1 match for us in C...
+			Completion c = (Completion)completions.get(0);
+			tip = c.getToolTipText();
+		}
+
+		return tip;
+
 	}
 
 

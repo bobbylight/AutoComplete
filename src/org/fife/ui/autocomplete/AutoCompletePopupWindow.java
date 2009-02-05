@@ -26,9 +26,9 @@ package org.fife.ui.autocomplete;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -132,7 +132,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		super(parent);
 
 		this.ac = ac;
-		model = new CompletionListModel();//DefaultListModel();
+		model = new CompletionListModel();
 		list = new JList(model);
 		list.setCellRenderer(new DelegatingCellRenderer());
 		list.addListSelectionListener(this);
@@ -242,6 +242,18 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 
 	/**
+	 * Returns the copy keystroke to use for this platform.
+	 *
+	 * @return The copy keystroke.
+	 */
+	private static final KeyStroke getCopyKeyStroke() {
+		int key = KeyEvent.VK_C;
+		int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		return KeyStroke.getKeyStroke(key, mask);
+	}
+
+
+	/**
 	 * Returns the default list cell renderer used when a completion provider
 	 * does not supply its own.
 	 *
@@ -314,8 +326,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		// Make Ctrl+C copy from description window.  This isn't done
 		// automagically because the desc. window is not focusable, and copying
 		// from text components can only be done from focused components.
-		int key = KeyEvent.VK_C;
-		KeyStroke ks = KeyStroke.getKeyStroke(key, InputEvent.CTRL_MASK);
+		KeyStroke ks = getCopyKeyStroke();
 		oldCtrlC.key = im.get(ks);
 		im.put(ks, ctrlCKap.key);
 		oldCtrlC.action = am.get(ctrlCKap.key);
@@ -668,8 +679,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		putBackAction(im, am, KeyEvent.VK_PAGE_DOWN, oldPageDown);
 
 		// Ctrl+C
-		int key = KeyEvent.VK_C;
-		KeyStroke ks = KeyStroke.getKeyStroke(key, InputEvent.CTRL_MASK);
+		KeyStroke ks = getCopyKeyStroke();
 		am.put(im.get(ks), oldCtrlC.action); // Original action
 		im.put(ks, oldCtrlC.key); // Original key
 

@@ -49,9 +49,9 @@ public abstract class AbstractCompletionProvider
 	protected List completions;
 
 	/**
-	 * The case-insensitive {@link Completion} comparator.
+	 * Compares a {@link Completion} against a String.
 	 */
-	private Comparator comparator;
+	protected Comparator comparator;
 
 
 	/**
@@ -246,8 +246,8 @@ public abstract class AbstractCompletionProvider
 
 
 	/**
-	 * A comparator that compares the input text of two {@link Completion}s
-	 * lexicographically, ignoring case.
+	 * A comparator that compares the input text of a {@link Completion}
+	 * against a String lexicographically, ignoring case.
 	 *
 	 * @author Robert Futrell
 	 * @version 1.0

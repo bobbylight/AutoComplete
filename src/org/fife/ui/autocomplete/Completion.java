@@ -41,6 +41,8 @@ import javax.swing.text.JTextComponent;
  *       completion list.  This may be <code>null</code>.  It may also be
  *       lazily generated to cut down on memory usage.
  *   <li>The <tt>CompletionProvider</tt> that returned this completion.
+ *   <li>Tool tip text that can be displayed when a mouse hovers over this
+ *       completion in a text component.
  * </ul>
  *
  * @author Robert Futrell
@@ -105,6 +107,25 @@ public interface Completion {
 	 *         completion.
 	 */
 	public String getSummary();
+
+
+	/**
+	 * Returns the tool tip text to display for mouse hovers over this
+	 * completion.<p>
+	 *
+	 * Note that for this functionality to be enabled, a
+	 * <tt>JTextComponent</tt> must be registered with the
+	 * <tt>ToolTipManager</tt>, and the text component must know to search
+	 * for this value.  In the case of an
+	 * <a href="http://fifesoft.com/rsyntaxtextarea">RSyntaxTextArea</a>, this
+	 * can be done with a <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> that
+	 * calls into
+	 * {@link CompletionProvider#getCompletionsAt(JTextComponent, java.awt.Point)}.
+	 *
+	 * @return The tool tip text for this completion, or <code>null</code> if
+	 *         none.
+	 */
+	public String getToolTipText();
 
 
 }

@@ -22,6 +22,7 @@
  */
 package org.fife.ui.autocomplete;
 
+import java.awt.Point;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,6 +54,19 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 	protected Segment seg;
 
+	/**
+	 * Used to speed up {@link #getCompletionsAt(JTextComponent, Point)}.
+	 */
+	private String lastCompletionsAtText;
+
+	/**
+	 * Used to speed up {@link #getCompletionsAt(JTextComponent, Point)},
+	 * since this may be called multiple times in succession (this is usually
+	 * called by <tt>JTextComponent.getToolTipText()</tt>, and if the user
+	 * wiggles the mouse while a tool tip is displayed, this method gets
+	 * repeatedly called.  It can be costly so we try to speed it up a tad).
+	 */
+	private List lastParameterizedCompletionsAt;
 
 	/**
 	 * Constructor.  The returned provider will not be aware of any completions.
@@ -121,7 +135,67 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getParameterizedCompletionsAt(JTextComponent tc) {
+	public List getCompletionsAt(JTextComponent tc, Point p) {
+
+		int offset = tc.viewToModel(p);
+		if (offset<0 || offset>=tc.getDocument().getLength()) {
+			lastCompletionsAtText = null;
+			return lastParameterizedCompletionsAt = null;
+		}
+
+		Segment s = new Segment();
+		Document doc = tc.getDocument();
+		Element root = doc.getDefaultRootElement();
+		int line = root.getElementIndex(offset);
+		Element elem = root.getElement(line);
+		int start = elem.getStartOffset();
+		int end = elem.getEndOffset() - 1;
+
+		try {
+
+			doc.getText(start, end-start, s);
+
+			// Get the valid chars before the specified offset.
+			int startOffs = s.offset + (offset-start) - 1;
+			while (startOffs>=s.offset && isValidChar(s.array[startOffs])) {
+				startOffs--;
+			}
+
+			// Get the valid chars at and after the specified offset.
+			int endOffs = s.offset;
+			while (endOffs<s.offset+s.count && isValidChar(s.array[endOffs])) {
+				endOffs++;
+			}
+
+			int len = endOffs - startOffs - 1;
+			if (len<=0) {
+				return lastParameterizedCompletionsAt = null;
+			}
+			String text = new String(s.array, startOffs+1, len);
+
+			if (text.equals(lastCompletionsAtText)) {
+				return lastParameterizedCompletionsAt;
+			}
+
+			// Get a list of all Completions matching the text.
+			List list = getCompletionByInputText(text);
+			lastCompletionsAtText = text;
+			return lastParameterizedCompletionsAt = list;
+
+		} catch (BadLocationException ble) {
+			ble.printStackTrace(); // Never happens
+		}
+
+		lastCompletionsAtText = null;
+		return lastParameterizedCompletionsAt = null;
+
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List getParameterizedCompletions(JTextComponent tc) {
 
 		List list = null;
 

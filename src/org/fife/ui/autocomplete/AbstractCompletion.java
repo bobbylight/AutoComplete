@@ -108,6 +108,17 @@ public abstract class AbstractCompletion implements Completion, Comparable {
 
 
 	/**
+	 * The default implementation returns <code>null</code>.  Subclasses
+	 * can override this method.
+	 *
+	 * @return The tool tip text.
+	 */
+	public String getToolTipText() {
+		return null;
+	}
+
+
+	/**
 	 * Returns a string representation of this completion.  The default
 	 * implementation returns {@link #getInputText()}.
 	 *

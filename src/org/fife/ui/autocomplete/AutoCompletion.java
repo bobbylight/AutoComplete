@@ -941,7 +941,7 @@ try {
 				return;
 			}
 			List completions = provider.
-								getParameterizedCompletionsAt(textComponent);
+								getParameterizedCompletions(textComponent);
 			if (completions!=null && completions.size()>0) {
 				// TODO: Have tooltip let you select between multiple, like VS
 				ParameterizedCompletion pc =

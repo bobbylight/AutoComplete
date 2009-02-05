@@ -23,6 +23,7 @@
  */
 package org.fife.ui.autocomplete;
 
+import java.awt.Point;
 import java.util.List;
 
 import javax.swing.ListCellRenderer;
@@ -68,9 +69,21 @@ public interface CompletionProvider {
 	 *
 	 * @param comp The text component.
 	 * @return The list of {@link Completion}s.  If no completions are
-	 *         available, an empty list is returned.
+	 *         available, this may be <code>null</code>.
 	 */
 	public List getCompletions(JTextComponent comp);
+
+
+	/**
+	 * Returns the completions that have been entered at the specified visual
+	 * location.  This can be used for tool tips when the user hovers the
+	 * mouse over completed text.
+	 * 
+	 * @param comp The text component.
+	 * @param p The position, usually from a <tt>MouseEvent</tt>.
+	 * @return The completions, or an empty list if there are none.
+	 */
+	public List getCompletionsAt(JTextComponent comp, Point p);
 
 
 	/**
@@ -92,7 +105,7 @@ public interface CompletionProvider {
 	 * @return The list of {@link ParameterizedCompletion}s.  If no completions
 	 *         are available, this may be <code>null</code>.
 	 */
-	public List getParameterizedCompletionsAt(JTextComponent tc);
+	public List getParameterizedCompletions(JTextComponent tc);
 
 
 	/**

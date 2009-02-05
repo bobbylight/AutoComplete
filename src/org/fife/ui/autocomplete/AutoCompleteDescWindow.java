@@ -367,7 +367,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			descArea.setSelectionColor(selBG);
 		}
 
-//		descArea.setEditable(false);
+		descArea.setEditable(false); // Required for links to work!
 
 		// Make selection visible even though we are not focusable.
 		descArea.getCaret().setSelectionVisible(true);

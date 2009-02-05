@@ -22,6 +22,8 @@
  */
 package org.fife.ui.autocomplete;
 
+import javax.swing.text.JTextComponent;
+
 
 /**
  * A completion for a variable (or constant) in a programming language.<p>
@@ -64,8 +66,13 @@ public class VariableCompletion extends BasicCompletion {
 
 
 	protected void addDefinitionString(StringBuffer sb) {
+		sb.append("<html><b>").append(getDefinitionString()).append("</b>");
+	}
 
-		sb.append("<html><b>");
+
+	public String getDefinitionString() {
+
+		StringBuffer sb = new StringBuffer();
 
 		// Add the return type if applicable (C macros like NULL have no type).
 		if (type!=null) {
@@ -75,7 +82,7 @@ public class VariableCompletion extends BasicCompletion {
 		// Add the item being described's name.
 		sb.append(getName());
 
-		sb.append("</b>");
+		return sb.toString();
 
 	}
 
@@ -110,6 +117,27 @@ public class VariableCompletion extends BasicCompletion {
 		possiblyAddDescription(sb);
 		possiblyAddDefinedIn(sb);
 		return sb.toString();
+	}
+
+
+	/**
+	 * Returns the tool tip text to display for mouse hovers over this
+	 * completion.<p>
+	 *
+	 * Note that for this functionality to be enabled, a
+	 * <tt>JTextComponent</tt> must be registered with the
+	 * <tt>ToolTipManager</tt>, and the text component must know to search
+	 * for this value.  In the case of an
+	 * <a href="http://fifesoft.com/rsyntaxtextarea">RSyntaxTextArea</a>, this
+	 * can be done with a <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> that
+	 * calls into
+	 * {@link CompletionProvider#getCompletionsAt(JTextComponent, java.awt.Point)}.
+	 *
+	 * @return The tool tip text for this completion, or <code>null</code> if
+	 *         none.
+	 */
+	public String getToolTipText() {
+		return getDefinitionString();
 	}
 
 
