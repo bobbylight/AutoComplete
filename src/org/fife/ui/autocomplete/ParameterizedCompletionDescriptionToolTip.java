@@ -604,11 +604,12 @@ class ParameterizedCompletionDescriptionToolTip {
 			for (int i=0; i<paramHighlights.size(); i++) {
 				Highlight h = (Highlight)paramHighlights.get(i);
 				if (offs>=h.getStartOffset() && offs<=h.getEndOffset()) {
-					int len = h.getEndOffset() - h.getStartOffset();
+					int start = h.getStartOffset() + 1;
+					int len = h.getEndOffset() - start;
 					JTextComponent tc = ac.getTextComponent();
 					Document doc = tc.getDocument();
 					try {
-						return doc.getText(h.getStartOffset(), len);
+						return doc.getText(start, len);
 					} catch (BadLocationException ble) {
 						UIManager.getLookAndFeel().provideErrorFeedback(tc);
 						ble.printStackTrace();

@@ -153,7 +153,7 @@ public class FunctionCompletion extends VariableCompletion
 
 
 	/**
-	 * Returns the specified {@link Parameter}.
+	 * Returns the specified {@link ParameterizedCompletion.Parameter}.
 	 *
 	 * @param index The index of the parameter to retrieve.
 	 * @return The parameter.
@@ -224,7 +224,7 @@ public class FunctionCompletion extends VariableCompletion
 	 * Sets the parameters to this function.
 	 *
 	 * @param params The parameters.  This should be a list of
-	 *        {@link Parameter}s.
+	 *        {@link ParameterizedCompletion.Parameter}s.
 	 * @see #getParam(int)
 	 * @see #getParamCount()
 	 */

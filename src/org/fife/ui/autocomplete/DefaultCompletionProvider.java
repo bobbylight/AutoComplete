@@ -84,7 +84,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 *
 	 * @param words The words to offer as completion suggestions.  If this is
 	 *        <code>null</code>, no completions will be known.
-	 * @see WordCompletion
+	 * @see BasicCompletion
 	 */
 	public DefaultCompletionProvider(String[] words) {
 		init();

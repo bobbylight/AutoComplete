@@ -96,7 +96,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 
 
 	/**
-	 * Returns the specified {@link Parameter}.
+	 * Returns the specified {@link ParameterizedCompletion.Parameter}.
 	 *
 	 * @param index The index of the attribute to retrieve.
 	 * @return The attribute.

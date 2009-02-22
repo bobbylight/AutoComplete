@@ -767,7 +767,7 @@ try {
 
 
 	/**
-	 * Sets the keystroke that should be used to trigger the autocomplete
+	 * Sets the keystroke that should be used to trigger the auto-complete
 	 * popup window.
 	 *
 	 * @param ks The keystroke.
@@ -791,7 +791,7 @@ try {
 
 
 	/**
-	 * Uninstalls this autocompletion from its text component.  If it is not
+	 * Uninstalls this auto-completion from its text component.  If it is not
 	 * installed on any text component, nothing happens.
 	 *
 	 * @see #install(JTextComponent)
@@ -829,7 +829,7 @@ try {
 
 	/**
 	 * Replaces the "trigger key" action with the one that was there
-	 * before autocompletion was installed.
+	 * before auto-completion was installed.
 	 *
 	 * @see #installTriggerKey(KeyStroke)
 	 */
@@ -857,8 +857,8 @@ try {
 
 
 	/**
-	 * The <code>Action</code> that displays the popup window if autocompletion
-	 * is enabled.
+	 * The <code>Action</code> that displays the popup window if
+	 * auto-completion is enabled.
 	 *
 	 * @author Robert Futrell
 	 * @version 1.0
@@ -879,7 +879,7 @@ try {
 
 	/**
 	 * Listens for events in the parent window of the text component with
-	 * autocompletion enabled.
+	 * auto-completion enabled.
 	 *
 	 * @author Robert Futrell
 	 * @version 1.0
