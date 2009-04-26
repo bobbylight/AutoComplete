@@ -22,7 +22,7 @@ import javax.swing.text.View;
  * NOTE: Whenever you see text like "Workaround for Java Highlight issues",
  * this is because highlighted text in a JTextComponent gets "pushed" forward
  * when the caret is at the Highlight's start, when we need it to instead get
- * prepended to.  For this reason, the autocomplete package adds its Highlights
+ * prepended to.  For this reason, the auto-complete package adds its Highlights
  * 1 char too long (1 char earlier than where it should really start), but only
  * paint the Highlight from the 2nd char on.
  */

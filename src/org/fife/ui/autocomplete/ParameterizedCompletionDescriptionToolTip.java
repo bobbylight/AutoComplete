@@ -317,7 +317,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		Highlight[] highlights = h.getHighlights();
 		for (int i=0; i<highlights.length; i++) {
 			Highlight hl = highlights[i];
-			if (hl.getPainter()==p) { // Only way to identify our own higlights
+			if (hl.getPainter()==p) { // Only way to identify our own highlights
 				if (currentPrev==null || currentPrev.getStartOffset()>=dot ||
 						(hl.getStartOffset()<selStart &&
 						hl.getStartOffset()>currentPrev.getStartOffset())) {
