@@ -120,6 +120,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			oldEnter, oldTab, oldHome, oldEnd, oldPageUp, oldPageDown,
 			oldCtrlC;
 
+	/**
+	 * The space between the caret and the completion popup.
+	 */
+	private static final int VERTICAL_SPACE			= 1;
+
 
 	/**
 	 * Constructor.
@@ -589,9 +594,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		// Try putting our stuff "below" the caret first.  We assume that the
 		// entire height of our stuff fits on the screen one way or the other.
 		aboveCaret = false;
-		int y = r.y + r.height + 10;
+		int y = r.y + r.height + VERTICAL_SPACE;
 		if (y+totalH>screenSize.height) {
-			y = r.y - 10 - getHeight();
+			y = r.y - VERTICAL_SPACE - getHeight();
 			aboveCaret = true;
 		}
 
@@ -665,7 +670,6 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		InputMap im = comp.getInputMap();
 		ActionMap am = comp.getActionMap();
 
-		putBackAction(im, am, KeyEvent.VK_ESCAPE, oldEscape);
 		putBackAction(im, am, KeyEvent.VK_ESCAPE, oldEscape);
 		putBackAction(im, am, KeyEvent.VK_UP, oldUp);
 		putBackAction(im, am, KeyEvent.VK_DOWN, oldDown);

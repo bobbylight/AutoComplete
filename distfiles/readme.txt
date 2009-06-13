@@ -35,6 +35,15 @@ robert -at- fifesoft dot com.
          Project home page, which contains general information and example
          source code.
 
-     * http://javadoc.fifesoft.com/autocomplete/
+    * http://javadoc.fifesoft.com/autocomplete/
          API documentation for the package.  Note that this *will* change as
          the library matures.
+
+* Thanks
+
+  The left and right arrow icons in the Help "tooltip" window are from the
+  "Silk" icon set, under the Creative Commons 3.0 License.  This is a wonderful
+  icon set, found here:
+  
+     http://famfamfam.com/lab/icons/silk/
+
