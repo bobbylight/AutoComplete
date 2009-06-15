@@ -406,33 +406,45 @@ public class AutoCompletion implements HierarchyListener {
 
 	/**
 	 * Hides any child windows being displayed by the auto-completion system.
+	 *
+	 * @return Whether any windows were visible.
 	 */
-	public void hideChildWindows() {
-		hidePopupWindow();
-		hideToolTipWindow();
+	public boolean hideChildWindows() {
+		//return hidePopupWindow() || hideToolTipWindow();
+		boolean res = hidePopupWindow();
+		res |= hideToolTipWindow();
+		return res;
 	}
 
 
 	/**
 	 * Hides the popup window, if it is visible.
+	 *
+	 * @return Whether the popup window was visible.
 	 */
-	private void hidePopupWindow() {
+	private boolean hidePopupWindow() {
 		if (popupWindow!=null) {
 			if (popupWindow.isVisible()) {
 				popupWindow.setVisible(false);
+				return true;
 			}
 		}
+		return false;
 	}
 
 
 	/**
 	 * Hides the parameter tool tip, if it is visible.
+	 *
+	 * @return Whether the tool tip window was visible.
 	 */
-	private void hideToolTipWindow() {
+	private boolean hideToolTipWindow() {
 		if (descToolTip!=null) {
 			descToolTip.setVisible(false, false);
 			descToolTip = null;
+			return true;
 		}
+		return false;
 	}
 
 

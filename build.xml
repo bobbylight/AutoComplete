@@ -6,7 +6,7 @@
 	Available targets include:
 	
 		1. compile:         Compiles all org.fife classes into ${class-dir}.
-		2. make-jar:        Creates the jar file.
+		2. make-jar:        Createqs the jar file.
 		3. make-source-zip: Creates a source zip file.
 		3. make-javadoc:    Creates the javadoc for RSyntaxTextArea.
 

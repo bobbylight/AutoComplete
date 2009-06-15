@@ -229,16 +229,23 @@ class SizeGrip extends JPanel {
 			int yDelta = newPos.y - origPos.y;
 			Window wind = SwingUtilities.getWindowAncestor(SizeGrip.this);
 			if (wind!=null) { // Should always be true
-				int w = wind.getWidth();
-				if (newPos.x>=wind.getX()) {
-					w += xDelta;
+				if (getComponentOrientation().isLeftToRight()) {
+					int w = wind.getWidth();
+					if (newPos.x>=wind.getX()) {
+						w += xDelta;
+					}
+					int h = wind.getHeight();
+					if (newPos.y>=wind.getY()) {
+						h += yDelta;
+					}
+					wind.setSize(w,h);
 				}
-				int h = wind.getHeight();
-				if (newPos.y>=wind.getY()) {
-					h += yDelta;
+				else { // RTL
+					int newW = Math.max(1, wind.getWidth()-xDelta);
+					int newH = Math.max(1, wind.getHeight()+yDelta);
+					wind.setBounds(newPos.x, wind.getY(), newW, newH);
 				}
-				wind.setSize(w,h);
-				// invalidate()/revalidate() needed pre-1.6.
+				// invalidate()/validate() needed pre-1.6.
 				wind.invalidate();
 				wind.validate();
 			}

@@ -24,6 +24,7 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -135,6 +136,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	public AutoCompletePopupWindow(Window parent, AutoCompletion ac) {
 
 		super(parent);
+		ComponentOrientation o = parent.getComponentOrientation();
 
 		this.ac = ac;
 		model = new CompletionListModel();
@@ -154,13 +156,14 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		// here.
 		JPanel corner = new SizeGrip();
 		//sp.setCorner(JScrollPane.LOWER_TRAILING_CORNER, corner);
-		boolean isLeftToRight = getComponentOrientation().isLeftToRight();
+		boolean isLeftToRight = o.isLeftToRight();
 	    String str = isLeftToRight ? JScrollPane.LOWER_RIGHT_CORNER :
 	    								JScrollPane.LOWER_LEFT_CORNER;
 	    sp.setCorner(str, corner);
 
 		contentPane.add(sp);
 		setContentPane(contentPane);
+		applyComponentOrientation(o);
 		pack();
 
 		setFocusableWindowState(false);
@@ -367,7 +370,8 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	/**
 	 * Positions the description window relative to the completion choices
-	 * window.
+	 * window.  We assume there is room on one side of the other for this
+	 * entire window to fit.
 	 */
 	private void positionDescWindow() {
 
@@ -379,10 +383,19 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		Dimension screenSize = getToolkit().getScreenSize();
 		//int totalH = Math.max(getHeight(), descWindow.getHeight());
 
-		// Try to position to the right first.
-		int x = getX() + getWidth() + 5;
-		if (x+descWindow.getWidth()>screenSize.width) { // doesn't fit
+		// Try to position to the right first (LTR)
+		int x; 
+		if (getComponentOrientation().isLeftToRight()) {
+			x = getX() + getWidth() + 5;
+			if (x+descWindow.getWidth()>screenSize.width) { // doesn't fit
+				x = getX() - 5 - descWindow.getWidth();
+			}
+		}
+		else { // RTL
 			x = getX() - 5 - descWindow.getWidth();
+			if (x<0) { // Doesn't fit
+				x = getX() + getWidth() + 5;
+			}
 		}
 
 		int y = getY();
@@ -603,6 +616,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		// Get x-coordinate of completions.  Try to align left edge with the
 		// caret first.
 		int x = r.x;
+		if (!getComponentOrientation().isLeftToRight()) {
+			x -= getWidth(); // RTL => align right edge
+		}
 		if (x<0) {
 			x = 0;
 		}
