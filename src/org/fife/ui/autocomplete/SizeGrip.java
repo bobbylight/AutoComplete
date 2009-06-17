@@ -62,7 +62,6 @@ class SizeGrip extends JPanel {
 		MouseHandler adapter = new MouseHandler();
 		addMouseListener(adapter);
 		addMouseMotionListener(adapter);
-		possiblyFixCursor(ComponentOrientation.getOrientation(getLocale()));
 		setPreferredSize(new Dimension(16, 16));
 	}
 
@@ -74,7 +73,7 @@ class SizeGrip extends JPanel {
 	 * @param o The new orientation.
 	 */
 	public void applyComponentOrientation(ComponentOrientation o) {
-		possiblyFixCursor(o);
+		possiblyFixCursor(o.isLeftToRight());
 		super.applyComponentOrientation(o);
 	}
 
@@ -176,11 +175,11 @@ class SizeGrip extends JPanel {
 	 * Ensures that the cursor for this component is appropriate for the
 	 * orientation.
 	 *
-	 * @param o The new orientation.
+	 * @param ltr Whether the current component orientation is LTR.
 	 */
-	protected void possiblyFixCursor(ComponentOrientation o) {
+	protected void possiblyFixCursor(boolean ltr) {
 		int cursor = Cursor.NE_RESIZE_CURSOR;
-		if (o.isLeftToRight()) {
+		if (ltr) {
 			cursor = Cursor.NW_RESIZE_CURSOR;
 		}
 		if (cursor!=getCursor().getType()) {

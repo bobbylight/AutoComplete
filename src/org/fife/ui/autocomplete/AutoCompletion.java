@@ -368,6 +368,18 @@ public class AutoCompletion implements HierarchyListener {
 
 
 	/**
+	 * Returns the orientation of the text component we're installed to.
+	 *
+	 * @return The orientation of the text component, or <code>null</code> if
+	 *         we are not installed on one.
+	 */
+	ComponentOrientation getTextComponentOrientation() {
+		return textComponent==null ? null :
+									textComponent.getComponentOrientation();
+	}
+
+
+	/**
 	 * Returns the "trigger key" used for autocomplete.
 	 *
 	 * @return The trigger key.
@@ -613,6 +625,11 @@ try {
 
 			if (popupWindow==null) {
 				popupWindow = new AutoCompletePopupWindow(parentWindow, this);
+				// Completion is usually done for code, which is always done
+				// LTR, so make completion stuff RTL only if text component is
+				// also RTL.
+				popupWindow.applyComponentOrientation(
+											getTextComponentOrientation());
 				if (renderer!=null) {
 					popupWindow.setListCellRenderer(renderer);
 				}

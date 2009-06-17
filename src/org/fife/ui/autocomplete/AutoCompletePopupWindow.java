@@ -136,7 +136,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	public AutoCompletePopupWindow(Window parent, AutoCompletion ac) {
 
 		super(parent);
-		ComponentOrientation o = parent.getComponentOrientation();
+		ComponentOrientation o = ac.getTextComponentOrientation();
 
 		this.ac = ac;
 		model = new CompletionListModel();
@@ -197,6 +197,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 */
 	private AutoCompleteDescWindow createDescriptionWindow() {
 		AutoCompleteDescWindow dw = new AutoCompleteDescWindow(this, ac);
+		dw.applyComponentOrientation(ac.getTextComponentOrientation());
 		Dimension size = preferredDescWindowSize;
 		if (size==null) {
 			size = getSize();
@@ -385,7 +386,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 		// Try to position to the right first (LTR)
 		int x; 
-		if (getComponentOrientation().isLeftToRight()) {
+		if (ac.getTextComponentOrientation().isLeftToRight()) {
 			x = getX() + getWidth() + 5;
 			if (x+descWindow.getWidth()>screenSize.width) { // doesn't fit
 				x = getX() - 5 - descWindow.getWidth();
@@ -616,7 +617,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		// Get x-coordinate of completions.  Try to align left edge with the
 		// caret first.
 		int x = r.x;
-		if (!getComponentOrientation().isLeftToRight()) {
+		if (!ac.getTextComponentOrientation().isLeftToRight()) {
 			x -= getWidth(); // RTL => align right edge
 		}
 		if (x<0) {

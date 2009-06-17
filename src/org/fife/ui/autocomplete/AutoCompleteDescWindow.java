@@ -25,6 +25,7 @@ package org.fife.ui.autocomplete;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.Window;
@@ -132,6 +133,8 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		super(owner);
 		this.ac = ac;
 
+		ComponentOrientation o = ac.getTextComponentOrientation();
+		
 		JPanel cp = new JPanel(new BorderLayout());
 //		cp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -145,8 +148,8 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		cp.add(scrollPane);
 
 		descWindowNavBar = new JToolBar();
-		backAction = new ToolBarBackAction();
-		forwardAction = new ToolBarForwardAction();
+		backAction = new ToolBarBackAction(o.isLeftToRight());
+		forwardAction = new ToolBarForwardAction(o.isLeftToRight());
 		descWindowNavBar.setFloatable(false);
 		descWindowNavBar.add(new JButton(backAction));
 		descWindowNavBar.add(new JButton(forwardAction));
@@ -404,9 +407,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 */
 	class ToolBarBackAction extends AbstractAction {
 
-		public ToolBarBackAction() {
+		public ToolBarBackAction(boolean ltr) {
+			String img = "org/fife/ui/autocomplete/arrow_" +
+						(ltr ? "left.png" : "right.png");
 			ClassLoader cl = getClass().getClassLoader();
-			URL url = cl.getResource("org/fife/ui/autocomplete/arrow_left.png");
+			URL url = cl.getResource(img);
 			try {
 				Icon icon = new ImageIcon(ImageIO.read(url));
 				putValue(Action.SMALL_ICON, icon);
@@ -432,9 +437,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 */
 	class ToolBarForwardAction extends AbstractAction {
 
-		public ToolBarForwardAction() {
+		public ToolBarForwardAction(boolean ltr) {
+			String img = "org/fife/ui/autocomplete/arrow_" +
+							(ltr ? "right.png" : "left.png");
 			ClassLoader cl = getClass().getClassLoader();
-			URL url = cl.getResource("org/fife/ui/autocomplete/arrow_right.png");
+			URL url = cl.getResource(img);
 			try {
 				Icon icon = new ImageIcon(ImageIO.read(url));
 				putValue(Action.SMALL_ICON, icon);
