@@ -24,10 +24,7 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.ComponentOrientation;
-import java.awt.Font;
-import java.awt.SystemColor;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -53,7 +50,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLDocument;
 
 
 /**
@@ -139,10 +135,10 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 //		cp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		descArea = new JEditorPane("text/html", null);
-		tweakDescArea();
+		TipUtil.tweakTipEditorPane(descArea);
 		descArea.addHyperlinkListener(this);
 		scrollPane = new JScrollPane(descArea);
-		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
 		cp.add(scrollPane);
@@ -217,24 +213,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			return true;
 		}
 		return false;
-	}
-
-
-	/**
-	 * Returns the default background color to use for the description
-	 * window.
-	 *
-	 * @return The default background color.
-	 */
-	protected Color getDefaultBackground() {
-		Color c = UIManager.getColor("ToolTip.background");
-		if (c==null) { // Some LookAndFeels like Nimbus
-			c = UIManager.getColor("info"); // Used by Nimbus (and others)
-			if (c==null) {
-				c = SystemColor.infoText; // System default
-			}
-		}
-		return c;
 	}
 
 
@@ -356,47 +334,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	}
 
 	/**
-	 * Tweaks the description text area to look good in the current Look
-	 * and Feel.
-	 */
-	private void tweakDescArea() {
-
-		// Jump through a few hoops to get things looking nice in Nimbus
-		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-			Color selBG = descArea.getSelectionColor();
-			Color selFG = descArea.getSelectedTextColor();
-			descArea.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
-			descArea.setSelectedTextColor(selFG);
-			descArea.setSelectionColor(selBG);
-		}
-
-		descArea.setEditable(false); // Required for links to work!
-
-		// Make selection visible even though we are not focusable.
-		descArea.getCaret().setSelectionVisible(true);
-
-		// Make it use "tool tip" background color.
-		descArea.setBackground(getDefaultBackground());
-
-		// Force JEditorPane to use a certain font even in HTML.
-		// All standard LookAndFeels, even Nimbus (!), define Label.font.
-		Font font = UIManager.getFont("Label.font");
-		if (font==null) { // Try to make a sensible default
-			font = new Font("SansSerif", Font.PLAIN, 12);
-		}
-		HTMLDocument doc = (HTMLDocument)descArea.getDocument();
-		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() +
-				"; font-size: " + font.getSize() + "pt; }");
-
-	}
-
-
-	/**
 	 * Called by the parent completion popup window the LookAndFeel is updated.
 	 */
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(this);
-		tweakDescArea(); // Update the editor pane (font in HTML, etc.)
+		// Update editor pane for new font, bg, selection colors, etc.
+		TipUtil.tweakTipEditorPane(descArea);
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
 	}

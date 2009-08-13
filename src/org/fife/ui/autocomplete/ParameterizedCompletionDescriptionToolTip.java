@@ -27,7 +27,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.SystemColor;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
@@ -36,7 +35,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -151,11 +149,11 @@ class ParameterizedCompletionDescriptionToolTip {
 		this.pc = pc;
 
 		descLabel = new JLabel();
-		descLabel.setOpaque(true);
 		descLabel.setBorder(BorderFactory.createCompoundBorder(
 					BorderFactory.createLineBorder(Color.BLACK),
 					BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-		descLabel.setBackground(getDefaultBackground());
+		descLabel.setOpaque(true);
+		descLabel.setBackground(TipUtil.getToolTipBackground());
 		tooltip.setContentPane(descLabel);
 
 		lastSelectedParam = -1;
@@ -167,24 +165,6 @@ class ParameterizedCompletionDescriptionToolTip {
 		p = new OutlineHighlightPainter(Color.GRAY);
 		tags = new ArrayList(1); // Usually small
 
-	}
-
-
-	/**
-	 * Returns the default background color to use for the description
-	 * window.
-	 *
-	 * @return The default background color.
-	 */
-	protected Color getDefaultBackground() {
-		Color c = UIManager.getColor("ToolTip.background");
-		if (c==null) { // Some LookAndFeels like Nimbus
-			c = UIManager.getColor("info"); // Used by Nimbus (and others)
-			if (c==null) {
-				c = SystemColor.infoText; // System default
-			}
-		}
-		return c;
 	}
 
 
