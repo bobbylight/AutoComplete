@@ -99,8 +99,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * This method returns all characters before the caret that are matched
 	 * by  {@link #isValidChar(char)}.
 	 *
-	 * @param comp The text component.
-	 * @return The text.
+	 * {@inheritDoc}
 	 */
 	public String getAlreadyEnteredText(JTextComponent comp) {
 		
@@ -162,7 +161,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 			}
 
 			// Get the valid chars at and after the specified offset.
-			int endOffs = s.offset;
+			int endOffs = s.offset + (offset-start);
 			while (endOffs<s.offset+s.count && isValidChar(s.array[endOffs])) {
 				endOffs++;
 			}

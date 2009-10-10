@@ -58,7 +58,10 @@ public interface CompletionProvider {
 	 * the start of something auto-completable.
 	 *
 	 * @param comp The text component.
-	 * @return The text.
+	 * @return The text.  A return value of <code>null</code> means nothing
+	 *         should be auto-completed; a value of an empty string
+	 *         (<code>""</code>) means auto-completion should still be
+	 *         considered (i.e., all possible choices are valid).
 	 */
 	public String getAlreadyEnteredText(JTextComponent comp);
 

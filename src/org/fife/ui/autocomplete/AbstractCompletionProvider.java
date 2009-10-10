@@ -177,20 +177,24 @@ public abstract class AbstractCompletionProvider
 		List retVal = new ArrayList();
 		String text = getAlreadyEnteredText(comp);
 
-		int index = Collections.binarySearch(completions, text, comparator);
-		if (index<0) {
-			index = -index - 1;
-		}
+		if (text!=null) {
 
-		while (index<completions.size()) {
-			Completion c = (Completion)completions.get(index);
-			if (startsWithIgnoreCase(c.getInputText(), text)) {
-				retVal.add(c);
-				index++;
+			int index = Collections.binarySearch(completions, text, comparator);
+			if (index<0) {
+				index = -index - 1;
 			}
-			else {
-				break;
+
+			while (index<completions.size()) {
+				Completion c = (Completion)completions.get(index);
+				if (startsWithIgnoreCase(c.getInputText(), text)) {
+					retVal.add(c);
+					index++;
+				}
+				else {
+					break;
+				}
 			}
+
 		}
 
 		return retVal;
