@@ -63,8 +63,8 @@ import org.fife.ui.rtextarea.ToolTipSupplier;
  * @author Robert Futrell
  * @version 1.0
  */
-public class CCompletionProvider extends CompletionProviderBase
-								implements ToolTipSupplier {
+public class LanguageAwareCompletionProvider extends CompletionProviderBase
+											implements ToolTipSupplier {
 
 	/**
 	 * The provider to use when no provider is assigned to a particular token
@@ -89,12 +89,22 @@ public class CCompletionProvider extends CompletionProviderBase
 
 
 	/**
+	 * Constructor subclasses can use when they don't have their default
+	 * provider created at construction time.  They should call
+	 * {@link #setDefaultCompletionProvider(CompletionProvider)} in this
+	 * constructor.
+	 */
+	protected LanguageAwareCompletionProvider() {
+	}
+
+
+	/**
 	 * Constructor.
 	 *
 	 * @param defaultProvider The provider to use when no provider is assigned
 	 *        to a particular token type.  This cannot be <code>null</code>.
 	 */
-	public CCompletionProvider(CompletionProvider defaultProvider) {
+	public LanguageAwareCompletionProvider(CompletionProvider defaultProvider) {
 		setDefaultCompletionProvider(defaultProvider);
 	}
 
