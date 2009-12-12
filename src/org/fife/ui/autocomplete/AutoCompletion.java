@@ -75,6 +75,13 @@ public class AutoCompletion implements HierarchyListener {
 	private AutoCompletePopupWindow popupWindow;
 
 	/**
+	 * The preferred size of the completion choices window.  This field exists
+	 * because the user will likely set the preferred size of the window
+	 * before it is actually created.
+	 */
+	private Dimension preferredChoicesWindowSize;
+
+	/**
 	 * The preferred size of the optional description window.  This field
 	 * only exists because the user may (and usually will) set the size of
 	 * the description window before it exists (it must be parented to a
@@ -633,6 +640,9 @@ try {
 				if (renderer!=null) {
 					popupWindow.setListCellRenderer(renderer);
 				}
+				if (preferredChoicesWindowSize!=null) {
+					popupWindow.setSize(preferredChoicesWindowSize);
+				}
 				if (preferredDescWindowSize!=null) {
 					popupWindow.setDescriptionWindowSize(
 												preferredDescWindowSize);
@@ -721,10 +731,26 @@ try {
 
 
 	/**
+	 * Sets the size of the completion choices window.
+	 *
+	 * @param w The new width.
+	 * @param h The new height.
+	 * @see #setDescriptionWindowSize(int, int)
+	 */
+	public void setChoicesWindowSize(int w, int h) {
+		preferredChoicesWindowSize = new Dimension(w, h);
+		if (popupWindow!=null) {
+			popupWindow.setSize(preferredChoicesWindowSize);
+		}
+	}
+
+
+	/**
 	 * Sets the size of the description window.
 	 *
 	 * @param w The new width.
 	 * @param h The new height.
+	 * @see #setChoicesWindowSize(int, int)
 	 */
 	public void setDescriptionWindowSize(int w, int h) {
 		preferredDescWindowSize = new Dimension(w, h);
