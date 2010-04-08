@@ -350,7 +350,13 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		ClassLoader cl = getClass().getClassLoader();
 		InputStream in = cl.getResourceAsStream(resource);
 		if (in==null) {
-			throw new IOException("No such resource: " + resource);
+			File file = new File(resource);
+			if (file.isFile()) {
+				in = new FileInputStream(file);
+			}
+			else {
+				throw new IOException("No such resource: " + resource);
+			}
 		}
 		BufferedInputStream bin = new BufferedInputStream(in);
 		try {

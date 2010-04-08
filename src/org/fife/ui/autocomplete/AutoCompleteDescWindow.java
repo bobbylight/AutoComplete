@@ -47,6 +47,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -107,9 +108,30 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	private int historyPos;
 
 	/**
+	 * Provides a slight delay between asking to set a description and actually
+	 * displaying it, so that if the user is scrolling quickly through
+	 * completions, those with slow-to-calculate summaries won't bog down the
+	 * scrolling.
+	 */
+	private Timer timer;
+
+	/**
+	 * The action that listens for the timer to fire.
+	 */
+	private TimerAction timerAction;
+
+	/**
 	 * The resource bundle for this window.
 	 */
 	private ResourceBundle bundle;
+
+	/**
+	 * The amount of time to wait after the user changes the selected
+	 * completion to refresh the description.  This delay is in place to help
+	 * performance for {@link Completion}s that may be slow to compute their
+	 * summary text.
+	 */
+	private static final int INITIAL_TIMER_DELAY			= 120;
 
 	/**
 	 * The resource bundle name.
@@ -161,6 +183,10 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 
 		history = new ArrayList(1); // Usually small
 		historyPos = -1;
+
+		timerAction = new TimerAction();
+		timer = new Timer(INITIAL_TIMER_DELAY, timerAction);
+		timer.setRepeats(false);
 
 	}
 
@@ -308,18 +334,27 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 *        (as opposed to clearing it and starting anew).
 	 */
 	protected void setDescriptionFor(Completion item, boolean addToHistory) {
-		String desc = item==null ? null : item.getSummary();
+		timer.stop();
+		timerAction.setCompletion(item, addToHistory);
+		timer.start();
+	}
+
+
+	private void setDisplayedDesc(String desc, boolean addToHistory) {
+
 		if (desc==null) {
 			desc = "<html><em>" + getString("NoDescAvailable") + "</em>";
 		}
 		descArea.setText(desc);
 		descArea.setCaretPosition(0); // In case of scrolling
+
 		if (!addToHistory) {
 			// Remove everything first if this is going to be the only
 			// thing in history.
 			clearHistory();
 		}
 		addToHistory(desc);
+
 	}
 
 
@@ -342,6 +377,30 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		TipUtil.tweakTipEditorPane(descArea);
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
+	}
+
+
+	/**
+	 * Action that actually updates the summary text displayed.
+	 */
+	private class TimerAction extends AbstractAction {
+
+		private Completion completion;
+		private boolean addToHistory;
+
+		/**
+		 * Called when the timer is fired.
+		 */
+		public void actionPerformed(ActionEvent e) {
+			String desc = completion==null ? null : completion.getSummary();
+			setDisplayedDesc(desc, addToHistory);
+		}
+
+		public void setCompletion(Completion c, boolean addToHistory) {
+			this.completion = c;
+			this.addToHistory = addToHistory;
+		}
+
 	}
 
 

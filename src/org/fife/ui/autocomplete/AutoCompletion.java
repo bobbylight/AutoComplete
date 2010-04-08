@@ -43,9 +43,9 @@ import javax.swing.text.*;
  *        (as seen in Eclipse and NetBeans).</li>
  *    <li>Parameter assistance.  If this is enabled, if the user enters a
  *        "parameterized" completion, such as a method or a function, then
- *        they will receive a tooltip describing the arguments they have to
+ *        they will receive a tool tip describing the arguments they have to
  *        enter to the completion.  Also, the arguments can be navigated via
- *        tab and shift+tab (ala Eclipse and NetBeans).</li>
+ *        tab and shift+tab (a la Eclipse and NetBeans).</li>
  * </ul>
  *
  * @author Robert Futrell
@@ -90,7 +90,7 @@ public class AutoCompletion implements HierarchyListener {
 	private Dimension preferredDescWindowSize;
 
 	/**
-	 * A "tooltip" describing a function just entered.
+	 * A "tool tip" describing a function just entered.
 	 */
 	private ParameterizedCompletionDescriptionToolTip descToolTip;
 
@@ -623,6 +623,18 @@ try {
 	 * @return The current line number of the caret.
 	 */
 	protected int refreshPopupWindow() {
+
+		// If the popup is currently visible, and they type a space (or any
+		// character that resets the completion list to "all completions"),
+		// the popup window should be hidden instead of being reset to show
+		// everything.
+		String text = provider.getAlreadyEnteredText(textComponent);
+		if (text==null || text.length()==0) {
+			if (isPopupVisible()) {
+				hidePopupWindow();
+				return getLineOfCaret();
+			}
+		}
 
 		final List completions = provider.getCompletions(textComponent);
 		int count = completions.size();

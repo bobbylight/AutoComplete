@@ -23,6 +23,7 @@
  */
 package org.fife.ui.autocomplete;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import org.xml.sax.Attributes;
@@ -30,7 +31,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 
 /**
- * Parser for an XML file describing a procedural language such as C.
+ * Parser for an XML file describing a procedural language such as C.<p>
+ *
+ * Error checking is minimal to non-existent; that will be handled via a
+ * schema in the future.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -64,9 +68,17 @@ public class CompletionXMLParser extends DefaultHandler {
 	private boolean gettingParams;
 	private boolean inParam;
 	private boolean gettingParamDesc;
+	private boolean inCompletionTypes;
 	private char paramStartChar;
 	private char paramEndChar;
 	private String paramSeparator;
+
+	/**
+	 * If specified in the XML, this class will be used instead of
+	 * {@link FunctionCompletion} when appropriate.  This class should extend
+	 * <tt>FunctionCompletion</tt>, or stuff will break.
+	 */
+	private String funcCompletionType;
 
 
 	/**
@@ -104,8 +116,27 @@ public class CompletionXMLParser extends DefaultHandler {
 
 
 	private FunctionCompletion createFunctionCompletion() {
-		FunctionCompletion fc = new FunctionCompletion(provider,
-				name, returnType);
+
+		FunctionCompletion fc = null;
+		if (funcCompletionType!=null) {
+			try {
+				Class clazz = Class.forName(funcCompletionType);
+				Class[] paramTypes = { CompletionProvider.class,
+										String.class, String.class };
+				Constructor c = clazz.getDeclaredConstructor(paramTypes);
+				fc = (FunctionCompletion)c.newInstance(
+					new Object[] { provider, name, returnType });
+			} catch (RuntimeException re) { // FindBugs
+				throw re;
+			} catch (Exception e) {
+				throw new RuntimeException(
+					"Problem with custom FunctionCompletion: " + e.toString());
+			}
+		}
+		else {
+			fc = new FunctionCompletion(provider, name, returnType);
+		}
+
 		if (desc.length()>0) {
 			fc.setShortDescription(desc.toString());
 			desc.setLength(0);
@@ -203,6 +234,12 @@ public class CompletionXMLParser extends DefaultHandler {
 				}
 			}
 
+		}
+
+		else if (inCompletionTypes) {
+			if ("completionTypes".equals(qName)) {
+				inCompletionTypes = false;
+			}
 		}
 
 	}
@@ -309,6 +346,14 @@ public class CompletionXMLParser extends DefaultHandler {
 			paramEndChar = attrs.getValue("paramEndChar").charAt(0);
 			paramSeparator = attrs.getValue("paramSeparator");
 			//paramTerminal = attrs.getValua("terminal");
+		}
+		else if ("completionTypes".equals(qName)) {
+			inCompletionTypes = true;
+		}
+		else if (inCompletionTypes) {
+			if ("functionCompletionType".equals(qName)) {
+				funcCompletionType = attrs.getValue("type");
+			}
 		}
 	}
 
