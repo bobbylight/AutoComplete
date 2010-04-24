@@ -144,9 +144,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForFunctionCompletion(JList list,
 		FunctionCompletion fc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b><em>");
+		StringBuffer sb = new StringBuffer("<html><b>");
 		sb.append(fc.getName());
-		sb.append("</em></b>");
+		sb.append("</b>");
 
 		sb.append(fc.getProvider().getParameterListStart());
 		int paramCount = fc.getParamCount();
@@ -200,9 +200,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForMarkupTagCompletion(JList list,
 		MarkupTagCompletion mc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b><em>");
+		StringBuffer sb = new StringBuffer("<html><b>");
 		sb.append(mc.getName());
-		sb.append("</em></b>");
+		sb.append("</b>");
 
 		setText(sb.toString());
 
@@ -222,9 +222,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForOtherCompletion(JList list,
 		Completion c, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b><em>");
+		StringBuffer sb = new StringBuffer("<html><b>");
 		sb.append(c.getInputText());
-		sb.append("</em></b>");
+		sb.append("</b>");
 
 		setText(sb.toString());
 
@@ -243,9 +243,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForVariableCompletion(JList list,
 		VariableCompletion vc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b><em>");
+		StringBuffer sb = new StringBuffer("<html><b>");
 		sb.append(vc.getName());
-		sb.append("</em></b>");
+		sb.append("</b>");
 
 		if (vc.getType()!=null) {
 			sb.append(" : ");
