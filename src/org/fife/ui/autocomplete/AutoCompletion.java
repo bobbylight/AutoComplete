@@ -24,6 +24,8 @@ package org.fife.ui.autocomplete;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.text.*;
@@ -193,12 +195,24 @@ public class AutoCompletion implements HierarchyListener {
 	 *        <code>null</code>.
 	 */
 	public AutoCompletion(CompletionProvider provider) {
+
 		setCompletionProvider(provider);
 		setTriggerKey(getDefaultTriggerKey());
 		setAutoCompleteEnabled(true);
 		setAutoCompleteSingleChoices(true);
 		setShowDescWindow(false);
 		parentWindowListener = new Listener();
+
+		// Automatically update LAF of popup windows on LookAndFeel changes
+		UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent e) {
+				String name = e.getPropertyName();
+				if (name.equals("lookAndFeel")) {
+					updateUI();
+				}
+			}
+		});
+
 	}
 
 
@@ -913,7 +927,7 @@ try {
 	 * this method as appropriate if they support changing the LookAndFeel
 	 * at runtime.
 	 */
-	public void updateUI() {
+	private void updateUI() {
 		if (popupWindow!=null) {
 			popupWindow.updateUI();
 		}

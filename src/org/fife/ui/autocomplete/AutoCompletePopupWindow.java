@@ -49,6 +49,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.ListUI;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 
@@ -140,7 +141,13 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 		this.ac = ac;
 		model = new CompletionListModel();
-		list = new JList(model);
+		list = new JList(model) {
+			public void setUI(ListUI ui) {
+				// Keep our special UI, no matter what
+				super.setUI(new FastListUI());
+			}
+		};
+
 		list.setCellRenderer(new DelegatingCellRenderer());
 		list.addListSelectionListener(this);
 		list.addMouseListener(this);

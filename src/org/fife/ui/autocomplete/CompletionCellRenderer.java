@@ -48,29 +48,37 @@ import javax.swing.JList;
 public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 	/**
-	 * The alternating background color.
+	 * The alternating background color, or <code>null</code> if alternating
+	 * row colors should not be used.
 	 */
 	private Color altBG;
 
 	/**
-	 * The font to use when rendering items.
+	 * The font to use when rendering items, or <code>null</code> if the
+	 * list's default font should be used.
 	 */
 	private Font font;
+
+	/**
+	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
+	 * words.
+	 */
+	private static final String PREFIX = "<html><nobr>";
 
 
 	/**
 	 * Constructor.
 	 */
 	public CompletionCellRenderer() {
-		setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
-		setAlternateBackground(new Color(240,240,240));
+		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
+		//setAlternateBackground(new Color(0xf4f4f4));
 	}
 
 
 	/**
 	 * Returns the background color to use on alternating lines.
 	 *
-	 * @return The altnernate background color.  If this is <code>null</code>,
+	 * @return The alternate background color.  If this is <code>null</code>,
 	 *         alternating colors are not used.
 	 * @see #setAlternateBackground(Color)
 	 */
@@ -104,7 +112,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 						int index, boolean selected, boolean hasFocus) {
 
 		super.getListCellRendererComponent(list,value,index,selected,hasFocus);
-		setFont(font); // Overrides super's setFont(list.getFont()).
+		if (font!=null) {
+			setFont(font); // Overrides super's setFont(list.getFont()).
+		}
 
 		if (value instanceof FunctionCompletion) {
 			FunctionCompletion fc = (FunctionCompletion)value;
@@ -144,9 +154,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForFunctionCompletion(JList list,
 		FunctionCompletion fc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b>");
+		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(fc.getName());
-		sb.append("</b>");
 
 		sb.append(fc.getProvider().getParameterListStart());
 		int paramCount = fc.getParamCount();
@@ -176,7 +185,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		sb.append(fc.getProvider().getParameterListEnd());
 		sb.append(" : ");
 		if (!selected) {
-			sb.append("<font color='#a0a0ff'>");
+			sb.append("<font color='#808080'>");
 		}
 		sb.append(fc.getType());
 		if (!selected) {
@@ -200,9 +209,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForMarkupTagCompletion(JList list,
 		MarkupTagCompletion mc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b>");
+		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(mc.getName());
-		sb.append("</b>");
 
 		setText(sb.toString());
 
@@ -222,9 +230,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForOtherCompletion(JList list,
 		Completion c, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b>");
+		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(c.getInputText());
-		sb.append("</b>");
 
 		setText(sb.toString());
 
@@ -243,14 +250,13 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForVariableCompletion(JList list,
 		VariableCompletion vc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer("<html><b>");
+		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(vc.getName());
-		sb.append("</b>");
 
 		if (vc.getType()!=null) {
 			sb.append(" : ");
 			if (!selected) {
-				sb.append("<font color='#a0a0ff'>");
+				sb.append("<font color='#808080'>");
 			}
 			sb.append(vc.getType());
 			if (!selected) {
