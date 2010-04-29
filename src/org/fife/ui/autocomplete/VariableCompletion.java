@@ -170,13 +170,16 @@ public class VariableCompletion extends BasicCompletion {
 	 * defined.
 	 *
 	 * @param sb The buffer to append to.
+	 * @return Whether there was a description to add.
 	 */
-	protected void possiblyAddDescription(StringBuffer sb) {
+	protected boolean possiblyAddDescription(StringBuffer sb) {
 		if (getShortDescription()!=null) {
 			sb.append("<hr><br>");
 			sb.append(getShortDescription());
 			sb.append("<br><br><br>");
+			return true;
 		}
+		return false;
 	}
 
 

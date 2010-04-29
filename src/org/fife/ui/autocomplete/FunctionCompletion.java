@@ -192,7 +192,9 @@ public class FunctionCompletion extends VariableCompletion
 	public String getSummary() {
 		StringBuffer sb = new StringBuffer();
 		addDefinitionString(sb);
-		possiblyAddDescription(sb);
+		if (!possiblyAddDescription(sb)) {
+			sb.append("<br><br><br>");
+		}
 		addParameters(sb);
 		possiblyAddDefinedIn(sb);
 		return sb.toString();

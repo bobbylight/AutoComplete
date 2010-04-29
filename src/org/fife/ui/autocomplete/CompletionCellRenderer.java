@@ -26,8 +26,13 @@ package org.fife.ui.autocomplete;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
+import javax.swing.plaf.basic.BasicHTML;
+import javax.swing.text.View;
 
 
 /**
@@ -60,6 +65,16 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private Font font;
 
 	/**
+	 * Whether to display the types of fields and return types of functions
+	 * in the completion text.
+	 */
+	private boolean showTypes;
+
+private boolean selected;
+private Color realBG;
+private Rectangle paintTextR;
+
+	/**
 	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
 	 * words.
 	 */
@@ -71,7 +86,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public CompletionCellRenderer() {
 		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
-		//setAlternateBackground(new Color(0xf4f4f4));
+		setAlternateBackground(new Color(0xf4f4f4));
+		setShowTypes(true);
+		paintTextR = new Rectangle();
 	}
 
 
@@ -115,6 +132,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		if (font!=null) {
 			setFont(font); // Overrides super's setFont(list.getFont()).
 		}
+this.selected = selected;
+this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 
 		if (value instanceof FunctionCompletion) {
 			FunctionCompletion fc = (FunctionCompletion)value;
@@ -138,6 +157,64 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		}
 
 		return this;
+
+	}
+
+
+	/**
+	 * Returns whether the types of fields and return types of methods are
+	 * shown in the completion text.
+	 *
+	 * @return Whether to show the types.
+	 * @see #setShowTypes(boolean)
+	 */
+	public boolean getShowTypes() {
+		return showTypes;
+	}
+
+
+	protected void paintComponent(Graphics g) {
+
+		//super.paintComponent(g);
+
+		g.setColor(realBG);
+		int iconW = 0;
+		if (getIcon()!=null) {
+			iconW = getIcon().getIconWidth();
+		}
+		if (selected && iconW>0) { // The icon area is never in the "selection"
+			g.fillRect(0, 0, iconW, getHeight());
+			g.setColor(getBackground());
+			g.fillRect(iconW,0, getWidth()-iconW,getHeight());
+		}
+		else {
+			g.setColor(getBackground());
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+		if (getIcon()!=null) {
+			getIcon().paintIcon(this, g, 0, 0);
+		}
+
+		String text = getText();
+		if (text != null) {
+			paintTextR.setBounds(iconW,0, getWidth()-iconW,getHeight());
+			paintTextR.x += 3; // Force a slight margin
+			int space = paintTextR.height - g.getFontMetrics().getHeight();
+			View v = (View)getClientProperty(BasicHTML.propertyKey);
+			if (v != null) {
+				// HTML rendering doesn't auto-center vertically, for some
+				// reason
+				paintTextR.y += space/2;
+				paintTextR.height -= space;
+				v.paint(g, paintTextR);
+			}
+			else {
+				int textX = paintTextR.x;
+				int textY = paintTextR.y;// + g.getFontMetrics().getAscent();
+				System.out.println(g.getFontMetrics().getAscent());
+				g.drawString(text, textX, textY);
+			}
+		}
 
 	}
 
@@ -183,13 +260,16 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 			}
 		}
 		sb.append(fc.getProvider().getParameterListEnd());
-		sb.append(" : ");
-		if (!selected) {
-			sb.append("<font color='#808080'>");
-		}
-		sb.append(fc.getType());
-		if (!selected) {
-			sb.append("</font>");
+
+		if (getShowTypes() && fc.getType()!=null) {
+			sb.append(" : ");
+			if (!selected) {
+				sb.append("<font color='#808080'>");
+			}
+			sb.append(fc.getType());
+			if (!selected) {
+				sb.append("</font>");
+			}
 		}
 
 		setText(sb.toString());
@@ -253,7 +333,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(vc.getName());
 
-		if (vc.getType()!=null) {
+		if (getShowTypes() && vc.getType()!=null) {
 			sb.append(" : ");
 			if (!selected) {
 				sb.append("<font color='#808080'>");
@@ -291,6 +371,18 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public void setDisplayFont(Font font) {
 		this.font = font;
+	}
+
+
+	/**
+	 * Sets whether the types of fields and return types of methods are
+	 * shown in the completion text.
+	 *
+	 * @param show Whether to show the types.
+	 * @see #getShowTypes()
+	 */
+	public void setShowTypes(boolean show) {
+		this.showTypes = show;
 	}
 
 

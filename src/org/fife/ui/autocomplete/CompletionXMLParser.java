@@ -151,6 +151,16 @@ public class CompletionXMLParser extends DefaultHandler {
 	}
 
 
+	private BasicCompletion createOtherCompletion() {
+		BasicCompletion bc = new BasicCompletion(provider, name);
+		if (desc.length()>0) {
+			bc.setSummary(desc.toString());
+			desc.setLength(0);
+		}
+		return bc;
+	}
+
+
 	private MarkupTagCompletion createMarkupTagCompletion() {
 		MarkupTagCompletion mc = new MarkupTagCompletion(provider,
 				name);
@@ -197,6 +207,9 @@ public class CompletionXMLParser extends DefaultHandler {
 				}
 				else if ("tag".equals(type)) { // Markup tag, such as HTML
 					c = createMarkupTagCompletion();
+				}
+				else if ("other".equals(type)) {
+					c = createOtherCompletion();
 				}
 				else {
 					throw new InternalError("Unexpected type: " + type);
