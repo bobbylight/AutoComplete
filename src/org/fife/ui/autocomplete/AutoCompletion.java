@@ -643,7 +643,8 @@ try {
 		// the popup window should be hidden instead of being reset to show
 		// everything.
 		String text = provider.getAlreadyEnteredText(textComponent);
-		if (text==null || text.length()==0) {
+		int textLen = text==null ? 0 : text.length();
+		if (textLen==0) {
 			if (isPopupVisible()) {
 				hidePopupWindow();
 				return getLineOfCaret();
@@ -653,7 +654,7 @@ try {
 		final List completions = provider.getCompletions(textComponent);
 		int count = completions.size();
 
-		if (count>1 || (count==1 && isPopupVisible()) ||
+		if (count>1 || (count==1 && (isPopupVisible() || textLen==0)) ||
 				(count==1 && !getAutoCompleteSingleChoices())) {
 
 			if (popupWindow==null) {
