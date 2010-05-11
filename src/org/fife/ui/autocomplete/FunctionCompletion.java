@@ -218,7 +218,11 @@ public class FunctionCompletion extends VariableCompletion
 	 *         none.
 	 */
 	public String getToolTipText() {
-		return getDefinitionString();
+		String text = getSummary();
+		if (text==null) {
+			text = getDefinitionString();
+		}
+		return text;
 	}
 
 
