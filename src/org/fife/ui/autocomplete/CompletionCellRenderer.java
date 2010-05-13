@@ -234,7 +234,11 @@ this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(fc.getName());
 
-		sb.append(fc.getProvider().getParameterListStart());
+		char paramListStart = fc.getProvider().getParameterListStart();
+		if (paramListStart!=0) { // 0 => no start char
+			sb.append(paramListStart);
+		}
+
 		int paramCount = fc.getParamCount();
 		for (int i=0; i<paramCount; i++) {
 			FunctionCompletion.Parameter param = fc.getParam(i);
@@ -259,7 +263,11 @@ this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 				sb.append(fc.getProvider().getParameterListSeparator());
 			}
 		}
-		sb.append(fc.getProvider().getParameterListEnd());
+
+		char paramListEnd = fc.getProvider().getParameterListEnd();
+		if (paramListEnd!=0) { // 0 => No parameter list end char
+			sb.append(paramListEnd);
+		}
 
 		if (getShowTypes() && fc.getType()!=null) {
 			sb.append(" : ");

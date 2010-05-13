@@ -298,6 +298,11 @@ public class CompletionXMLParser extends DefaultHandler {
 	}
 
 
+	private static final char getSingleChar(String str) {
+		return str.length()==1 ? str.charAt(0) : 0;
+	}
+
+
 	/**
 	 * Resets this parser to grab more completions.
 	 *
@@ -355,8 +360,8 @@ public class CompletionXMLParser extends DefaultHandler {
 			}
 		}
 		else if ("environment".equals(qName)) {
-			paramStartChar = attrs.getValue("paramStartChar").charAt(0);
-			paramEndChar = attrs.getValue("paramEndChar").charAt(0);
+			paramStartChar = getSingleChar(attrs.getValue("paramStartChar"));
+			paramEndChar = getSingleChar(attrs.getValue("paramEndChar"));
 			paramSeparator = attrs.getValue("paramSeparator");
 			//paramTerminal = attrs.getValua("terminal");
 		}
