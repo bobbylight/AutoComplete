@@ -25,6 +25,7 @@ package org.fife.ui.autocomplete;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
+import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.UIManager;
@@ -114,6 +115,11 @@ class TipUtil {
 		doc.getStyleSheet().addRule(
 				"body { font-family: " + font.getFamily() + "; font-size: "
 						+ font.getSize() + "pt; }");
+		URL url = TipUtil.class.getResource("bullet_black.png");
+		if (url!=null) {
+			doc.getStyleSheet().addRule(
+				"ul { list-style-image: " + url.toString() + "; }");
+		}
 
 	}
 
