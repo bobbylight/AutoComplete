@@ -307,11 +307,27 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * @throws IOException If an IO error occurs.
 	 */
 	public void loadFromXML(InputStream in) throws IOException {
+		loadFromXML(in, null);
+	}
+
+
+	/**
+	 * Loads completions from an XML input stream.  The XML should validate
+	 * against the completion XML schema.
+	 *
+	 * @param in The input stream to read from.
+	 * @param cl The class loader to use when loading any extra classes defined
+	 *        in the XML, such as custom {@link FunctionCompletion}s.  This
+	 *        may be <code>null</code> if the default is to be used, or if no
+	 *        custom completions are defined in the XML.
+	 * @throws IOException If an IO error occurs.
+	 */
+	public void loadFromXML(InputStream in, ClassLoader cl) throws IOException {
 
 		//long start = System.currentTimeMillis();
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
-		CompletionXMLParser handler = new CompletionXMLParser(this);
+		CompletionXMLParser handler = new CompletionXMLParser(this, cl);
 		BufferedInputStream bin = new BufferedInputStream(in);
 		try {
 			SAXParser saxParser = factory.newSAXParser();

@@ -51,6 +51,13 @@ public class CompletionXMLParser extends DefaultHandler {
 	 */
 	private CompletionProvider provider;
 
+	/**
+	 * The completion provider to use when loading classes, such as custom
+	 * {@link FunctionCompletion}s.
+	 */
+	private ClassLoader completionCL;
+
+
 	private String name;
 	private String type;
 	private String returnType;
@@ -80,6 +87,14 @@ public class CompletionXMLParser extends DefaultHandler {
 	 */
 	private String funcCompletionType;
 
+	/**
+	 * The class loader to use to load custom completion classes, such as
+	 * the one defined by {@link #funcCompletionType}.  If this is
+	 * <code>null</code>, then a default class loader is used.  This field
+	 * will usually be <code>null</code>.
+	 */
+	private static ClassLoader DEFAULT_COMPLETION_CLASS_LOADER;
+
 
 	/**
 	 * Constructor.
@@ -88,7 +103,27 @@ public class CompletionXMLParser extends DefaultHandler {
 	 * @see #reset(CompletionProvider)
 	 */
 	public CompletionXMLParser(CompletionProvider provider) {
+		this(provider, null);
+	}
+
+
+	/**
+	 * Constructor.
+	 *
+	 * @param provider The provider to get completions for.
+	 * @param cl The class loader to use, if necessary, when loading classes
+	 *        from the XML  (custom {@link FunctionCompletion}s, for example).
+	 *        This may be <code>null</code> if the default is to be used, or
+	 *        if the XML does not define specific classes for completion types.
+	 * @see #reset(CompletionProvider)
+	 */
+	public CompletionXMLParser(CompletionProvider provider, ClassLoader cl) {
 		this.provider = provider;
+		this.completionCL = cl;
+		if (completionCL==null) {
+			// May also be null, but that's okay.
+			completionCL = DEFAULT_COMPLETION_CLASS_LOADER;
+		}
 		completions = new ArrayList();
 		params = new ArrayList(1);
 		desc = new StringBuffer();
@@ -120,7 +155,14 @@ public class CompletionXMLParser extends DefaultHandler {
 		FunctionCompletion fc = null;
 		if (funcCompletionType!=null) {
 			try {
-				Class clazz = Class.forName(funcCompletionType);
+				Class clazz = null;
+				if (completionCL!=null) {
+					clazz = Class.forName(funcCompletionType, true,
+											completionCL);
+				}
+				else {
+					clazz = Class.forName(funcCompletionType);
+				}
 				Class[] paramTypes = { CompletionProvider.class,
 										String.class, String.class };
 				Constructor c = clazz.getDeclaredConstructor(paramTypes);
@@ -129,11 +171,11 @@ public class CompletionXMLParser extends DefaultHandler {
 			} catch (RuntimeException re) { // FindBugs
 				throw re;
 			} catch (Exception e) {
-				throw new RuntimeException(
-					"Problem with custom FunctionCompletion: " + e.toString());
+				e.printStackTrace();
 			}
 		}
-		else {
+
+		if (fc==null) { // Fallback if completion failed for some reason
 			fc = new FunctionCompletion(provider, name, returnType);
 		}
 
@@ -147,7 +189,9 @@ public class CompletionXMLParser extends DefaultHandler {
 			fc.setReturnValueDescription(returnValDesc.toString());
 			returnValDesc.setLength(0);
 		}
+
 		return fc;
+
 	}
 
 
@@ -315,6 +359,21 @@ public class CompletionXMLParser extends DefaultHandler {
 				gettingParamDesc = false;
 		paramStartChar = paramEndChar = 0;
 		paramSeparator = null;
+	}
+
+
+	/**
+	 * Sets the class loader to use when loading custom classes to use for
+	 * various {@link Completion} types, such as {@link FunctionCompletion}s,
+	 * from XML.<p>
+	 *
+	 * Users should very rarely have a need to use this method.
+	 *
+	 * @param cl The class loader to use.  If this is <code>null</code>, then
+	 *        a default is used.
+	 */
+	public static void setDefaultCompletionClassLoader(ClassLoader cl) {
+		DEFAULT_COMPLETION_CLASS_LOADER = cl;
 	}
 
 
