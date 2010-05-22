@@ -233,7 +233,8 @@ public class AutoCompletion implements HierarchyListener {
 		// Don't bother with a tooltip if there are no parameters.
 		if (pc.getParamCount()==0) {
 			CompletionProvider p = pc.getProvider();
-			String text = Character.toString(p.getParameterListEnd());
+			char end = p.getParameterListEnd(); // Might be '\0'
+			String text = end=='\0' ? "" : Character.toString(end);
 			if (addParamListStart) {
 				text = p.getParameterListStart() + text;
 			}
@@ -560,8 +561,13 @@ try {
 		installTriggerKey(getTriggerKey());
 
 		// Install the function completion key, if there is one.
+		// NOTE: We cannot do this if the start char is ' ' (e.g. just a space
+		// between the function name and parameters) because it overrides
+		// RSTA's special space action.  It seems KeyStorke.getKeyStroke(' ')
+		// hoses ctrl+space, shift+space, etc., even though I think it
+		// shouldn't...
 		char start = provider.getParameterListStart();
-		if (start!=0) {
+		if (start!=0 && start!=' ') {
 			InputMap im = c.getInputMap();
 			ActionMap am = c.getActionMap();
 			KeyStroke ks = KeyStroke.getKeyStroke(start);
@@ -1017,19 +1023,22 @@ try {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			hidePopupWindow(); // Prevents keystrokes from messing up
-			textComponent.replaceSelection(start);
-			if (!isParameterAssistanceEnabled()) {
+
+			// Prevents keystrokes from messing up
+			boolean wasVisible = hidePopupWindow();
+
+			// Only proceed if they were selecting a completion
+			if (!wasVisible || !isParameterAssistanceEnabled()) {
+				textComponent.replaceSelection(start);
 				return;
 			}
-			List completions = provider.
-								getParameterizedCompletions(textComponent);
-			if (completions!=null && completions.size()>0) {
-				// TODO: Have tooltip let you select between multiple, like VS
-				ParameterizedCompletion pc =
-								(ParameterizedCompletion)completions.get(0);
-				displayDescriptionToolTip(pc, false);
+
+			Completion c = popupWindow.getSelection();
+			if (c instanceof ParameterizedCompletion) { // Should always be true
+				// Fixes capitalization of the entered text.
+				insertCompletion(c);
 			}
+
 		}
 
 	}

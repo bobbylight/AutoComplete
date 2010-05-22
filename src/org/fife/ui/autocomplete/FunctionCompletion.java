@@ -127,7 +127,10 @@ public class FunctionCompletion extends VariableCompletion
 
 		// Add parameters for functions.
 		CompletionProvider provider = getProvider();
-		sb.append(provider.getParameterListStart());
+		char start = provider.getParameterListStart();
+		if (start!=0) {
+			sb.append(start);
+		}
 		for (int i=0; i<getParamCount(); i++) {
 			Parameter param = getParam(i);
 			type = param.getType();
@@ -145,7 +148,10 @@ public class FunctionCompletion extends VariableCompletion
 				sb.append(provider.getParameterListSeparator());
 			}
 		}
-		sb.append(provider.getParameterListEnd());
+		char end = provider.getParameterListEnd();
+		if (end!=0) {
+			sb.append(end);
+		}
 
 		return sb.toString();
 

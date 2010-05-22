@@ -180,8 +180,20 @@ public abstract class AbstractCompletionProvider
 		if (text!=null) {
 
 			int index = Collections.binarySearch(completions, text, comparator);
-			if (index<0) {
+			if (index<0) { // No exact match
 				index = -index - 1;
+			}
+			else {
+				// If there are several overloads for the function being
+				// completed, Collections.binarySearch() will return the index
+				// of one of those overloads, but we must return all of them,
+				// so search backward until we find the first one.
+				int pos = index - 1;
+				while (pos>0 &&
+						comparator.compare(completions.get(pos), text)==0) {
+					retVal.add(completions.get(pos));
+					pos--;
+				}
 			}
 
 			while (index<completions.size()) {
