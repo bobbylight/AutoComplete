@@ -196,6 +196,9 @@ public class AutoCompletion implements HierarchyListener {
 	 */
 	public AutoCompletion(CompletionProvider provider) {
 
+		setChoicesWindowSize(350, 200);
+		setDescriptionWindowSize(350, 250);
+
 		setCompletionProvider(provider);
 		setTriggerKey(getDefaultTriggerKey());
 		setAutoCompleteEnabled(true);
