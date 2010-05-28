@@ -42,7 +42,7 @@ import javax.swing.plaf.basic.BasicListUI;
  * with no performance penalty.  With standard BasicListUI subclasses, this can
  * cause very poor performance <b>each time</b> the list is displayed, which
  * is bad for lists that are repeatedly hidden and re-displayed, such as
- * completion choices.  This is all becasue the calculation to get the
+ * completion choices.  This is all because the calculation to get the
  * preferred size of each list item, when it is displayed with HTML, is slow.
  *
  * @author Robert Futrell
@@ -176,7 +176,7 @@ class FastListUI extends BasicListUI {
 		if (list.getParent() instanceof JViewport) { // Always true for us
 			cellWidth = list.getParent().getWidth();
 		}
-		System.out.println(cellWidth);
+		//System.out.println(cellWidth);
 
 		// We're getting a fixed cell height for all cells
 		cellHeights = null;

@@ -28,7 +28,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicHTML;
@@ -56,7 +55,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * The alternating background color, or <code>null</code> if alternating
 	 * row colors should not be used.
 	 */
-	private Color altBG;
+	private static Color altBG;
 
 	/**
 	 * The font to use when rendering items, or <code>null</code> if the
@@ -86,7 +85,6 @@ private Rectangle paintTextR;
 	 */
 	public CompletionCellRenderer() {
 		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
-		setAlternateBackground(new Color(0xf4f4f4));
 		setShowTypes(true);
 		paintTextR = new Rectangle();
 	}
@@ -99,7 +97,7 @@ private Rectangle paintTextR;
 	 *         alternating colors are not used.
 	 * @see #setAlternateBackground(Color)
 	 */
-	public Color getAlternateBackground() {
+	public static Color getAlternateBackground() {
 		return altBG;
 	}
 
@@ -365,8 +363,8 @@ this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 	 *        background colors.
 	 * @see #getAlternateBackground()
 	 */
-	public void setAlternateBackground(Color altBG) {
-		this.altBG = altBG;
+	public static void setAlternateBackground(Color altBG) {
+		CompletionCellRenderer.altBG = altBG;
 	}
 
 

@@ -59,7 +59,7 @@ import javax.swing.text.*;
  * It also handles communication between the CompletionProvider and the actual
  * popup Window.
  */
-public class AutoCompletion implements HierarchyListener {
+public class AutoCompletion {
 
 	/**
 	 * The text component we're providing completion for.
@@ -167,9 +167,15 @@ public class AutoCompletion implements HierarchyListener {
 
 	/**
 	 * Listens for events in the parent window that affect the visibility of
-	 * the popup window.
+	 * the popup windows.
 	 */
-	private Listener parentWindowListener;
+	private ParentWindowListener parentWindowListener;
+
+	/**
+	 * Listens for events from the text component that affect the visibility
+	 * of the popup windows.
+	 */
+	private TextComponentListener textComponentListener;
 
 	/**
 	 * The key used in the input map for the AutoComplete action.
@@ -204,7 +210,8 @@ public class AutoCompletion implements HierarchyListener {
 		setAutoCompleteEnabled(true);
 		setAutoCompleteSingleChoices(true);
 		setShowDescWindow(false);
-		parentWindowListener = new Listener();
+		parentWindowListener = new ParentWindowListener();
+		textComponentListener = new TextComponentListener();
 
 		// Automatically update LAF of popup windows on LookAndFeel changes
 		UIManager.addPropertyChangeListener(new PropertyChangeListener() {
@@ -416,32 +423,6 @@ public class AutoCompletion implements HierarchyListener {
 
 
 	/**
-	 * Called when the component hierarchy for our text component changes.
-	 * When the text component is added to a new {@link Window}, this method
-	 * registers listeners on that <code>Window</code>.
-	 *
-	 * @param e The event.
-	 */
-	public void hierarchyChanged(HierarchyEvent e) {
-
-		// NOTE: e many be null as we call this method at other times.
-		//System.out.println("Hierarchy changed! " + e);
-
-		Window oldParentWindow = parentWindow;
-		parentWindow = SwingUtilities.getWindowAncestor(textComponent);
-		if (parentWindow!=oldParentWindow) {
-			if (oldParentWindow!=null) {
-				parentWindowListener.removeFrom(oldParentWindow);
-			}
-			if (parentWindow!=null) {
-				parentWindowListener.addTo(parentWindow);
-			}
-		}
-
-	}
-
-
-	/**
 	 * Hides any child windows being displayed by the auto-completion system.
 	 *
 	 * @return Whether any windows were visible.
@@ -581,8 +562,9 @@ try {
 							new ParameterizedCompletionStartAction(start));
 		}
 
-		this.textComponent.addHierarchyListener(this);
-		hierarchyChanged(null); // In case textComponent is already in a window
+		textComponentListener.addTo(this.textComponent);
+		// In case textComponent is already in a window...
+		textComponentListener.hierarchyChanged(null);
 
 	}
 
@@ -905,7 +887,7 @@ try {
 				am.put(PARAM_COMPLETE_KEY, oldParenAction);
 			}
 
-			textComponent.removeHierarchyListener(this);
+			textComponentListener.removeFrom(textComponent);
 			if (parentWindow!=null) {
 				parentWindowListener.removeFrom(parentWindow);
 			}
@@ -969,13 +951,50 @@ try {
 
 
 	/**
+	 * Action that starts a parameterized completion, e.g. after '(' is
+	 * typed.
+	 *
+	 * @author Robert Futrell
+	 * @version 1.0
+	 */
+	private class ParameterizedCompletionStartAction extends AbstractAction {
+
+		private String start;
+
+		public ParameterizedCompletionStartAction(char ch) {
+			this.start = Character.toString(ch);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+
+			// Prevents keystrokes from messing up
+			boolean wasVisible = hidePopupWindow();
+
+			// Only proceed if they were selecting a completion
+			if (!wasVisible || !isParameterAssistanceEnabled()) {
+				textComponent.replaceSelection(start);
+				return;
+			}
+
+			Completion c = popupWindow.getSelection();
+			if (c instanceof ParameterizedCompletion) { // Should always be true
+				// Fixes capitalization of the entered text.
+				insertCompletion(c);
+			}
+
+		}
+
+	}
+
+
+	/**
 	 * Listens for events in the parent window of the text component with
 	 * auto-completion enabled.
 	 *
 	 * @author Robert Futrell
 	 * @version 1.0
 	 */
-	private class Listener extends ComponentAdapter
+	private class ParentWindowListener extends ComponentAdapter
 									implements WindowFocusListener {
 
 		public void addTo(Window w) {
@@ -1011,37 +1030,52 @@ try {
 
 
 	/**
-	 * Action that starts a parameterized completion, e.g. after '(' is
-	 * typed.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
+	 * Listens for events from the text component we're installed on.
 	 */
-	private class ParameterizedCompletionStartAction extends AbstractAction {
+	private class TextComponentListener extends FocusAdapter
+										implements HierarchyListener {
 
-		private String start;
-
-		public ParameterizedCompletionStartAction(char ch) {
-			this.start = Character.toString(ch);
+		void addTo(JTextComponent tc) {
+			tc.addFocusListener(this);
+			tc.addHierarchyListener(this);
 		}
 
-		public void actionPerformed(ActionEvent e) {
+		/**
+		 * Hide the auto-completion windows when the text component loses
+		 * focus.
+		 */
+		public void focusLost(FocusEvent e) {
+			hideChildWindows();
+		}
 
-			// Prevents keystrokes from messing up
-			boolean wasVisible = hidePopupWindow();
+		/**
+		 * Called when the component hierarchy for our text component changes.
+		 * When the text component is added to a new {@link Window}, this
+		 * method registers listeners on that <code>Window</code>.
+		 *
+		 * @param e The event.
+		 */
+		public void hierarchyChanged(HierarchyEvent e) {
 
-			// Only proceed if they were selecting a completion
-			if (!wasVisible || !isParameterAssistanceEnabled()) {
-				textComponent.replaceSelection(start);
-				return;
+			// NOTE: e many be null as we call this method at other times.
+			//System.out.println("Hierarchy changed! " + e);
+
+			Window oldParentWindow = parentWindow;
+			parentWindow = SwingUtilities.getWindowAncestor(textComponent);
+			if (parentWindow!=oldParentWindow) {
+				if (oldParentWindow!=null) {
+					parentWindowListener.removeFrom(oldParentWindow);
+				}
+				if (parentWindow!=null) {
+					parentWindowListener.addTo(parentWindow);
+				}
 			}
 
-			Completion c = popupWindow.getSelection();
-			if (c instanceof ParameterizedCompletion) { // Should always be true
-				// Fixes capitalization of the entered text.
-				insertCompletion(c);
-			}
+		}
 
+		public void removeFrom(JTextComponent tc) {
+			tc.removeFocusListener(this);
+			tc.removeHierarchyListener(this);
 		}
 
 	}
