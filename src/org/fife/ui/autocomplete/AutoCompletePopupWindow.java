@@ -650,7 +650,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @param visible Whether this window should be visible.
 	 */
 	public void setVisible(boolean visible) {
+
 		if (visible!=isVisible()) {
+
 			if (visible) {
 				installKeyBindings();
 				lastLine = ac.getLineOfCaret();
@@ -658,22 +660,44 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 				if (descWindow==null && ac.getShowDescWindow()) {
 					descWindow = createDescriptionWindow();
 					positionDescWindow();
-					// descWindow needs a kick-start the first time it's
-					// displayed.
+				}
+				// descWindow needs a kick-start the first time it's displayed.
+				// Also, the newly-selected item in the choices list is
+				// probably different from the previous one anyway.
+				if (descWindow!=null) {
 					Completion c = (Completion)list.getSelectedValue();
-					descWindow.setDescriptionFor(c);
+					if (c!=null) {
+						descWindow.setDescriptionFor(c);
+					}
 				}
 			}
 			else {
 				uninstallKeyBindings();
 			}
+
 			super.setVisible(visible);
+
+			// Some languages, such as Java, can use quite a lot of memory
+			// when displaying hundreds of completion choices.  We pro-actively
+			// clear our list model here to make them available for GC.
+			// Otherwise, they stick around, and consider the following:  a
+			// user starts code-completion for Java 5 SDK classes, then hides
+			// the dialog, then changes the "class path" to use a Java 6 SDK
+			// instead.  On pressing Ctrl+space, a new array of Completions is
+			// created.  If this window holds on to the previous Completions,
+			// you're getting roughly 2x the necessary Completions in memory
+			// until the Completions are actually passed to this window.
+			if (!visible) { // Do after super.setVisible(false)
+				model.clear();
+			}
+
 			// Must set descWindow's visibility one way or the other each time,
 			// because of the way child JWindows' visibility is handled - in
 			// some ways it's dependent on the parent, in other ways it's not.
 			if (descWindow!=null) {
 				descWindow.setVisible(visible && ac.getShowDescWindow());
 			}
+
 		}
 
 	}
