@@ -131,7 +131,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 			return EMPTY_STRING;
 		}
 		CompletionProvider provider = getProviderFor(comp);
-		return provider.getAlreadyEnteredText(comp);
+		return provider!=null ? provider.getAlreadyEnteredText(comp) : null;
 	}
 
 
@@ -153,6 +153,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 		return defaultProvider==null ? null :
 				defaultProvider.getCompletionsAt(tc, p);
 	}
+
 
 	/**
 	 * Does the dirty work of creating a list of completions.
@@ -315,6 +316,15 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 */
 	public CompletionProvider getStringCompletionProvider() {
 		return stringCompletionProvider;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isAutoActivateOkay(JTextComponent tc) {
+		CompletionProvider provider = getProviderFor(tc);
+		return provider!=null ? provider.isAutoActivateOkay(tc) : false;
 	}
 
 

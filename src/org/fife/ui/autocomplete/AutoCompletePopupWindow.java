@@ -83,6 +83,13 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private CompletionListModel model;
 
 	/**
+	 * A hack to work around the fact that we clear our completion model (and
+	 * our selection) when hiding the completion window.  This allows us to
+	 * still know what the user selected after the popup is hidden.
+	 */
+	private Completion lastSelection;
+
+	/**
 	 * Optional popup window containing a description of the currently
 	 * selected completion.
 	 */
@@ -289,7 +296,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @return The selected value.
 	 */
 	public Completion getSelection() {
-		return (Completion)list.getSelectedValue();
+		return isShowing() ? (Completion)list.getSelectedValue():lastSelection;
 	}
 
 
@@ -688,6 +695,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			// you're getting roughly 2x the necessary Completions in memory
 			// until the Completions are actually passed to this window.
 			if (!visible) { // Do after super.setVisible(false)
+				lastSelection = (Completion)list.getSelectedValue();
 				model.clear();
 			}
 

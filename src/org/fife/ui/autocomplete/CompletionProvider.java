@@ -159,6 +159,21 @@ public interface CompletionProvider {
 
 
 	/**
+	 * This method is called if auto-activation is enabled in the parent
+	 * {@link AutoCompletion} after the user types a single character.  This
+	 * provider should check the text at the current caret position of the
+	 * text component, and decide whether auto-activation would be appropriate
+	 * here.  For example, a <code>CompletionProvider</code> for Java might
+	 * want to return <code>true</code> for this method only if the last
+	 * character typed was a '<code>.</code>'.
+	 *
+	 * @param tc The text component.
+	 * @return Whether auto-activation would be appropriate.
+	 */
+	public boolean isAutoActivateOkay(JTextComponent tc);
+
+
+	/**
 	 * Sets the renderer to use when displaying completion choices.
 	 *
 	 * @param r The renderer to use.

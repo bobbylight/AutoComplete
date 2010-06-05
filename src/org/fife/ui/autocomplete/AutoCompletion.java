@@ -28,12 +28,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 
 
 /**
- * Adds autocompletion to a text component.  Provides a popup window with a
- * list of autocomplete choices on a given keystroke, such as Crtrl+Space.<p>
+ * Adds auto-completion to a text component.  Provides a popup window with a
+ * list of auto-complete choices on a given keystroke, such as Crtrl+Space.<p>
  *
  * Depending on the {@link CompletionProvider} installed, the following
  * auto-completion features may be enabled:
@@ -120,13 +124,19 @@ public class AutoCompletion {
 	private boolean showDescWindow;
 
 	/**
-	 * Whether autocomplete is enabled.
+	 * Whether auto-complete is enabled.
 	 */
 	private boolean autoCompleteEnabled;
 
 	/**
+	 * Whether the auto-activation of auto-complete (after a delay, after the
+	 * user types an appropriate character) is enabled.
+	 */
+	private boolean autoActivationEnabled;
+
+	/**
 	 * Whether or not, when there is only a single auto-complete option
-	 * that maches the text at the current text position, that text should
+	 * that matches the text at the current text position, that text should
 	 * be auto-inserted, instead of the completion window displaying.
 	 */
 	private boolean autoCompleteSingleChoices;
@@ -178,6 +188,12 @@ public class AutoCompletion {
 	private TextComponentListener textComponentListener;
 
 	/**
+	 * Listens for events in the text component that cause the popup windows
+	 * to automatically activate.
+	 */
+	private AutoActivationListener autoActivationListener;
+
+	/**
 	 * The key used in the input map for the AutoComplete action.
 	 */
 	private static final String PARAM_TRIGGER_KEY	= "AutoComplete";
@@ -209,9 +225,11 @@ public class AutoCompletion {
 		setTriggerKey(getDefaultTriggerKey());
 		setAutoCompleteEnabled(true);
 		setAutoCompleteSingleChoices(true);
+		setAutoActivationEnabled(false);
 		setShowDescWindow(false);
 		parentWindowListener = new ParentWindowListener();
 		textComponentListener = new TextComponentListener();
+		autoActivationListener = new AutoActivationListener();
 
 		// Automatically update LAF of popup windows on LookAndFeel changes
 		UIManager.addPropertyChangeListener(new PropertyChangeListener() {
@@ -281,8 +299,20 @@ public class AutoCompletion {
 
 
 	/**
-	 * Returns whether, if a single autocomplete choice is available, it should
-	 * be automatically inserted, without displaying the popup menu.
+	 * Returns the delay between when the user types a character and when the
+	 * code completion popup should automatically appear (if applicable).
+	 *
+	 * @return The delay, in milliseconds.
+	 * @see #setAutoActivationDelay(int)
+	 */
+	public int getAutoActivationDelay() {
+		return autoActivationListener.timer.getDelay();
+	}
+
+
+	/**
+	 * Returns whether, if a single auto-complete choice is available, it
+	 * should be automatically inserted, without displaying the popup menu.
 	 *
 	 * @return Whether to autocomplete single choices.
 	 * @see #setAutoCompleteSingleChoices(boolean)
@@ -566,6 +596,10 @@ try {
 		// In case textComponent is already in a window...
 		textComponentListener.hierarchyChanged(null);
 
+		if (isAutoActivationEnabled()) {
+			autoActivationListener.addTo(this.textComponent);
+		}
+
 	}
 
 
@@ -586,9 +620,25 @@ try {
 
 
 	/**
-	 * Returns whether autocompletion is enabled.
+	 * Returns whether auto-activation is enabled (that is, whether the
+	 * completion popup will automatically appear after a delay when the user
+	 * types an appropriate character).  Note that this parameter will be
+	 * ignored if auto-completion is disabled.
 	 *
-	 * @return Whether autocompletion is enabled.
+	 * @return Whether auto-activation is enabled.
+	 * @see #setAutoActivationEnabled(boolean)
+	 * @see #getAutoActivationDelay()
+	 * @see #isAutoCompleteEnabled()
+	 */
+	public boolean isAutoActivationEnabled() {
+		return autoActivationEnabled;
+	}
+
+
+	/**
+	 * Returns whether auto-completion is enabled.
+	 *
+	 * @return Whether auto-completion is enabled.
 	 * @see #setAutoCompleteEnabled(boolean)
 	 */
 	public boolean isAutoCompleteEnabled() {
@@ -702,6 +752,43 @@ try {
 
 		return getLineOfCaret();
 
+	}
+
+
+	/**
+	 * Sets the delay between when the user types a character and when the
+	 * code completion popup should automatically appear (if applicable).
+	 *
+	 * @param ms The delay, in milliseconds.  This should be greater than zero.
+	 * @see #getAutoActivationDelay()
+	 */
+	public void setAutoActivationDelay(int ms) {
+		ms = Math.max(0, ms);
+		autoActivationListener.timer.stop();
+		autoActivationListener.timer.setDelay(ms);
+	}
+
+
+	/**
+	 * Toggles whether auto-activation is enabled.  Note that auto-activation
+	 * also depends on auto-completion itself being enabled.
+	 *
+	 * @param enabled Whether auto-activation is enabled.
+	 * @see #isAutoActivationEnabled()
+	 * @see #setAutoActivationDelay(int)
+	 */
+	public void setAutoActivationEnabled(boolean enabled) {
+		if (enabled!=autoActivationEnabled) {
+			autoActivationEnabled = enabled;
+			if (textComponent!=null) {
+				if (autoActivationEnabled) {
+					autoActivationListener.addTo(textComponent);
+				}
+				else {
+					autoActivationListener.removeFrom(textComponent);
+				}
+			}
+		}
 	}
 
 
@@ -892,6 +979,10 @@ try {
 				parentWindowListener.removeFrom(parentWindow);
 			}
 
+			if (isAutoActivationEnabled()) {
+				autoActivationListener.removeFrom(textComponent);
+			}
+
 			textComponent = null;
 			popupWindow = null;
 
@@ -926,6 +1017,81 @@ try {
 		if (descToolTip!=null) {
 			descToolTip.updateUI();
 		}
+	}
+
+
+	/**
+	 * Listens for events in the text component to auto-activate the code
+	 * completion popup.
+	 */
+	private class AutoActivationListener extends FocusAdapter
+				implements DocumentListener, CaretListener, ActionListener {
+
+		private Timer timer;
+		private boolean justInserted;
+
+		public AutoActivationListener() {
+			timer = new Timer(200, this);
+			timer.setRepeats(false);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			doCompletion();
+		}
+
+		public void addTo(JTextComponent tc) {
+			tc.addFocusListener(this);
+			tc.getDocument().addDocumentListener(this);
+			tc.addCaretListener(this);
+		}
+
+		public void caretUpdate(CaretEvent e) {
+			if (justInserted) {
+				justInserted = false;
+			}
+			else {
+				timer.stop();
+			}
+		}
+
+		public void changedUpdate(DocumentEvent e) {
+			 // Ignore
+		}
+
+		public void focusLost(FocusEvent e) {
+			timer.stop();
+			//hideChildWindows(); Other listener will do this
+		}
+
+		public void insertUpdate(DocumentEvent e) {
+			justInserted = false;
+			if (isAutoCompleteEnabled() && isAutoActivationEnabled() &&
+					e.getLength()==1) {
+				if (provider.isAutoActivateOkay(textComponent)) {
+					timer.restart();
+					justInserted = true;
+				}
+				else {
+					timer.stop();
+				}
+			}
+			else {
+				timer.stop();
+			}
+		}
+
+		public void removeFrom(JTextComponent tc) {
+			tc.removeFocusListener(this);
+			tc.getDocument().removeDocumentListener(this);
+			tc.removeCaretListener(this);
+			timer.stop();
+			justInserted = false;
+		}
+
+		public void removeUpdate(DocumentEvent e) {
+			timer.stop();
+		}
+
 	}
 
 
@@ -1033,7 +1199,7 @@ try {
 	 * Listens for events from the text component we're installed on.
 	 */
 	private class TextComponentListener extends FocusAdapter
-										implements HierarchyListener {
+				implements HierarchyListener {
 
 		void addTo(JTextComponent tc) {
 			tc.addFocusListener(this);

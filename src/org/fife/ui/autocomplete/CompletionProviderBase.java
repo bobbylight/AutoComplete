@@ -25,7 +25,10 @@ package org.fife.ui.autocomplete;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.ListCellRenderer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.Segment;
 
 
 /**
@@ -64,6 +67,21 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 * Text that separates items in a parameter list, for example, ", ".
 	 */
 	private String paramListSeparator;
+
+	/**
+	 * Whether auto-activation should occur after letters.
+	 */
+	private boolean autoActivateAfterLetters;
+
+	/**
+	 * Non-letter chars that should cause auto-activation to occur.
+	 */
+	private String autoActivateChars;
+
+	/**
+	 * A segment to use for fast char access.
+	 */
+	private Segment s = new Segment();
 
 	protected static final String EMPTY_STRING = "";
 
@@ -137,6 +155,38 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	public CompletionProvider getParent() {
 		return parent;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isAutoActivateOkay(JTextComponent tc) {
+		Document doc = tc.getDocument();
+		char ch = 0;
+		try {
+			doc.getText(tc.getCaretPosition(), 1, s);
+			ch = s.first();
+		} catch (BadLocationException ble) { // Never happens
+			ble.printStackTrace();
+		}
+		return (autoActivateAfterLetters && Character.isLetter(ch)) ||
+				(autoActivateChars!=null && autoActivateChars.indexOf(ch)>-1);
+	}
+
+
+	/**
+	 * Sets the characters that auto-activation should occur after.  A Java
+	 * completion provider, for example, might want to set <code>others</code>
+	 * to "<code>.</code>", to allow auto-activation for members of an object.
+	 *
+	 * @param letters Whether auto-activation should occur after any letter.
+	 * @param others A string of (non-letter) chars that auto-activation should
+	 *        occur after.  This may be <code>null</code>.
+	 */
+	public void setAutoActivationRules(boolean letters, String others) {
+		autoActivateAfterLetters = letters;
+		autoActivateChars = others;
 	}
 
 
