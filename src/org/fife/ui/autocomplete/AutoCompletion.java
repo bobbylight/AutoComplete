@@ -765,7 +765,7 @@ try {
 	public void setAutoActivationDelay(int ms) {
 		ms = Math.max(0, ms);
 		autoActivationListener.timer.stop();
-		autoActivationListener.timer.setDelay(ms);
+		autoActivationListener.timer.setInitialDelay(ms);
 	}
 
 
