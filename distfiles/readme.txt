@@ -15,7 +15,20 @@ robert -at- fifesoft dot com.
 
 * Example Usage
 
-  See http://fifesoft.com/autocomplete
+  See the AutoComplete example(s) on the RSyntaxTextArea examples page here:
+  
+     http://fifesoft.com/rsyntaxtextarea/examples/index.php
+  
+  They provide a good example of basic usage of the library, showing how to
+  auto-complete a simple, fixed set of words (function names).
+  
+  Also see the AutoCompleteDemo project, which lives here in SVN:
+  
+     http://svn.fifesoft.com/svn/RSyntaxTextArea/
+
+  It provides an example of loading completions from an XML file.  It
+  demonstrates a code editor with completion support for the C Standard library,
+  and demos the parameter assistance feature.
 
 * License
 
@@ -31,10 +44,22 @@ robert -at- fifesoft dot com.
          Has a forum for AutoComplete and related projects, where you can
          ask questions and get feedback quickly.
 
+    * https://sourceforge.net/projects/rsyntaxtextarea/
+         RSyntaxTextArea and AutoComplete's home on SourceForge.  Don't use
+         the forums here (use the first link above), but you can use the
+         "Tracker" section here to post bug reports and feature requests.
+
+* Other Links
+
     * http://fifesoft.com/autocomplete
          Project home page, which contains general information and example
          source code.
 
+    * http://fifesoft.com/rsyntaxtextarea
+         The source code editor you're (probably) already using if you're
+         using this AutoComplete library.
+
+    * http://javadoc.fifesoft.com/rsyntaxtextarea/
     * http://javadoc.fifesoft.com/autocomplete/
          API documentation for the package.  Note that this *will* change as
          the library matures.
