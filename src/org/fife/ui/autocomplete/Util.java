@@ -23,12 +23,16 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.Color;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.net.URI;
 
 
 /**
- * Utility methods for the autocomplete framework.
+ * Utility methods for the auto-complete framework.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -38,41 +42,6 @@ class Util {
 	private static boolean desktopCreationAttempted;
 	private static Object desktop;
 	private static final Object LOCK_DESKTOP_CREATION = new Object();
-
-
-	/**
-	 * Returns a hex string for the specified color, suitable for HTML.
-	 *
-	 * @param c The color.
-	 * @return The string representation, in the form "<code>#rrggbb</code>",
-	 *         or <code>null</code> if <code>c</code> is <code>null</code>.
-	 */
-	public static String getHexString(Color c) {
-
-		if (c==null) {
-			return null;
-		}
-
-		StringBuffer sb = new StringBuffer("#");
-		int r = c.getRed();
-		if (r<16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(r));
-		int g = c.getGreen();
-		if (g<16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(g));
-		int b = c.getBlue();
-		if (b<16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(b));
-
-		return sb.toString();
-
-	}
 
 
 	/**
@@ -147,6 +116,68 @@ class Util {
 
 		return desktop;
 
+	}
+
+
+	/**
+	 * Returns a hex string for the specified color, suitable for HTML.
+	 *
+	 * @param c The color.
+	 * @return The string representation, in the form "<code>#rrggbb</code>",
+	 *         or <code>null</code> if <code>c</code> is <code>null</code>.
+	 */
+	public static String getHexString(Color c) {
+
+		if (c==null) {
+			return null;
+		}
+
+		StringBuffer sb = new StringBuffer("#");
+		int r = c.getRed();
+		if (r<16) {
+			sb.append('0');
+		}
+		sb.append(Integer.toHexString(r));
+		int g = c.getGreen();
+		if (g<16) {
+			sb.append('0');
+		}
+		sb.append(Integer.toHexString(g));
+		int b = c.getBlue();
+		if (b<16) {
+			sb.append('0');
+		}
+		sb.append(Integer.toHexString(b));
+
+		return sb.toString();
+
+	}
+
+
+	/**
+	 * Returns the screen coordinates for the monitor that contains the
+	 * specified point.  This is useful for setups with multiple monitors,
+	 * to ensure that popup windows are positioned properly.
+	 *
+	 * @param x The x-coordinate.
+	 * @param y The y-coordinate.
+	 * @return The bounds of the monitor that contains the specified point.
+	 */
+	public static Rectangle getScreenBoundsForPoint(int x, int y) {
+		GraphicsEnvironment env = GraphicsEnvironment.
+										getLocalGraphicsEnvironment();
+		GraphicsDevice[] devices = env.getScreenDevices();
+		for (int i=0; i<devices.length; i++) {
+			GraphicsConfiguration[] configs = devices[i].getConfigurations();
+			for (int j=0; j<configs.length; j++) {
+				Rectangle gcBounds = configs[j].getBounds();
+				if (gcBounds.contains(x, y)) {
+					return gcBounds;
+				}
+			}
+		}
+		// If point is outside all monitors, default to default monitor (?)
+		return env.getMaximumWindowBounds();
 	}
 
 

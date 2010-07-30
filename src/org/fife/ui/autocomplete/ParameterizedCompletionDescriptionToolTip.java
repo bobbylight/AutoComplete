@@ -24,7 +24,6 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -56,7 +55,7 @@ import javax.swing.text.Highlighter.Highlight;
 
 
 /**
- * A "tooltip" that displays information on the function or method currently
+ * A "tool tip" that displays information on the function or method currently
  * being entered.
  *
  * @author Robert Futrell
@@ -65,7 +64,7 @@ import javax.swing.text.Highlighter.Highlight;
 class ParameterizedCompletionDescriptionToolTip {
 
 	/**
-	 * The actual tooltip.
+	 * The actual tool tip.
 	 */
 	private JWindow tooltip;
 
@@ -95,19 +94,19 @@ class ParameterizedCompletionDescriptionToolTip {
 	private ParameterizedCompletion pc;
 
 	/**
-	 * Listens for events in the text component while this window is vislble.
+	 * Listens for events in the text component while this window is visible.
 	 */
 	private Listener listener;
 
 	/**
 	 * The minimum offset into the document that the caret can move to
-	 * before this tooltip disappears.
+	 * before this tool tip disappears.
 	 */
 	private int minPos;
 
 	/**
 	 * The maximum offset into the document that the caret can move to
-	 * before this tooltip disappears.
+	 * before this tool tip disappears.
 	 */
 	private Position maxPos; // Moves with text inserted.
 
@@ -138,7 +137,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * Constructor.
 	 *
 	 * @param owner The parent window.
-	 * @param ac The parent autocompletion.
+	 * @param ac The parent auto-completion.
 	 * @param pc The completion being described.
 	 */
 	public ParameterizedCompletionDescriptionToolTip(Window owner,
@@ -335,13 +334,20 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
-	 * Sets the location of this tooltip relative to the given rectangle.
+	 * Sets the location of this tool tip relative to the given rectangle.
 	 *
 	 * @param r The visual position of the caret (in screen coordinates).
 	 */
 	public void setLocationRelativeTo(Rectangle r) {
 
-		Dimension screenSize = tooltip.getToolkit().getScreenSize();
+		// Multi-monitor support - make sure the completion window (and
+		// description window, if applicable) both fit in the same window in
+		// a multi-monitor environment.  To do this, we decide which monitor
+		// the rectangle "r" is in, and use that one (just pick top-left corner
+		// as the defining point).
+		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
+System.out.println(screenBounds);
+		//Dimension screenSize = tooltip.getToolkit().getScreenSize();
 
 		// Try putting our stuff "above" the caret first.
 		int y = r.y - 5 - tooltip.getHeight();
@@ -352,11 +358,11 @@ class ParameterizedCompletionDescriptionToolTip {
 		// Get x-coordinate of completions.  Try to align left edge with the
 		// caret first.
 		int x = r.x;
-		if (x<0) {
-			x = 0;
+		if (x<screenBounds.x) {
+			x = screenBounds.x;
 		}
-		else if (x+tooltip.getWidth()>screenSize.width) { // completions don't fit
-			x = screenSize.width - tooltip.getWidth();
+		else if (x+tooltip.getWidth()>screenBounds.x+screenBounds.width) { // completions don't fit
+			x = screenBounds.x + screenBounds.width - tooltip.getWidth();
 		}
 
 		tooltip.setLocation(x, y);
@@ -365,9 +371,9 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
-	 * Toggles the visibility of this tooltip.
+	 * Toggles the visibility of this tool tip.
 	 *
-	 * @param visible Whether the tooltip should be visible.
+	 * @param visible Whether the tool tip should be visible.
 	 * @param addParamListStart Whether or not
 	 *        {@link CompletionProvider#getParameterListStart()} should be
 	 *        added to the text component.  If <code>visible</code> is
@@ -428,8 +434,8 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
-	 * Updates the text in the tooltip to have the current parameter
-	 * disiplayed in bold.  The "current parameter" is determined from the
+	 * Updates the text in the tool tip to have the current parameter
+	 * displayed in bold.  The "current parameter" is determined from the
 	 * current caret position.
 	 */
 	private void updateText() {
@@ -456,7 +462,7 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
-	 * Updates the text in the tooltip to have the current parameter
+	 * Updates the text in the tool tip to have the current parameter
 	 * displayed in bold.
 	 *
 	 * @param selectedParam The index of the selected parameter.
@@ -631,7 +637,7 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
-	 * Listens for various events in the text component while this tooltip
+	 * Listens for various events in the text component while this tool tip
 	 * is visible.
 	 *
 	 * @author Robert Futrell

@@ -26,6 +26,7 @@ package org.fife.ui.autocomplete;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -395,20 +396,25 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			return;
 		}
 
-		Dimension screenSize = getToolkit().getScreenSize();
+		// Don't use getLocationOnScreen() as this throws an exception if
+		// window isn't visible yet, but getLocation() doesn't, and is in
+		// screen coordinates!
+		Point p = getLocation();
+		Rectangle screenBounds = Util.getScreenBoundsForPoint(p.x, p.y);
+		//Dimension screenSize = getToolkit().getScreenSize();
 		//int totalH = Math.max(getHeight(), descWindow.getHeight());
 
 		// Try to position to the right first (LTR)
 		int x; 
 		if (ac.getTextComponentOrientation().isLeftToRight()) {
 			x = getX() + getWidth() + 5;
-			if (x+descWindow.getWidth()>screenSize.width) { // doesn't fit
+			if (x+descWindow.getWidth()>screenBounds.x+screenBounds.width) { // doesn't fit
 				x = getX() - 5 - descWindow.getWidth();
 			}
 		}
 		else { // RTL
 			x = getX() - 5 - descWindow.getWidth();
-			if (x<0) { // Doesn't fit
+			if (x<screenBounds.x) { // Doesn't fit
 				x = getX() + getWidth() + 5;
 			}
 		}
@@ -612,8 +618,15 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 */
 	public void setLocationRelativeTo(Rectangle r) {
 
+		// Multi-monitor support - make sure the completion window (and
+		// description window, if applicable) both fit in the same window in
+		// a multi-monitor environment.  To do this, we decide which monitor
+		// the rectangle "r" is in, and use that one (just pick top-left corner
+		// as the defining point).
+		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
+		//Dimension screenSize = getToolkit().getScreenSize();
+
 		boolean showDescWindow = descWindow!=null && ac.getShowDescWindow();
-		Dimension screenSize = getToolkit().getScreenSize();
 		int totalH = getHeight();
 		if (showDescWindow) {
 			totalH = Math.max(totalH, descWindow.getHeight());
@@ -623,7 +636,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		// entire height of our stuff fits on the screen one way or the other.
 		aboveCaret = false;
 		int y = r.y + r.height + VERTICAL_SPACE;
-		if (y+totalH>screenSize.height) {
+		if (y+totalH>screenBounds.height) {
 			y = r.y - VERTICAL_SPACE - getHeight();
 			aboveCaret = true;
 		}
@@ -634,11 +647,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		if (!ac.getTextComponentOrientation().isLeftToRight()) {
 			x -= getWidth(); // RTL => align right edge
 		}
-		if (x<0) {
-			x = 0;
+		if (x<screenBounds.x) {
+			x = screenBounds.x;
 		}
-		else if (x+getWidth()>screenSize.width) { // completions don't fit
-			x = screenSize.width - getWidth();
+		else if (x+getWidth()>screenBounds.x+screenBounds.width) { // completions don't fit
+			x = screenBounds.x + screenBounds.width - getWidth();
 		}
 
 		setLocation(x, y);
