@@ -159,8 +159,8 @@ class Util {
 	 * specified point.  This is useful for setups with multiple monitors,
 	 * to ensure that popup windows are positioned properly.
 	 *
-	 * @param x The x-coordinate.
-	 * @param y The y-coordinate.
+	 * @param x The x-coordinate, in screen coordinates.
+	 * @param y The y-coordinate, in screen coordinates.
 	 * @return The bounds of the monitor that contains the specified point.
 	 */
 	public static Rectangle getScreenBoundsForPoint(int x, int y) {

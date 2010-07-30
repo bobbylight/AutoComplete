@@ -346,7 +346,6 @@ class ParameterizedCompletionDescriptionToolTip {
 		// the rectangle "r" is in, and use that one (just pick top-left corner
 		// as the defining point).
 		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
-System.out.println(screenBounds);
 		//Dimension screenSize = tooltip.getToolkit().getScreenSize();
 
 		// Try putting our stuff "above" the caret first.
