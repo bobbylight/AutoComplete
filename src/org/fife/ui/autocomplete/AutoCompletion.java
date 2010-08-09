@@ -418,7 +418,7 @@ public class AutoCompletion {
 
 
 	/**
-	 * Returns the text component for which autocompletion is enabled.
+	 * Returns the text component for which auto-completion is enabled.
 	 *
 	 * @return The text component, or <code>null</code> if this
 	 *         {@link AutoCompletion} is not installed on any text component.
@@ -519,7 +519,7 @@ public class AutoCompletion {
 	 *
 	 * @param c A completion to insert.  This cannot be <code>null</code>.
 	 */
-	void insertCompletion(Completion c) {
+	protected void insertCompletion(Completion c) {
 
 		JTextComponent textComp = getTextComponent();
 		String alreadyEntered = c.getAlreadyEntered(textComp);
@@ -535,18 +535,6 @@ public class AutoCompletion {
 		caret.setDot(start);
 		caret.moveDot(dot);
 		textComp.replaceSelection(replacement);
-		/*
-		Document doc = textComp.getDocument();
-try {
-		if (doc instanceof AbstractDocument) {
-			((AbstractDocument)doc).replace(start, len, replacement, null);
-		}
-		else {
-			doc.remove(start, len);
-			doc.insertString(start, replacement, null);
-		}
-} catch (javax.swing.text.BadLocationException ble) { ble.printStackTrace(); }
-*/
 
 		if (isParameterAssistanceEnabled() &&
 				(c instanceof ParameterizedCompletion)) {
@@ -558,7 +546,7 @@ try {
 
 
 	/**
-	 * Installs this autocompletion on a text component.  If this
+	 * Installs this auto-completion on a text component.  If this
 	 * {@link AutoCompletion} is already installed on another text component,
 	 * it is uninstalled first.
 	 *
