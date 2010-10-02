@@ -179,6 +179,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		cp.add(bottomPanel, BorderLayout.SOUTH);
 		setContentPane(cp);
 
+		applyComponentOrientation(o);
 		setFocusableWindowState(false);
 
 		history = new ArrayList(1); // Usually small
