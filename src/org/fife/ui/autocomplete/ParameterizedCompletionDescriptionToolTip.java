@@ -654,7 +654,7 @@ class ParameterizedCompletionDescriptionToolTip {
 				setVisible(false, false);
 			}
 			int dot = e.getDot();
-			if (dot<minPos || dot>maxPos.getOffset()) {
+			if (dot<minPos || dot>=maxPos.getOffset()) {
 				setVisible(false, false);
 			}
 			updateText();
