@@ -251,7 +251,10 @@ class ParameterizedCompletionDescriptionToolTip {
 		List highlights = getParameterHighlights();
 		for (int i=0; i<highlights.size(); i++) {
 			Highlight hl = (Highlight)highlights.get(i);
-			if (currentNext==null || currentNext.getStartOffset()<=dot ||
+			// Check "< dot", not "<= dot" as OutlineHighlightPainter paints
+			// starting at one char AFTER the highlight starts, to work around
+			// Java issue.  Thanks to Matthew Adereth!
+			if (currentNext==null || currentNext.getStartOffset()</*=*/dot ||
 					(hl.getStartOffset()>dot &&
 					hl.getStartOffset()<=currentNext.getStartOffset())) {
 				currentNext = hl;
@@ -259,7 +262,7 @@ class ParameterizedCompletionDescriptionToolTip {
 			}
 		}
 
-		if (currentNext!=null && dot<currentNext.getStartOffset()) {
+		if (currentNext!=null && dot<=currentNext.getStartOffset()) {
 			 // "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentNext.getStartOffset()+1);
 			tc.setSelectionEnd(currentNext.getEndOffset());
@@ -747,9 +750,12 @@ class ParameterizedCompletionDescriptionToolTip {
 					sb.append(paramText);
 					int end = start + paramText.length();
 					paramLocs.add(new Point(start, end));
-					if (i<paramCount-1) {
-						sb.append(pc.getProvider().getParameterListSeparator());
-						start = end + 2;
+					// Patch for param. list separators with length > 2 -
+					// thanks to Matthew Adereth!
+					String sep = pc.getProvider().getParameterListSeparator();
+					if (i<paramCount-1 && sep!=null) {
+						sb.append(sep);
+						start = end + sep.length();
 					}
 				}
 				sb.append(pc.getProvider().getParameterListEnd());
