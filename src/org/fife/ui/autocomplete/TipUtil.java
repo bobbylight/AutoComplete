@@ -102,6 +102,15 @@ class TipUtil {
 		// Make selection visible even though we are not (initially) focusable.
 		textArea.getCaret().setSelectionVisible(true);
 
+		// Set the foreground color.  Important because when rendering HTML,
+		// default foreground becomes black, which may not match all LAF's
+		// (e.g. Substance).
+		Color fg = UIManager.getColor("Label.foreground");
+		if (fg==null) {
+			fg = SystemColor.text;
+		}
+		textArea.setForeground(fg);
+
 		// Make it use the "tool tip" background color.
 		textArea.setBackground(TipUtil.getToolTipBackground());
 
@@ -113,8 +122,9 @@ class TipUtil {
 		}
 		HTMLDocument doc = (HTMLDocument) textArea.getDocument();
 		doc.getStyleSheet().addRule(
-				"body { font-family: " + font.getFamily() + "; font-size: "
-						+ font.getSize() + "pt; }");
+				"body { font-family: " + font.getFamily() +
+						"; font-size: " + font.getSize() + "pt" +
+						"; color: " + Util.getHexString(fg) + "; }");
 		URL url = TipUtil.class.getResource("bullet_black.png");
 		if (url!=null) {
 			doc.getStyleSheet().addRule(
