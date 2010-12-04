@@ -515,7 +515,8 @@ public class AutoCompletion {
 
 
 	/**
-	 * Inserts a completion.
+	 * Inserts a completion.  Any time a code completion event occurs, the
+	 * actual text insertion happens through this method.
 	 *
 	 * @param c A completion to insert.  This cannot be <code>null</code>.
 	 */
