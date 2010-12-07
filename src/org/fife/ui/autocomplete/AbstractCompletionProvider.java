@@ -273,7 +273,9 @@ public abstract class AbstractCompletionProvider
 
 		public int compare(Object o1, Object o2) {
 			Completion c = (Completion)o1;
-			return String.CASE_INSENSITIVE_ORDER.compare(c.getInputText(), o2);
+			// o2.toString() needed to help compile with 1.5+.
+			return String.CASE_INSENSITIVE_ORDER.compare(
+									c.getInputText(), o2.toString());
 		}
 
 	}
