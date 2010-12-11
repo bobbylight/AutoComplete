@@ -41,12 +41,20 @@ import javax.swing.text.JTextComponent;
  * @author Robert Futrell
  * @version 1.0
  */
-public abstract class AbstractCompletion implements Completion, Comparable {
+public abstract class AbstractCompletion implements Completion {
 
 	/**
 	 * The provider that created this completion;
 	 */
 	private CompletionProvider provider;
+
+	/**
+	 * The relevance of this completion.  Completion instances with higher
+	 * "relevance" values are inserted higher into the list of possible
+	 * completions than those with lower values.  Completion instances with
+	 * equal relevance values are sorted alphabetically.
+	 */
+	private int relevance;
 
 
 	/**
@@ -60,11 +68,7 @@ public abstract class AbstractCompletion implements Completion, Comparable {
 
 
 	/**
-	 * Compares this completion to another one lexicographically, ignoring
-	 * case.
-	 *
-	 * @param o Another completion instance.
-	 * @return How this completion compares to the other one.
+	 * {@inheritDoc}
 	 */
 	public int compareTo(Object o) {
 		if (o==this) {
@@ -108,6 +112,14 @@ public abstract class AbstractCompletion implements Completion, Comparable {
 
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public int getRelevance() {
+		return relevance;
+	}
+
+
+	/**
 	 * The default implementation returns <code>null</code>.  Subclasses
 	 * can override this method.
 	 *
@@ -115,6 +127,17 @@ public abstract class AbstractCompletion implements Completion, Comparable {
 	 */
 	public String getToolTipText() {
 		return null;
+	}
+
+
+	/**
+	 * Sets the relevance of this completion.
+	 *
+	 * @param relevance The new relevance of this completion.
+	 * @see #getRelevance()
+	 */
+	public void setRelevance(int relevance) {
+		this.relevance = relevance;
 	}
 
 

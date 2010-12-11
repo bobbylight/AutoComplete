@@ -49,7 +49,17 @@ import javax.swing.text.JTextComponent;
  * @version 1.0
  * @see AbstractCompletion
  */
-public interface Completion {
+public interface Completion extends Comparable {
+
+
+	/**
+	 * Compares this completion to another one lexicographically, ignoring
+	 * case.
+	 *
+	 * @param o Another completion instance.
+	 * @return How this completion compares to the other one.
+	 */
+	public int compareTo(Object o);
 
 
 	/**
@@ -85,6 +95,23 @@ public interface Completion {
 	 * @return The provider.
 	 */
 	public CompletionProvider getProvider();
+
+
+	/**
+	 * Returns the "relevance" of this completion.  This is used when sorting
+	 * completions by their relevance.  It is an abstract concept that may
+	 * mean different things to different languages, and may depend on the
+	 * context of the completion.<p>
+	 *
+	 * By default, all completions have a relevance of <code>0</code>.  The
+	 * higher the value returned by this method, the higher up in the list
+	 * this completion will be; the lower the value returned, the lower it will
+	 * be.  <code>Completion</code>s with equal relevance values will be
+	 * sorted alphabetically.
+	 *
+	 * @return The relevance of this completion.
+	 */
+	public int getRelevance();
 
 
 	/**

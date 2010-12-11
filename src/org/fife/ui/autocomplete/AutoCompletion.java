@@ -482,9 +482,11 @@ public class AutoCompletion {
 
 
 	/**
-	 * Hides the parameter tool tip, if it is visible.
+	 * Hides the parameter tool tip and/or the parameter choices window, if
+	 * either one is visible.
 	 *
-	 * @return Whether the tool tip window was visible.
+	 * @return Whether either of the two windows were visible (and thus
+	 *         hidden).
 	 */
 	private boolean hideToolTipWindow() {
 		if (descToolTip!=null) {

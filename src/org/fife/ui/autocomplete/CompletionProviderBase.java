@@ -23,6 +23,7 @@
 package org.fife.ui.autocomplete;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.ListCellRenderer;
 import javax.swing.text.BadLocationException;
@@ -85,6 +86,13 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 
 	protected static final String EMPTY_STRING = "";
 
+	/**
+	 * Comparator used to sort completions by their relevance before sorting
+	 * them lexicographically.
+	 */
+	private static final Comparator sortByRelevanceComparator =
+								new SortByRelevanceComparator();
+
 
 	/**
 	 * {@inheritDoc}
@@ -99,12 +107,22 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 * {@inheritDoc}
 	 */
 	public List getCompletions(JTextComponent comp) {
+
 		List completions = getCompletionsImpl(comp);
 		if (parent!=null) {
 			completions.addAll(parent.getCompletions(comp));
 			Collections.sort(completions);
 		}
+
+		// NOTE: We can't sort by relevance prior to this; we need to have
+		// things alphabetical so we can easily narrow down completions to
+		// those starting with what was already typed.
+		if (/*sortByRelevance*/true) {
+			Collections.sort(completions, sortByRelevanceComparator);
+		}
+
 		return completions;
+
 	}
 
 
@@ -223,6 +241,24 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	public void setParent(CompletionProvider parent) {
 		this.parent = parent;
+	}
+
+
+	/**
+	 * Compares two <code>Completion</code>s by their relevance before
+	 * sorting them lexicographically.
+	 */
+	public static class SortByRelevanceComparator implements Comparator {
+
+		public int compare(Object o1, Object o2) {
+			Completion c1 = (Completion)o1;
+			Completion c2 = (Completion)o2;
+			int rel1 = c1.getRelevance();
+			int rel2 = c2.getRelevance();
+			int diff = rel2 - rel1;//rel1 - rel2;
+			return diff==0 ? c1.compareTo(c2) : diff;
+		}
+
 	}
 
 
