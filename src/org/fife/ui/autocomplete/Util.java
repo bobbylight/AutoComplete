@@ -37,7 +37,7 @@ import java.net.URI;
  * @author Robert Futrell
  * @version 1.0
  */
-class Util {
+public class Util {
 
 	private static boolean desktopCreationAttempted;
 	private static Object desktop;
@@ -178,6 +178,31 @@ class Util {
 		}
 		// If point is outside all monitors, default to default monitor (?)
 		return env.getMaximumWindowBounds();
+	}
+
+
+	/**
+	 * Returns whether <code>str</code> starts with <code>start</code>,
+	 * ignoring case.
+	 *
+	 * @param str The string to check.
+	 * @param start The prefix to check for.
+	 * @return Whether <code>str</code> starts with <code>start</code>,
+	 *         ignoring case.
+	 */
+	public static boolean startsWithIgnoreCase(String str, String start) {
+		int startLen = start.length();
+		if (str.length()>=startLen) {
+			for (int i=0; i<startLen; i++) {
+				char c1 = str.charAt(i);
+				char c2 = start.charAt(i);
+				if (Character.toLowerCase(c1)!=Character.toLowerCase(c2)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 

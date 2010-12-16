@@ -80,6 +80,11 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	private String autoActivateChars;
 
 	/**
+	 * Provides completion choices for a parameterized completion's parameters.
+	 */
+	private ParameterChoicesProvider paramChoicesProvider;
+
+	/**
 	 * A segment to use for fast char access.
 	 */
 	private Segment s = new Segment();
@@ -147,6 +152,14 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	public ParameterChoicesProvider getParameterChoicesProvider() {
+		return paramChoicesProvider;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public char getParameterListEnd() {
 		return paramListEnd;
 	}
@@ -205,6 +218,21 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	public void setAutoActivationRules(boolean letters, String others) {
 		autoActivateAfterLetters = letters;
 		autoActivateChars = others;
+	}
+
+
+	/**
+	 * Sets the param choices provider.  This is used when a user
+	 * code-completes a parameterized completion, such as a function or method.
+	 * For any parameter to the function/method, this object can return
+	 * possible completions.
+	 *
+	 * @param pcp The parameter choices provider, or <code>null</code> for
+	 *        none.
+	 * @see #getParameterChoicesProvider()
+	 */
+	public void setParameterChoicesProvider(ParameterChoicesProvider pcp) {
+		paramChoicesProvider = pcp;
 	}
 
 

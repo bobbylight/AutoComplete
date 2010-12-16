@@ -111,6 +111,18 @@ class ParameterizedCompletionDescriptionToolTip {
 	private Position maxPos; // Moves with text inserted.
 
 	/**
+	 * A small popup window giving likely choices for parameterized completions.
+	 */
+	private ParameterizedCompletionChoicesWindow paramChoicesWindow;
+
+	/**
+	 * The text before the caret for the current parameter.  If
+	 * {@link #paramChoicesWindow} is non-<code>null</code>, this is used to
+	 * determine what parameter choices to actually show.
+	 */
+	private String paramAlreadyEntered;
+
+	/**
 	 * The currently "selected" parameter in the displayed text.
 	 */
 	private int lastSelectedParam;
@@ -119,6 +131,10 @@ class ParameterizedCompletionDescriptionToolTip {
 	private Action oldTabAction;
 	private Object oldShiftTabKey;
 	private Action oldShiftTabAction;
+	private Object oldUpKey;
+	private Action oldUpAction;
+	private Object oldDownKey;
+	private Action oldDownAction;
 	private Object oldEnterKey;
 	private Action oldEnterAction;
 	private Object oldEscapeKey;
@@ -128,6 +144,8 @@ class ParameterizedCompletionDescriptionToolTip {
 
 	private static final String IM_KEY_TAB = "ParamCompDescTip.Tab";
 	private static final String IM_KEY_SHIFT_TAB = "ParamCompDescTip.ShiftTab";
+	private static final String IM_KEY_UP = "ParamCompDescTip.Up";
+	private static final String IM_KEY_DOWN = "ParamCompDescTip.Down";
 	private static final String IM_KEY_ESCAPE = "ParamCompDescTip.Escape";
 	private static final String IM_KEY_ENTER = "ParamCompDescTip.Enter";
 	private static final String IM_KEY_CLOSING = "ParamCompDescTip.Closing";
@@ -163,6 +181,48 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		p = new OutlineHighlightPainter(Color.GRAY);
 		tags = new ArrayList(1); // Usually small
+
+		paramChoicesWindow = createParamChoicesWindow();
+
+	}
+
+
+	/**
+	 * Creates the completion window offering suggestions for parameters.
+	 *
+	 * @return The window.
+	 */
+	private ParameterizedCompletionChoicesWindow createParamChoicesWindow() {
+		ParameterizedCompletionChoicesWindow pcw =
+			new ParameterizedCompletionChoicesWindow(tooltip.getOwner(), ac);
+		pcw.initialize(pc);
+		return pcw;
+	}
+
+
+	/**
+	 * Returns the starting offset of the current parameter.
+	 *
+	 * @return The current parameter's starting offset, or <code>-1</code> if
+	 *         the caret is not in a parameter's bounds.
+	 */
+	private int getCurrentParameterStartOffset() {
+
+		JTextComponent tc = ac.getTextComponent();
+		int dot = tc.getCaretPosition();
+		if (dot>0) {
+			dot--; // Workaround for Java Highlight issues
+		}
+
+		List paramHighlights = getParameterHighlights();
+		for (int i=0; i<paramHighlights.size(); i++) {
+			Highlight h = (Highlight)paramHighlights.get(i);
+			if (dot>=h.getStartOffset() && dot<h.getEndOffset()) {
+				return h.getStartOffset() + 1;
+			}
+		}
+
+		return -1;
 
 	}
 
@@ -207,6 +267,18 @@ class ParameterizedCompletionDescriptionToolTip {
 		im.put(ks, IM_KEY_SHIFT_TAB);
 		oldShiftTabAction = am.get(IM_KEY_SHIFT_TAB);
 		am.put(IM_KEY_SHIFT_TAB, new PrevParamAction());
+
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+		oldUpKey = im.get(ks);
+		im.put(ks, IM_KEY_UP);
+		oldUpAction = am.get(IM_KEY_UP);
+		am.put(IM_KEY_UP, new NextChoiceAction(-1, oldUpAction));
+
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+		oldDownKey = im.get(ks);
+		im.put(ks, IM_KEY_DOWN);
+		oldDownAction = am.get(IM_KEY_DOWN);
+		am.put(IM_KEY_DOWN, new NextChoiceAction(1, oldDownAction));
 
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		oldEnterKey = im.get(ks);
@@ -324,6 +396,42 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
+	 * Updates the optional window listing likely completion choices,
+	 */
+	private void prepareParamChoicesWindow() {
+
+		if (paramChoicesWindow!=null) {
+
+			int offs = getCurrentParameterStartOffset();
+			if (offs==-1) {
+				paramChoicesWindow.setVisible(false);
+				paramChoicesWindow = null;
+				return;
+			}
+
+			JTextComponent tc = ac.getTextComponent();
+			try {
+				Rectangle r = tc.modelToView(offs);
+				Point p = new Point(r.x, r.y);
+				SwingUtilities.convertPointToScreen(p, tc);
+				r.x = p.x;
+				r.y = p.y;
+				paramChoicesWindow.setLocationRelativeTo(r);
+			} catch (BadLocationException ble) { // Should never happen
+				UIManager.getLookAndFeel().provideErrorFeedback(tc);
+				ble.printStackTrace();
+			}
+
+			paramChoicesWindow.setParameter(lastSelectedParam,
+											paramAlreadyEntered);
+			paramChoicesWindow.setVisible(true);
+
+		}
+
+	}
+
+
+	/**
 	 * Removes the bounding boxes around parameters.
 	 */
 	private void removeParameterHighlights() {
@@ -382,16 +490,26 @@ class ParameterizedCompletionDescriptionToolTip {
 	 *        <code>false</code>, this parameter is ignored.
 	 */
 	public void setVisible(boolean visible, boolean addParamListStart) {
+
 		if (visible!=tooltip.isVisible()) {
+
 			JTextComponent tc = ac.getTextComponent();
+
 			if (visible) {
 				listener.install(tc, addParamListStart);
+				prepareParamChoicesWindow();
 			}
 			else {
 				listener.uninstall();
 			}
+
 			tooltip.setVisible(visible);
+			if (paramChoicesWindow!=null) {
+				paramChoicesWindow.setVisible(visible);
+			}
+
 		}
+
 	}
 
 
@@ -419,6 +537,14 @@ class ParameterizedCompletionDescriptionToolTip {
 		im.put(ks, oldShiftTabKey);
 		am.put(IM_KEY_SHIFT_TAB, oldShiftTabAction);
 
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+		im.put(ks, oldUpKey);
+		am.put(IM_KEY_UP, oldUpAction);
+
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+		im.put(ks, oldDownKey);
+		am.put(IM_KEY_DOWN, oldDownAction);
+
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		im.put(ks, oldEnterKey);
 		am.put(IM_KEY_ENTER, oldEnterAction);
@@ -439,8 +565,10 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * Updates the text in the tool tip to have the current parameter
 	 * displayed in bold.  The "current parameter" is determined from the
 	 * current caret position.
+	 *
+	 * @return Whether the text needed to be updated.
 	 */
-	private void updateText() {
+	private boolean updateText() {
 
 		JTextComponent tc = ac.getTextComponent();
 		int dot = tc.getCaretPosition();
@@ -452,13 +580,21 @@ class ParameterizedCompletionDescriptionToolTip {
 		List paramHighlights = getParameterHighlights();
 		for (int i=0; i<paramHighlights.size(); i++) {
 			Highlight h = (Highlight)paramHighlights.get(i);
-			if (dot>=h.getStartOffset() && dot<h.getEndOffset()) {
+			// "+1" because of param hack - see OutlineHighlightPainter
+			int start = h.getStartOffset()+1;
+			if (dot>=start && dot<h.getEndOffset()) {
+				try {
+					paramAlreadyEntered = tc.getText(start, dot-start);
+				} catch (BadLocationException ble) {
+					ble.printStackTrace();
+					paramAlreadyEntered = null;
+				}
 				index = i;
 				break;
 			}
 		}
 
-		updateText(index);
+		return updateText(index);
 
 	}
 
@@ -468,13 +604,14 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * displayed in bold.
 	 *
 	 * @param selectedParam The index of the selected parameter.
+	 * @return Whether the text needed to be updated.
 	 */
-	private void updateText(int selectedParam) {
+	private boolean updateText(int selectedParam) {
 
 		// Don't redo everything if they're just using the arrow keys to move
 		// through each char of a single parameter, for example.
 		if (selectedParam==lastSelectedParam) {
-			return;
+			return false;
 		}
 		lastSelectedParam = selectedParam;
 
@@ -506,6 +643,8 @@ class ParameterizedCompletionDescriptionToolTip {
 		descLabel.setText(sb.toString());
 		tooltip.pack();
 
+		return true;
+
 	}
 
 
@@ -515,6 +654,9 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(tooltip);
+		if (paramChoicesWindow!=null) {
+			paramChoicesWindow.updateUI();
+		}
 	}
 
 
@@ -549,7 +691,7 @@ class ParameterizedCompletionDescriptionToolTip {
 			JTextComponent tc = ac.getTextComponent();
 			int dot = tc.getCaretPosition();
 			char end = pc.getProvider().getParameterListEnd();
-		
+
 			// Are they at or past the end of the parameters?
 			if (dot>=maxPos.getOffset()-1) { // ">=" for overwrite mode
 
@@ -655,12 +797,17 @@ class ParameterizedCompletionDescriptionToolTip {
 		public void caretUpdate(CaretEvent e) {
 			if (maxPos==null) { // Sanity check
 				setVisible(false, false);
+				return;
 			}
 			int dot = e.getDot();
 			if (dot<minPos || dot>=maxPos.getOffset()) {
 				setVisible(false, false);
+				return;
 			}
-			updateText();
+			boolean updated = updateText();
+			if (updated) {
+				prepareParamChoicesWindow();
+			}
 		}
 
 
@@ -800,6 +947,38 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		}
 
+
+	}
+
+
+	/**
+	 * Action performed when the user presses the up or down arrow keys and
+	 * the parameter completion choices popup is visible.
+	 *
+	 * @author Robert Futrell
+	 * @version 1.0
+	 */
+	private class NextChoiceAction extends AbstractAction {
+
+		private Action oldAction;
+		private int amount;
+
+		public NextChoiceAction(int amount, Action oldAction) {
+			this.amount = amount;
+			this.oldAction = oldAction;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
+				paramChoicesWindow.incSelection(amount);
+			}
+			else if (oldAction!=null) {
+				oldAction.actionPerformed(e);
+			}
+			else {
+				setVisible(false, false);
+			}
+		}
 
 	}
 

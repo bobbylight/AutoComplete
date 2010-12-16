@@ -198,7 +198,7 @@ public abstract class AbstractCompletionProvider
 
 			while (index<completions.size()) {
 				Completion c = (Completion)completions.get(index);
-				if (startsWithIgnoreCase(c.getInputText(), text)) {
+				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
 					retVal.add(c);
 					index++;
 				}
@@ -233,31 +233,6 @@ public abstract class AbstractCompletionProvider
 		}
 		completions.remove(index);
 		return true;
-	}
-
-
-	/**
-	 * Returns whether <code>str</code> starts with <code>start</code>,
-	 * ignoring case.
-	 *
-	 * @param str The string to check.
-	 * @param start The prefix to check for.
-	 * @return Whether <code>str</code> starts with <code>start</code>,
-	 *         ignoring case.
-	 */
-	protected boolean startsWithIgnoreCase(String str, String start) {
-		int startLen = start.length();
-		if (str.length()>=startLen) {
-			for (int i=0; i<startLen; i++) {
-				char c1 = str.charAt(i);
-				char c2 = start.charAt(i);
-				if (Character.toLowerCase(c1)!=Character.toLowerCase(c2)) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
 	}
 
 

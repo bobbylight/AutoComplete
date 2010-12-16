@@ -100,6 +100,18 @@ public interface CompletionProvider {
 
 
 	/**
+	 * Returns an object that can return a list of completion choices for
+	 * parameters.  This is used when a user code-completes a parameterized
+	 * completion, such as a function or method.  For any parameter to the
+	 * function/method, this object can return possible completions.
+	 *
+	 * @return The parameter choices provider, or <code>null</code> if
+	 *         none is installed.
+	 */
+	public ParameterChoicesProvider getParameterChoicesProvider();
+
+
+	/**
 	 * Returns a list of parameterized completions that have been entered
 	 * at the current caret position of a text component (and thus can have
 	 * their completion choices displayed).
