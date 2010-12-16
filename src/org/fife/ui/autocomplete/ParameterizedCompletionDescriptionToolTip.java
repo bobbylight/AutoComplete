@@ -120,7 +120,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * {@link #paramChoicesWindow} is non-<code>null</code>, this is used to
 	 * determine what parameter choices to actually show.
 	 */
-	private String paramAlreadyEntered;
+	private String paramPrefix;
 
 	/**
 	 * The currently "selected" parameter in the displayed text.
@@ -201,12 +201,13 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 	/**
-	 * Returns the starting offset of the current parameter.
+	 * Returns the highlight of the current parameter.
 	 *
-	 * @return The current parameter's starting offset, or <code>-1</code> if
+	 * @return The current parameter's highlight, or <code>null</code> if
 	 *         the caret is not in a parameter's bounds.
+	 * @see #getCurrentParameterStartOffset()
 	 */
-	private int getCurrentParameterStartOffset() {
+	private Highlight getCurrentParameterHighlight() {
 
 		JTextComponent tc = ac.getTextComponent();
 		int dot = tc.getCaretPosition();
@@ -218,12 +219,25 @@ class ParameterizedCompletionDescriptionToolTip {
 		for (int i=0; i<paramHighlights.size(); i++) {
 			Highlight h = (Highlight)paramHighlights.get(i);
 			if (dot>=h.getStartOffset() && dot<h.getEndOffset()) {
-				return h.getStartOffset() + 1;
+				return h;
 			}
 		}
 
-		return -1;
+		return null;
 
+	}
+
+
+	/**
+	 * Returns the starting offset of the current parameter.
+	 *
+	 * @return The current parameter's starting offset, or <code>-1</code> if
+	 *         the caret is not in a parameter's bounds.
+	 * @see #getCurrentParameterHighlight()
+	 */
+	private int getCurrentParameterStartOffset() {
+		Highlight h = getCurrentParameterHighlight();
+		return h!=null ? h.getStartOffset()+1 : -1;
 	}
 
 
@@ -367,21 +381,28 @@ class ParameterizedCompletionDescriptionToolTip {
 		int selStart = tc.getSelectionStart()-1; // Workaround for Java Highlight issues.
 		Highlight currentPrev = null;
 		int pos = 0;
-		Highlighter h = tc.getHighlighter();
-		Highlight[] highlights = h.getHighlights();
-		for (int i=0; i<highlights.length; i++) {
-			Highlight hl = highlights[i];
-			if (hl.getPainter()==p) { // Only way to identify our own highlights
-				if (currentPrev==null || currentPrev.getStartOffset()>=dot ||
-						(hl.getStartOffset()<selStart &&
-						hl.getStartOffset()>currentPrev.getStartOffset())) {
-					currentPrev = hl;
-					pos = i;
-				}
+		List highlights = getParameterHighlights();
+
+		for (int i=0; i<highlights.size(); i++) {
+			Highlight h = (Highlight)highlights.get(i);
+			if (currentPrev==null || currentPrev.getStartOffset()>=dot ||
+					(h.getStartOffset()<selStart &&
+					h.getStartOffset()>currentPrev.getStartOffset())) {
+				currentPrev = h;
+				pos = i;
 			}
 		}
 
-		if (currentPrev!=null && dot>currentPrev.getStartOffset()) {
+		// Loop back from param 0 to last param.
+		if (pos==0 && lastSelectedParam==0 && highlights.size()>1) {
+			pos = highlights.size() - 1;
+			currentPrev = (Highlight)highlights.get(pos);
+			 // "+1" is a workaround for Java Highlight issues.
+			tc.setSelectionStart(currentPrev.getStartOffset()+1);
+			tc.setSelectionEnd(currentPrev.getEndOffset());
+			updateText(pos);
+		}
+		else if (currentPrev!=null && dot>currentPrev.getStartOffset()) {
 			 // "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentPrev.getStartOffset()+1);
 			tc.setSelectionEnd(currentPrev.getEndOffset());
@@ -400,12 +421,12 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private void prepareParamChoicesWindow() {
 
+		// If this window was set to null, the user pressed Escape to hide it
 		if (paramChoicesWindow!=null) {
 
 			int offs = getCurrentParameterStartOffset();
 			if (offs==-1) {
 				paramChoicesWindow.setVisible(false);
-				paramChoicesWindow = null;
 				return;
 			}
 
@@ -422,9 +443,8 @@ class ParameterizedCompletionDescriptionToolTip {
 				ble.printStackTrace();
 			}
 
-			paramChoicesWindow.setParameter(lastSelectedParam,
-											paramAlreadyEntered);
-			paramChoicesWindow.setVisible(true);
+			// Toggles visibility, if necessary.
+			paramChoicesWindow.setParameter(lastSelectedParam, paramPrefix);
 
 		}
 
@@ -497,6 +517,10 @@ class ParameterizedCompletionDescriptionToolTip {
 
 			if (visible) {
 				listener.install(tc, addParamListStart);
+				// First time through, we'll need to create this window.
+				if (paramChoicesWindow==null) {
+					paramChoicesWindow = createParamChoicesWindow();
+				}
 				prepareParamChoicesWindow();
 			}
 			else {
@@ -505,6 +529,7 @@ class ParameterizedCompletionDescriptionToolTip {
 
 			tooltip.setVisible(visible);
 			if (paramChoicesWindow!=null) {
+				// Only really needed to hide the window (i.e. visible==false)
 				paramChoicesWindow.setVisible(visible);
 			}
 
@@ -571,23 +596,29 @@ class ParameterizedCompletionDescriptionToolTip {
 	private boolean updateText() {
 
 		JTextComponent tc = ac.getTextComponent();
-		int dot = tc.getCaretPosition();
-		if (dot>0) {
-			dot--; // Workaround for Java Highlight issues
-		}
+		int dot = tc.getSelectionStart();
+		int mark = tc.getSelectionEnd();
 		int index = -1;
+		paramPrefix = null;
 
 		List paramHighlights = getParameterHighlights();
 		for (int i=0; i<paramHighlights.size(); i++) {
 			Highlight h = (Highlight)paramHighlights.get(i);
 			// "+1" because of param hack - see OutlineHighlightPainter
 			int start = h.getStartOffset()+1;
-			if (dot>=start && dot<h.getEndOffset()) {
+			if (dot>=start && dot<=h.getEndOffset()) {
 				try {
-					paramAlreadyEntered = tc.getText(start, dot-start);
+					// All text selected => offer all suggestions
+					if (dot==start && mark==h.getEndOffset()) {
+						paramPrefix = null;
+					}
+					// Not everything selected => use prefix before selection
+					else {
+						paramPrefix = tc.getText(start, dot-start);
+					}
 				} catch (BadLocationException ble) {
 					ble.printStackTrace();
-					paramAlreadyEntered = null;
+					paramPrefix = null;
 				}
 				index = i;
 				break;
@@ -669,9 +700,33 @@ class ParameterizedCompletionDescriptionToolTip {
 	private class GotoEndAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
+
+			// If the param choices window is visible and something is chosen,
+			// replace the parameter with it and move to the next one.
+			if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
+				String choice = paramChoicesWindow.getSelectedChoice();
+				if (choice!=null) {
+					JTextComponent tc = ac.getTextComponent();
+					Highlight h = getCurrentParameterHighlight();
+					if (h!=null) {
+						 // "+1" is a workaround for Java Highlight issues.
+						tc.setSelectionStart(h.getStartOffset()+1);
+						tc.setSelectionEnd(h.getEndOffset());
+						tc.replaceSelection(choice);
+						moveToNextParam();
+					}
+					else {
+						UIManager.getLookAndFeel().provideErrorFeedback(tc);
+					}
+					return;
+				}
+			}
+
+			// Otherwise, just move to the end.
 			JTextComponent tc = ac.getTextComponent();
 			tc.setCaretPosition(maxPos.getOffset());
 			setVisible(false, false);
+
 		}
 
 	}
@@ -774,7 +829,17 @@ class ParameterizedCompletionDescriptionToolTip {
 	private class HideAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
-			setVisible(false, false);
+			// On first escape press, if the param choices window is visible,
+			// just remove it, but keep ability to tab through params.  If
+			// param choices window isn't visible, or second escape press,
+			// exit tabbing through params entirely.
+			if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
+				paramChoicesWindow.setVisible(false);
+				paramChoicesWindow = null;
+			}
+			else {
+				setVisible(false, false);
+			}
 		}
 
 	}
@@ -804,8 +869,8 @@ class ParameterizedCompletionDescriptionToolTip {
 				setVisible(false, false);
 				return;
 			}
-			boolean updated = updateText();
-			if (updated) {
+			/*boolean updated = */updateText();
+			if (tooltip.isVisible()) {
 				prepareParamChoicesWindow();
 			}
 		}

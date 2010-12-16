@@ -99,6 +99,17 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 
 	/**
+	 * Returns the selected value.
+	 *
+	 * @return The selected value, or <code>null</code> if nothing is
+	 *         selected.
+	 */
+	public String getSelectedChoice() {
+		return (String)list.getSelectedValue();
+	}
+
+
+	/**
 	 * Changes the selected index.
 	 *
 	 * @param amount The amount by which to change the selected index.
@@ -187,9 +198,10 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @param param The index of the parameter the caret is currently in.
 	 *        This may be <code>-1</code> if not in a parameter (i.e., on
 	 *        the comma between parameters).
-	 * @param alreadyEntered Text in the parameter before the dot.
+	 * @param prefix Text in the parameter before the dot.  This may
+	 *        be <code>null</code> to represent the empty string.
 	 */
-	public void setParameter(int param, String alreadyEntered) {
+	public void setParameter(int param, String prefix) {
 
 		model.clear();
 
@@ -198,7 +210,8 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			List choices = (List)choicesListList.get(param);
 			for (Iterator i=choices.iterator(); i.hasNext(); ) {
 				String choice = (String)i.next();
-				if (Util.startsWithIgnoreCase(choice, alreadyEntered)) {
+				if (prefix==null ||
+						Util.startsWithIgnoreCase(choice, prefix)) {
 					model.addElement(choice);
 				}
 			}
@@ -206,7 +219,17 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			int visibleRowCount = Math.min(model.size(), 10);
 			list.setVisibleRowCount(visibleRowCount);
 
-			pack();
+			// Toggle visibility, if necessary.
+			if (visibleRowCount==0 && isVisible()) {
+				setVisible(false);
+			}
+			else if (visibleRowCount>0) {
+				pack();
+				list.setSelectedIndex(0);
+				if (!isVisible()) {
+					setVisible(true);
+				}
+			}
 
 		}
 
@@ -219,17 +242,13 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @param visible Whether this window should be visible.
 	 */
 	public void setVisible(boolean visible) {
-
 		if (visible!=isVisible()) {
-
-			if (visible) {
-				
+			// i.e. if no possibilities matched what's been typed
+			if (visible && list.getVisibleRowCount()==0) {
+				return;
 			}
-
 			super.setVisible(visible);
-
 		}
-
 	}
 
 
