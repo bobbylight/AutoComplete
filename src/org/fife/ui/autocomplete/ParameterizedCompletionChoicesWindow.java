@@ -86,13 +86,15 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 		model = new DefaultListModel();
 		list = new JList(model);
+		if (ac.getParamChoicesRenderer()!=null) {
+			list.setCellRenderer(ac.getParamChoicesRenderer());
+		}
 		JScrollPane sp = new JScrollPane(list);
 		// Required to easily keep popup wide enough for no horiz. scroll bar
 		sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		setContentPane(sp);
 		applyComponentOrientation(o);
-
 		setFocusableWindowState(false);
 
 	}
@@ -105,7 +107,8 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *         selected.
 	 */
 	public String getSelectedChoice() {
-		return (String)list.getSelectedValue();
+		Completion c = (Completion)list.getSelectedValue();
+		return c==null ? null : c.toString();
 	}
 
 
@@ -209,16 +212,17 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 			List choices = (List)choicesListList.get(param);
 			for (Iterator i=choices.iterator(); i.hasNext(); ) {
-				String choice = (String)i.next();
+				Completion c = (Completion)i.next();
+				String choice = c.getReplacementText();
 				if (prefix==null ||
 						Util.startsWithIgnoreCase(choice, prefix)) {
-					model.addElement(choice);
+					model.addElement(c);
 				}
 			}
 
 			int visibleRowCount = Math.min(model.size(), 10);
 			list.setVisibleRowCount(visibleRowCount);
-
+//list.setPreferredSize(list.getPreferredScrollableViewportSize());
 			// Toggle visibility, if necessary.
 			if (visibleRowCount==0 && isVisible()) {
 				setVisible(false);

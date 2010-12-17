@@ -147,6 +147,13 @@ public class AutoCompletion {
 	private boolean parameterAssistanceEnabled;
 
 	/**
+	 * A renderer used for {@link Completion}s in the optional parameter
+	 * choices popup window (displayed when a {@link ParameterizedCompletion}
+	 * is code-completed).  If this isn't set, a default renderer is used.
+	 */
+	private ListCellRenderer paramChoicesRenderer;
+
+	/**
 	 * The keystroke that triggers the completion window.
 	 */
 	private KeyStroke trigger;
@@ -383,6 +390,21 @@ public class AutoCompletion {
 	 */
 	public ListCellRenderer getListCellRenderer() {
 		return renderer;
+	}
+
+
+	/**
+	 * Returns the renderer to use for {@link Completion}s in the optional
+	 * parameter choices popup window (displayed when a
+	 * {@link ParameterizedCompletion} is code-completed).  If this returns
+	 * <code>null</code>, a default renderer is used.
+	 *
+	 * @return The renderer to use.
+	 * @see #setParamChoicesRenderer(ListCellRenderer)
+	 * @see #isParameterAssistanceEnabled()
+	 */
+	public ListCellRenderer getParamChoicesRenderer() {
+		return paramChoicesRenderer;
 	}
 
 
@@ -890,6 +912,21 @@ public class AutoCompletion {
 
 
 	/**
+	 * Sets the renderer to use for {@link Completion}s in the optional
+	 * parameter choices popup window (displayed when a
+	 * {@link ParameterizedCompletion} is code-completed).  If this isn't set,
+	 * a default renderer is used.
+	 *
+	 * @param r The renderer to use.
+	 * @see #getParamChoicesRenderer()
+	 * @see #setParameterAssistanceEnabled(boolean)
+	 */
+	public void setParamChoicesRenderer(ListCellRenderer r) {
+		paramChoicesRenderer = r;
+	}
+
+
+	/**
 	 * Sets whether parameter assistance is enabled.  If parameter assistance
 	 * is enabled, and a "parameterized" completion (such as a function or
 	 * method) is inserted, the user will get "assistance" in inserting the
@@ -1007,6 +1044,10 @@ public class AutoCompletion {
 		}
 		if (descToolTip!=null) {
 			descToolTip.updateUI();
+		}
+		// Will practically always be a JComponent (a JLabel)
+		if (paramChoicesRenderer instanceof JComponent) {
+			((JComponent)paramChoicesRenderer).updateUI();
 		}
 	}
 
