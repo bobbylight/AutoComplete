@@ -27,6 +27,8 @@ import java.awt.ComponentOrientation;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,6 +71,13 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * A list of lists of choices for each parameter.
 	 */
 	private List choicesListList;
+
+	/**
+	 * Comparator used to sort completions by their relevance before sorting
+	 * them lexicographically.
+	 */
+	private static final Comparator sortByRelevanceComparator =
+								new SortByRelevanceComparator();
 
 
 	/**
@@ -207,6 +216,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	public void setParameter(int param, String prefix) {
 
 		model.clear();
+		List temp = new ArrayList();
 
 		if (choicesListList!=null && param>=0 && param<choicesListList.size()) {
 
@@ -214,15 +224,24 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			for (Iterator i=choices.iterator(); i.hasNext(); ) {
 				Completion c = (Completion)i.next();
 				String choice = c.getReplacementText();
-				if (prefix==null ||
-						Util.startsWithIgnoreCase(choice, prefix)) {
-					model.addElement(c);
+				if (prefix==null || Util.startsWithIgnoreCase(choice, prefix)) {
+					temp.add(c);
 				}
+			}
+
+			// Sort completions appropriately.
+			Comparator c = null;
+			if (/*sortByRelevance*/true) {
+				c = sortByRelevanceComparator;
+			}
+			Collections.sort(temp, c);
+			for (int i=0; i<temp.size(); i++) {
+				model.addElement(temp.get(i));
 			}
 
 			int visibleRowCount = Math.min(model.size(), 10);
 			list.setVisibleRowCount(visibleRowCount);
-//list.setPreferredSize(list.getPreferredScrollableViewportSize());
+
 			// Toggle visibility, if necessary.
 			if (visibleRowCount==0 && isVisible()) {
 				setVisible(false);

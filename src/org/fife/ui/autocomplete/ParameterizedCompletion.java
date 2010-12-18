@@ -48,10 +48,21 @@ public interface ParameterizedCompletion extends Completion {
 	public static class Parameter {
 
 		private String name;
-		private String type;
+		private Object type;
 		private String desc;
 
-		public Parameter(String type, String name) {
+		/**
+		 * Constructor.
+		 *
+		 * @param type The type of this parameter.  This may be
+		 *        <code>null</code> for languages without specific types,
+		 *        dynamic typing, etc.  Usually you'll pass a String for this
+		 *        value, but you may pass any object representing a type in
+		 *        your language, as long as its <code>toString()</code> method
+		 *        returns a string representation of the type.
+		 * @param name The name of the parameter.
+		 */
+		public Parameter(Object type, String name) {
 			this.name = name;
 			this.type = type;
 		}
@@ -64,7 +75,21 @@ public interface ParameterizedCompletion extends Completion {
 			return name;
 		}
 
+		/**
+		 * Returns the type of this parameter, as a string.
+		 *
+		 * @return The type of the parameter, or <code>null</code> for none.
+		 */
 		public String getType() {
+			return type==null ? null : type.toString();
+		}
+
+		/**
+		 * Returns the object used to describe the type of this parameter.
+		 *
+		 * @return The type object, or <code>null</code> for none.
+		 */
+		public Object getTypeObject() {
 			return type;
 		}
 

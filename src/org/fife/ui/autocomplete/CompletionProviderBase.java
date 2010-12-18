@@ -272,22 +272,4 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	}
 
 
-	/**
-	 * Compares two <code>Completion</code>s by their relevance before
-	 * sorting them lexicographically.
-	 */
-	public static class SortByRelevanceComparator implements Comparator {
-
-		public int compare(Object o1, Object o2) {
-			Completion c1 = (Completion)o1;
-			Completion c2 = (Completion)o2;
-			int rel1 = c1.getRelevance();
-			int rel2 = c2.getRelevance();
-			int diff = rel2 - rel1;//rel1 - rel2;
-			return diff==0 ? c1.compareTo(c2) : diff;
-		}
-
-	}
-
-
 }
