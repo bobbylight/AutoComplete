@@ -43,7 +43,7 @@ public interface ParameterChoicesProvider {
 	 * Returns a list of choices for a specific parameter.
 	 *
 	 * @param tc The text component.
-	 * @param p The currently focused parameter.
+	 * @param param The currently focused parameter.
 	 * @return The list of parameters.  This may be <code>null</code> for
 	 *         "no parameters," but might also be an empty list.
 	 */

@@ -24,8 +24,11 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,6 +76,11 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	private List choicesListList;
 
 	/**
+	 * The scroll pane containing the list.
+	 */
+	private JScrollPane sp;
+
+	/**
 	 * Comparator used to sort completions by their relevance before sorting
 	 * them lexicographically.
 	 */
@@ -85,9 +93,11 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *
 	 * @param parent The parent window (hosting the text component).
 	 * @param ac The auto-completion instance.
+	 * @param tip The parent parameter description tool tip.
 	 */
 	public ParameterizedCompletionChoicesWindow(Window parent,
-												AutoCompletion ac) {
+						AutoCompletion ac,
+						final ParameterizedCompletionDescriptionToolTip tip) {
 
 		super(parent);
 		this.ac = ac;
@@ -98,13 +108,24 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 		if (ac.getParamChoicesRenderer()!=null) {
 			list.setCellRenderer(ac.getParamChoicesRenderer());
 		}
-		JScrollPane sp = new JScrollPane(list);
-		// Required to easily keep popup wide enough for no horiz. scroll bar
-		sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		list.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount()==2) {
+					tip.insertSelectedChoice();
+				}
+			}
+		});
+		sp = new JScrollPane(list);
 
 		setContentPane(sp);
 		applyComponentOrientation(o);
 		setFocusableWindowState(false);
+
+		// Give apps a chance to decorate us with drop shadows, etc.
+		PopupWindowDecorator decorator = PopupWindowDecorator.get();
+		if (decorator!=null) {
+			decorator.decorate(this);
+		}
 
 	}
 
@@ -137,7 +158,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			selection %= model.getSize();
 		}
 		list.setSelectedIndex(selection);
-		list.setSelectedIndex(selection);
+		list.ensureIndexIsVisible(selection);
 	}
 
 
@@ -247,8 +268,22 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 				setVisible(false);
 			}
 			else if (visibleRowCount>0) {
-				pack();
+				Dimension size = getPreferredSize();
+				if (size.width<150) {
+					setSize(150, size.height);
+				}
+				else {
+					pack();
+				}
+				// Make sure nothing is ever obscured by vertical scroll bar.
+				if (sp.getVerticalScrollBar()!=null &&
+						sp.getVerticalScrollBar().isVisible()) {
+					size = getSize();
+					int w = size.width + sp.getVerticalScrollBar().getWidth()+5;
+					setSize(w, size.height);
+				}
 				list.setSelectedIndex(0);
+				list.ensureIndexIsVisible(0);
 				if (!isVisible()) {
 					setVisible(true);
 				}

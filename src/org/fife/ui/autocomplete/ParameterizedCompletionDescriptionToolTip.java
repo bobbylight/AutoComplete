@@ -23,6 +23,7 @@
  */
 package org.fife.ui.autocomplete;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -40,6 +41,7 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -162,6 +164,7 @@ class ParameterizedCompletionDescriptionToolTip {
 						AutoCompletion ac, ParameterizedCompletion pc) {
 
 		tooltip = new JWindow(owner);
+
 		this.ac = ac;
 		this.pc = pc;
 
@@ -171,7 +174,21 @@ class ParameterizedCompletionDescriptionToolTip {
 					BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 		descLabel.setOpaque(true);
 		descLabel.setBackground(TipUtil.getToolTipBackground());
-		tooltip.setContentPane(descLabel);
+		// It appears that if a JLabel is set as a content pane directly, when
+		// using the JDK's opacity API's, it won't paint its background, even
+		// if label.setOpaque(true) is called.  You have to have a container
+		// underneath it for it to paint its background.  Thus, we embed our
+		// label in a parent JPanel to handle this case.
+		//tooltip.setContentPane(descLabel);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(descLabel);
+		tooltip.setContentPane(panel);
+
+		// Give apps a chance to decorate us with drop shadows, etc.
+		PopupWindowDecorator decorator = PopupWindowDecorator.get();
+		if (decorator!=null) {
+			decorator.decorate(tooltip);
+		}
 
 		lastSelectedParam = -1;
 		updateText(0);
@@ -194,7 +211,8 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private ParameterizedCompletionChoicesWindow createParamChoicesWindow() {
 		ParameterizedCompletionChoicesWindow pcw =
-			new ParameterizedCompletionChoicesWindow(tooltip.getOwner(), ac);
+			new ParameterizedCompletionChoicesWindow(tooltip.getOwner(),
+														ac, this);
 		pcw.initialize(pc);
 		return pcw;
 	}
@@ -251,6 +269,35 @@ class ParameterizedCompletionDescriptionToolTip {
 			}
 		}
 		return paramHighlights;
+	}
+
+
+	/**
+	 * Inserts the choice selected in the parameter choices window.
+	 *
+	 * @return Whether the choice was inserted.  This will be <code>false</code>
+	 *         if the window is not visible, or no choice is selected.
+	 */
+	boolean insertSelectedChoice() {
+		if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
+			String choice = paramChoicesWindow.getSelectedChoice();
+			if (choice!=null) {
+				JTextComponent tc = ac.getTextComponent();
+				Highlight h = getCurrentParameterHighlight();
+				if (h!=null) {
+					 // "+1" is a workaround for Java Highlight issues.
+					tc.setSelectionStart(h.getStartOffset()+1);
+					tc.setSelectionEnd(h.getEndOffset());
+					tc.replaceSelection(choice);
+					moveToNextParam();
+				}
+				else {
+					UIManager.getLookAndFeel().provideErrorFeedback(tc);
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 
@@ -704,20 +751,7 @@ class ParameterizedCompletionDescriptionToolTip {
 			// If the param choices window is visible and something is chosen,
 			// replace the parameter with it and move to the next one.
 			if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
-				String choice = paramChoicesWindow.getSelectedChoice();
-				if (choice!=null) {
-					JTextComponent tc = ac.getTextComponent();
-					Highlight h = getCurrentParameterHighlight();
-					if (h!=null) {
-						 // "+1" is a workaround for Java Highlight issues.
-						tc.setSelectionStart(h.getStartOffset()+1);
-						tc.setSelectionEnd(h.getEndOffset());
-						tc.replaceSelection(choice);
-						moveToNextParam();
-					}
-					else {
-						UIManager.getLookAndFeel().provideErrorFeedback(tc);
-					}
+				if (insertSelectedChoice()) {
 					return;
 				}
 			}
