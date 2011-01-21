@@ -696,16 +696,45 @@ class ParameterizedCompletionDescriptionToolTip {
 		StringBuffer sb = new StringBuffer("<html>");
 		int paramCount = pc.getParamCount();
 		for (int i=0; i<paramCount; i++) {
+
 			if (i==selectedParam) {
 				sb.append("<b>");
 			}
-			sb.append(pc.getParam(i).toString());
+
+			// Some parameter types may have chars in them unfriendly to HTML
+			// (such as type parameters in Java).  We need to take care to
+			// escape these.
+			String temp = pc.getParam(i).toString();
+			int lt = temp.indexOf('<');
+			if (lt>-1) {
+				sb.append(temp.substring(0, lt));
+				sb.append("&lt;");
+				for (int j=lt+1; j<temp.length(); j++) {
+					char ch = temp.charAt(j);
+					switch (ch) {
+						case '<':
+							sb.append("&lt;");
+							break;
+						case '>':
+							sb.append("&gt;");
+							break;
+						default:
+							sb.append(ch);
+							break;
+					}
+				}
+			}
+			else {
+				sb.append(temp);
+			}
+
 			if (i==selectedParam) {
 				sb.append("</b>");
 			}
 			if (i<paramCount-1) {
 				sb.append(pc.getProvider().getParameterListSeparator());
 			}
+
 		}
 
 		if (selectedParam>=0 && selectedParam<paramCount) {
