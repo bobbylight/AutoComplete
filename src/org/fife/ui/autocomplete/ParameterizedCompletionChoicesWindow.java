@@ -34,13 +34,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
+
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
 
 /**

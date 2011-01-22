@@ -55,6 +55,8 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 import javax.swing.text.Highlighter.Highlight;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
 
 /**
  * A "tool tip" that displays information on the function or method currently
