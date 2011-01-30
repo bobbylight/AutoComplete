@@ -243,11 +243,13 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 		if (choicesListList!=null && param>=0 && param<choicesListList.size()) {
 
 			List choices = (List)choicesListList.get(param);
-			for (Iterator i=choices.iterator(); i.hasNext(); ) {
-				Completion c = (Completion)i.next();
-				String choice = c.getReplacementText();
-				if (prefix==null || Util.startsWithIgnoreCase(choice, prefix)) {
-					temp.add(c);
+			if (choices!=null) {
+				for (Iterator i=choices.iterator(); i.hasNext(); ) {
+					Completion c = (Completion)i.next();
+					String choice = c.getReplacementText();
+					if (prefix==null || Util.startsWithIgnoreCase(choice, prefix)) {
+						temp.add(c);
+					}
 				}
 			}
 
