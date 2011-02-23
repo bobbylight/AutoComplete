@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- 
+
+	This is the Ant build script for autocomplete.jar.
+	Available targets include:
+	
+		1. compile:         Compiles all org.fife classes into ${class-dir}.
+		2. make-jar:        Createqs the jar file.
+		3. make-source-zip: Creates a source zip file.
+		3. make-javadoc:    Creates the javadoc for RSyntaxTextArea.
+
+	Author:   Robert Futrell
+	Version:  1.4
+	Date:     22feb2009
+
+-->
+
+
+<project name="AutoComplete" default="make-jar" basedir=".">
+
+	<description>AutoComplete build file</description>
+
+
+	<!-- Set global properties for this build. -->
+	<property name="version"          value="1.5.0"/>
+	<property name="source-dir"       location="src"/>
+	<property name="class-dir"        location="ant-classes"/>
+	<property name="dist-dir"         location="dist"/>
+	<property name="doc-dir"          location="javadoc"/>
+	<property name="debug"            value="true"/>
+	<property name="debuglevel"       value="lines,var,source"/>
+	<property name="java-level"       value="1.4"/>
+
+
+	<!-- Compiles the classes.  -->
+	<target name="compile" description="Compile the source">
+		<delete includeEmptyDirs="true" quiet="true" dir="${class-dir}"/>
+		<mkdir dir="${class-dir}"/>
+		<javac srcdir="${source-dir}" destdir="${class-dir}"
+			classpath="../RSyntaxTextArea/dist/rsyntaxtextarea.jar"
+			deprecation="yes" debug="${debug}" debuglevel="${debuglevel}"
+			source="${java-level}" target="${java-level}"/>
+	</target>
+
+
+	<!-- Creates the jar file. -->
+	<target name="make-jar" depends="compile" description="Create the jar file">
+		<delete includeEmptyDirs="true" quiet="true" dir="${dist-dir}"/>
+		<mkdir dir="${dist-dir}"/>
+		<jar destfile="${dist-dir}/autocomplete.jar">
+			<fileset dir="${class-dir}"/>
+			<fileset dir="${source-dir}">
+				<include name="**/*.png"/>
+			</fileset>
+			<fileset dir="i18n"/>
+			<manifest>
+				<attribute name="Class-Path" value="rsyntaxtextarea.jar"/>
+				<attribute name="Specification-Title" value="AutoComplete"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Implementation-Title" value="org.fife.ui"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+			</manifest>
+		</jar>
+		<copy todir="${dist-dir}" file="../RSyntaxTextArea/dist/rsyntaxtextarea.jar"/>
+	</target>
+
+
+	<!-- Builds the source zip file. -->
+	<target name="make-source-zip" description="Builds the source zip file">
+		<zip destfile="autocomplete_${version}_Source.zip">
+			<fileset dir=".">
+				<include name="src/**"/>
+				<include name="distfiles/**"/>
+				<include name="i18n/**"/>
+				<include name="lang/**"/>
+				<include name="build.xml"/>
+			</fileset>
+		</zip>
+	</target>
+
+
+	<!-- Builds the javadoc.  -->
+	<target name="make-javadoc" depends="compile">
+		<javadoc destdir="${doc-dir}" author="true" version="true"
+			 	breakiterator="yes" classpath="../RSyntaxTextArea/dist/rsyntaxtextarea.jar">
+			<packageset dir="${source-dir}" defaultexcludes="yes">
+				<include name="org/**"/>
+			</packageset>
+		</javadoc>
+	</target>
+
+
+</project>
