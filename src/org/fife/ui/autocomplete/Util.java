@@ -168,12 +168,10 @@ public class Util {
 										getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = env.getScreenDevices();
 		for (int i=0; i<devices.length; i++) {
-			GraphicsConfiguration[] configs = devices[i].getConfigurations();
-			for (int j=0; j<configs.length; j++) {
-				Rectangle gcBounds = configs[j].getBounds();
-				if (gcBounds.contains(x, y)) {
-					return gcBounds;
-				}
+			GraphicsConfiguration config = devices[i].getDefaultConfiguration();
+			Rectangle gcBounds = config.getBounds();
+			if (gcBounds.contains(x, y)) {
+				return gcBounds;
 			}
 		}
 		// If point is outside all monitors, default to default monitor (?)
