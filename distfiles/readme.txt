@@ -72,3 +72,10 @@ robert -at- fifesoft dot com.
   
      http://famfamfam.com/lab/icons/silk/
 
+  The "bullet_black.png" icon is an edited version of "bullet_black.png" in the
+  Silk icon set noted above.  It can be considered to be distributed under the
+  same Creative Commons 3.0 License.
+  
+  "osx_sizegrip.png" is a reproduction of the size grip used on native OS X
+  windows.  It is distributed under the same LGPL license as the meat of the
+  AutoComplete library.
