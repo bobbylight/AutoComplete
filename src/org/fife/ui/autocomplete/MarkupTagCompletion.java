@@ -96,6 +96,18 @@ public class MarkupTagCompletion extends AbstractCompletion {
 
 
 	/**
+	 * Returns all attributes of this tag.
+	 *
+	 * @return A list of {@link Parameter}s.
+	 * @see #getAttribute(int)
+	 * @see #getAttributeCount()
+	 */
+	public List getAttributes() {
+		return attrs;
+	}
+
+
+	/**
 	 * Returns the specified {@link ParameterizedCompletion.Parameter}.
 	 *
 	 * @param index The index of the attribute to retrieve.
