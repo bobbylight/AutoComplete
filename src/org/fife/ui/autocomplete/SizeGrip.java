@@ -122,14 +122,14 @@ class SizeGrip extends JPanel {
 		super.paintComponent(g);
 
 		Dimension dim = getSize();
-		Color c1 = UIManager.getColor("Label.disabledShadow");
-		Color c2 = UIManager.getColor("Label.disabledForeground");
 
 		if (osxSizeGrip!=null) {
 			g.drawImage(osxSizeGrip, dim.width-16, dim.height-16, null);
 			return;
 		}
 
+		Color c1 = UIManager.getColor("Label.disabledShadow");
+		Color c2 = UIManager.getColor("Label.disabledForeground");
 		ComponentOrientation orientation = getComponentOrientation();
 
 		if (orientation.isLeftToRight()) {

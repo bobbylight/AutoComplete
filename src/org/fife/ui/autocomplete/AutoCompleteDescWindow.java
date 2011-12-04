@@ -24,7 +24,10 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -49,6 +52,8 @@ import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -154,13 +159,15 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		ComponentOrientation o = ac.getTextComponentOrientation();
 		
 		JPanel cp = new JPanel(new BorderLayout());
-//		cp.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		cp.setBorder(TipUtil.getToolTipBorder());
 
 		descArea = new JEditorPane("text/html", null);
 		TipUtil.tweakTipEditorPane(descArea);
 		descArea.addHyperlinkListener(this);
 		scrollPane = new JScrollPane(descArea);
-		scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+		Border b = BorderFactory.createEmptyBorder();
+		scrollPane.setBorder(b);
+		scrollPane.setViewportBorder(b);
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
 		cp.add(scrollPane);
@@ -173,6 +180,16 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		descWindowNavBar.add(new JButton(forwardAction));
 
 		bottomPanel = new JPanel(new BorderLayout());
+		b = new AbstractBorder() {
+			public Insets getBorderInsets(Component c) { 
+				return new Insets(1, 0, 0, 0);
+			}
+			public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
+				g.setColor(UIManager.getColor("controlDkShadow"));
+				g.drawLine(x,y, x+w-1,y);
+			}
+		};
+		bottomPanel.setBorder(b);
 		SizeGrip rp = new SizeGrip();
 		bottomPanel.add(descWindowNavBar, BorderLayout.LINE_START);
 		bottomPanel.add(rp, BorderLayout.LINE_END);
@@ -378,6 +395,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		TipUtil.tweakTipEditorPane(descArea);
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
+		((JPanel)getContentPane()).setBorder(TipUtil.getToolTipBorder());
 	}
 
 

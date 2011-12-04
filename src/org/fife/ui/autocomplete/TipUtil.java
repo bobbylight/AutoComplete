@@ -29,6 +29,7 @@ import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.text.html.HTMLDocument;
 
@@ -60,9 +61,10 @@ class TipUtil {
 		Color c = UIManager.getColor("ToolTip.background");
 
 		// Tooltip.background is wrong color on Nimbus (!)
-		if (c==null || UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+		boolean isNimbus = isNimbusLookAndFeel();
+		if (c==null || isNimbus) {
 			c = UIManager.getColor("info"); // Used by Nimbus (and others)
-			if (c==null) {
+			if (c==null || (isNimbus && isDerivedColor(c))) {
 				c = SystemColor.info; // System default
 			}
 		}
@@ -79,6 +81,51 @@ class TipUtil {
 
 
 	/**
+	 * Returns the border used by tool tips in this look and feel.
+	 *
+	 * @return The border.
+	 */
+	public static Border getToolTipBorder() {
+
+		Border border = UIManager.getBorder("ToolTip.border");
+
+		if (border==null || isNimbusLookAndFeel()) {
+			border = UIManager.getBorder("nimbusBorder");
+			if (border==null) {
+				border = BorderFactory.createLineBorder(SystemColor.controlDkShadow);
+			}
+		}
+
+		return border;
+
+	}
+
+
+	/**
+	 * Returns whether a color is a Nimbus DerivedColor, which is troublesome
+	 * in that it doesn't use its RGB values (uses HSB instead?) and so
+	 * querying them is useless.
+	 *
+	 * @param c The color to check.
+	 * @return Whether it is a DerivedColor
+	 */
+	private static final boolean isDerivedColor(Color c) {
+		return c!=null && (c.getClass().getName().endsWith(".DerivedColor") ||
+				c.getClass().getName().endsWith(".DerivedColor$UIResource"));
+	}
+
+
+	/**
+	 * Returns whether the Nimbus Look and Feel is installed.
+	 *
+	 * @return Whether the current LAF is Nimbus.
+	 */
+	private static final boolean isNimbusLookAndFeel() {
+		return UIManager.getLookAndFeel().getName().equals("Nimbus");
+	}
+
+
+	/**
 	 * Tweaks a <code>JEditorPane</code> so it can be used to render the
 	 * content in a focusable pseudo-tool tip.  It is assumed that the editor
 	 * pane is using an <code>HTMLDocument</code>.
@@ -88,7 +135,8 @@ class TipUtil {
 	public static void tweakTipEditorPane(JEditorPane textArea) {
 
 		// Jump through a few hoops to get things looking nice in Nimbus
-		if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+		boolean isNimbus = isNimbusLookAndFeel();
+		if (isNimbus) {
 			Color selBG = textArea.getSelectionColor();
 			Color selFG = textArea.getSelectedTextColor();
 			textArea.setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
@@ -106,8 +154,8 @@ class TipUtil {
 		// default foreground becomes black, which may not match all LAF's
 		// (e.g. Substance).
 		Color fg = UIManager.getColor("Label.foreground");
-		if (fg==null) {
-			fg = SystemColor.text;
+		if (fg==null || (isNimbus && isDerivedColor(fg))) {
+			fg = SystemColor.textText;
 		}
 		textArea.setForeground(fg);
 
