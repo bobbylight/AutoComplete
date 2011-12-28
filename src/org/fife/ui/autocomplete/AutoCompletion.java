@@ -692,11 +692,16 @@ public class AutoCompletion {
 	 */
 	protected int refreshPopupWindow() {
 
+		// A return value of null => don't suggest completions
+		String text = provider.getAlreadyEnteredText(textComponent);
+		if (text==null && !isPopupVisible()) {
+			return getLineOfCaret();
+		}
+
 		// If the popup is currently visible, and they type a space (or any
 		// character that resets the completion list to "all completions"),
 		// the popup window should be hidden instead of being reset to show
 		// everything.
-		String text = provider.getAlreadyEnteredText(textComponent);
 		int textLen = text==null ? 0 : text.length();
 		if (textLen==0) {
 			if (isPopupVisible()) {
