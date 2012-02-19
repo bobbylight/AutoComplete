@@ -983,7 +983,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		 * Installs this listener onto a text component.
 		 *
 		 * @param tc The text component to install onto.
-		 * @param addParamListStart Whether or not
+		 * @param addParamStartList Whether or not
 		 *        {@link CompletionProvider#getParameterListStart()} should be
 		 *        added to the text component.
 		 * @see #uninstall()
