@@ -23,7 +23,7 @@
 
 
 	<!-- Set global properties for this build. -->
-	<property name="version"          value="2.0.0"/>
+	<property name="version"          value="2.0.2"/>
 	<property name="source-dir"       location="src"/>
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>
@@ -62,7 +62,10 @@
 				<attribute name="Implementation-Version" value="${version}"/>
 			</manifest>
 		</jar>
-		<copy todir="${dist-dir}" file="../RSyntaxTextArea/dist/rsyntaxtextarea.jar"/>
+		<!--<copy todir="${dist-dir}" file="../RSyntaxTextArea/dist/rsyntaxtextarea.jar"/>-->
+		<copy todir="${dist-dir}">
+			<fileset dir="distfiles"/>
+		</copy>
 	</target>
 
 
@@ -73,7 +76,6 @@
 				<include name="src/**"/>
 				<include name="distfiles/**"/>
 				<include name="i18n/**"/>
-				<include name="lang/**"/>
 				<include name="build.xml"/>
 			</fileset>
 		</zip>

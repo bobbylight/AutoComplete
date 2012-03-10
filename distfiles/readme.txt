@@ -32,8 +32,8 @@ robert -at- fifesoft dot com.
 
 * License
 
-  AutoComplete is licensed under the LGPL.  Please see the included license
-  file.
+  AutoComplete is licensed under a modified BSD liense.  Please see the
+  included AutoComplete.License.txt file.
 
 * Feedback
 
@@ -77,5 +77,5 @@ robert -at- fifesoft dot com.
   same Creative Commons 3.0 License.
   
   "osx_sizegrip.png" is a reproduction of the size grip used on native OS X
-  windows.  It is distributed under the same LGPL license as the meat of the
-  AutoComplete library.
+  windows.  It is distributed under the same modified BSD license as the meat
+  of the AutoComplete library.
