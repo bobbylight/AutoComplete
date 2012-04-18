@@ -107,14 +107,14 @@ public interface ParameterizedCompletion extends Completion {
 
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			if (type!=null) {
-				sb.append(type);
+			if (getType()!=null) {
+				sb.append(getType());
 			}
-			if (name!=null) {
-				if (type!=null) {
+			if (getName()!=null) {
+				if (getType()!=null) {
 					sb.append(' ');
 				}
-				sb.append(name);
+				sb.append(getName());
 			}
 			return sb.toString();
 		}
