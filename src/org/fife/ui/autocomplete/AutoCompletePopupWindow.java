@@ -40,6 +40,8 @@ import javax.swing.plaf.ListUI;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
 
 /**
  * The actual popup window of choices.  When visible, this window intercepts
@@ -165,6 +167,13 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		contentPane.add(sp);
 		setContentPane(contentPane);
 		applyComponentOrientation(o);
+
+		// Give apps a chance to decorate us with drop shadows, etc.
+		PopupWindowDecorator decorator = PopupWindowDecorator.get();
+		if (decorator!=null) {
+			decorator.decorate(this);
+		}
+
 		pack();
 
 		setFocusableWindowState(false);

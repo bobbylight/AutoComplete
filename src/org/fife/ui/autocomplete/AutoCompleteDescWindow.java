@@ -43,6 +43,8 @@ import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
 
 /**
  * The optional "description" window that describes the currently selected
@@ -184,6 +186,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 
 		applyComponentOrientation(o);
 		setFocusableWindowState(false);
+
+		// Give apps a chance to decorate us with drop shadows, etc.
+		PopupWindowDecorator decorator = PopupWindowDecorator.get();
+		if (decorator!=null) {
+			decorator.decorate(this);
+		}
 
 		history = new ArrayList(1); // Usually small
 		historyPos = -1;
