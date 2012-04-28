@@ -227,8 +227,10 @@ public class FunctionCompletion extends VariableCompletion
 	 * @see #getParamCount()
 	 */
 	public void setParams(List params) {
-		// Deep copy so parsing can re-use its array.
-		this.params = new ArrayList(params);
+		if (params!=null) {
+			// Deep copy so parsing can re-use its array.
+			this.params = new ArrayList(params);
+		}
 	}
 
 
