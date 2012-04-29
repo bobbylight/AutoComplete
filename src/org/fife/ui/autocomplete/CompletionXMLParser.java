@@ -13,14 +13,16 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
 /**
- * Parser for an XML file describing a procedural language such as C.<p>
- *
- * Error checking is minimal to non-existent; that will be handled via a
- * schema in the future.
+ * Parser for an XML file describing a procedural language such as C.  XML
+ * files will be validated against the <code>CompletionXml.dtd</code> DTD
+ * found in this package.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -288,6 +290,10 @@ public class CompletionXMLParser extends DefaultHandler {
 	}
 
 
+	public void error(SAXParseException e) throws SAXException {
+		throw e;
+	}
+
 	/**
 	 * Returns the completions found after parsing the XML.
 	 *
@@ -347,6 +353,12 @@ public class CompletionXMLParser extends DefaultHandler {
 		paramSeparator = null;
 	}
 
+
+    public InputSource resolveEntity(String publicID, 
+			String systemID) throws SAXException {
+		return new InputSource(getClass().
+				getResourceAsStream("CompletionXml.dtd"));
+	}
 
 	/**
 	 * Sets the class loader to use when loading custom classes to use for
@@ -418,6 +430,11 @@ public class CompletionXMLParser extends DefaultHandler {
 				funcCompletionType = attrs.getValue("type");
 			}
 		}
+	}
+
+
+	public void warning(SAXParseException e) throws SAXException {
+		throw e;
 	}
 
 

@@ -269,7 +269,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 	/**
 	 * Loads completions from an XML file.  The XML should validate against
-	 * the completion XML schema.
+	 * <code>CompletionXml.dtd</code>.
 	 *
 	 * @param file An XML file to load from.
 	 * @throws IOException If an IO error occurs.
@@ -287,7 +287,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 	/**
 	 * Loads completions from an XML input stream.  The XML should validate
-	 * against the completion XML schema.
+	 * against <code>CompletionXml.dtd</code>.
 	 *
 	 * @param in The input stream to read from.
 	 * @throws IOException If an IO error occurs.
@@ -299,7 +299,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 	/**
 	 * Loads completions from an XML input stream.  The XML should validate
-	 * against the completion XML schema.
+	 * against <code>CompletionXml.dtd</code>.
 	 *
 	 * @param in The input stream to read from.
 	 * @param cl The class loader to use when loading any extra classes defined
@@ -313,6 +313,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		//long start = System.currentTimeMillis();
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
+		factory.setValidating(true);
 		CompletionXMLParser handler = new CompletionXMLParser(this, cl);
 		BufferedInputStream bin = new BufferedInputStream(in);
 		try {
@@ -343,7 +344,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 	/**
 	 * Loads completions from an XML file.  The XML should validate against
-	 * the completion XML schema.
+	 * <code>CompletionXml.dtd</code>.
 	 *
 	 * @param resource A resource the current ClassLoader can get to.
 	 * @throws IOException If an IO error occurs.
