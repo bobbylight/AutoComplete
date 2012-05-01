@@ -169,9 +169,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		applyComponentOrientation(o);
 
 		// Give apps a chance to decorate us with drop shadows, etc.
-		PopupWindowDecorator decorator = PopupWindowDecorator.get();
-		if (decorator!=null) {
-			decorator.decorate(this);
+		if (Util.getShouldAllowDecoratingMainAutoCompleteWindows()) {
+			PopupWindowDecorator decorator = PopupWindowDecorator.get();
+			if (decorator!=null) {
+				decorator.decorate(this);
+			}
 		}
 
 		pack();

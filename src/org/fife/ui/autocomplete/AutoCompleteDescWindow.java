@@ -188,9 +188,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		setFocusableWindowState(false);
 
 		// Give apps a chance to decorate us with drop shadows, etc.
-		PopupWindowDecorator decorator = PopupWindowDecorator.get();
-		if (decorator!=null) {
-			decorator.decorate(this);
+		if (Util.getShouldAllowDecoratingMainAutoCompleteWindows()) {
+			PopupWindowDecorator decorator = PopupWindowDecorator.get();
+			if (decorator!=null) {
+				decorator.decorate(this);
+			}
 		}
 
 		history = new ArrayList(1); // Usually small

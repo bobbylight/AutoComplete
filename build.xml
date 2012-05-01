@@ -23,7 +23,7 @@
 
 
 	<!-- Set global properties for this build. -->
-	<property name="version"          value="2.0.2"/>
+	<property name="version"          value="2.0.3"/>
 	<property name="source-dir"       location="src"/>
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>
@@ -51,6 +51,7 @@
 		<jar destfile="${dist-dir}/autocomplete.jar">
 			<fileset dir="${class-dir}"/>
 			<fileset dir="${source-dir}">
+				<include name="**/*.dtd"/>
 				<include name="**/*.png"/>
 			</fileset>
 			<fileset dir="i18n"/>

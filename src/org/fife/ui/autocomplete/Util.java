@@ -16,6 +16,8 @@ import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.net.URI;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
 
 /**
  * Utility methods for the auto-complete framework.
@@ -24,6 +26,17 @@ import java.net.URI;
  * @version 1.0
  */
 public class Util {
+
+	/**
+	 * If this system property is <code>true</code>, then even the "main" two
+	 * auto-complete windows will allow window decorations via
+	 * {@link PopupWindowDecorator}.  If this property is undefined or
+	 * <code>false</code>, they won't honor such decorations.  This is due to
+	 * certain performance issues with translucent windows (used for drop
+	 * shadows), even as of Java 7u2.
+	 */
+	public static final String PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS =
+		"org.fife.ui.autocomplete.allowDecoratedAutoCompleteWindows";
 
 	private static boolean desktopCreationAttempted;
 	private static Object desktop;
@@ -162,6 +175,20 @@ public class Util {
 		}
 		// If point is outside all monitors, default to default monitor (?)
 		return env.getMaximumWindowBounds();
+	}
+
+
+	/**
+	 * Give apps a chance to decorate us with drop shadows, etc. Since very
+	 * scrolly things such as lists (of e.g. completions) are *very* slow when
+	 * in per-pixel translucent windows, even as of Java 7u2, we force the user
+	 * to specify an extra option for the two "main" auto-complete windows.
+	 *
+	 * @return Whether to allow decorating the main auto-complete windows.
+	 * @see #PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS
+	 */
+	public static boolean getShouldAllowDecoratingMainAutoCompleteWindows() {
+		return Boolean.getBoolean(PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS);
 	}
 
 
