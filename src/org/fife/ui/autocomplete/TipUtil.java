@@ -162,7 +162,7 @@ class TipUtil {
 		URL url = TipUtil.class.getResource("bullet_black.png");
 		if (url!=null) {
 			doc.getStyleSheet().addRule(
-				"ul { list-style-image: " + url.toString() + "; }");
+				"ul { list-style-image: '" + url.toString() + "'; }");
 		}
 
 	}

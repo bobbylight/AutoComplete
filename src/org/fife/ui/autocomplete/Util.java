@@ -131,6 +131,9 @@ public class Util {
 			return null;
 		}
 
+		// Don't assume 0xff alpha
+		//return "#" + Integer.toHexString(c.getRGB()&0xffffff).substring(2);
+
 		StringBuffer sb = new StringBuffer("#");
 		int r = c.getRed();
 		if (r<16) {
