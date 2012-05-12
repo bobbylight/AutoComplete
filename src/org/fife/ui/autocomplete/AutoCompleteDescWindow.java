@@ -16,14 +16,12 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -53,7 +51,8 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  * @author Robert Futrell
  * @version 1.0
  */
-class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
+class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
+				DescWindowCallback {
 
 	/**
 	 * The parent AutoCompletion instance.
@@ -208,10 +207,10 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	/**
 	 * Sets the currently displayed description and updates the history.
 	 *
-	 * @param html The new description.
+	 * @param historyItem The item to add to the history.
 	 */
-	private void addToHistory(String html) {
-		history.add(++historyPos, html);
+	private void addToHistory(HistoryEntry historyItem) {
+		history.add(++historyPos, historyItem);
 		clearHistoryAfterCurrentPos();
 		setActionStates();
 	}
@@ -280,14 +279,20 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		HyperlinkEvent.EventType type = e.getEventType();
 
 		if (type.equals(HyperlinkEvent.EventType.ACTIVATED)) {
+
+			// Custom hyperlink handler for this completion type
+			ExternalURLHandler handler = ac.getExternalURLHandler();
+			if (handler!=null) {
+				HistoryEntry current = (HistoryEntry)history.
+												get(historyPos);
+				handler.urlClicked(e, current.completion, this);
+				return;
+			}
+
+			// No custom handler...
 			URL url = e.getURL();
 			if (url!=null) {
-				ExternalURLHandler handler = ac.getExternalURLHandler();
-				if (handler!=null) {
-					handler.urlClicked(url);
-					return;
-				}
-				// No handler - try loading in external browser (Java 6+ only).
+				// Try loading in external browser (Java 6+ only).
 				try {
 					Util.browse(new URI(url.toString()));
 				} catch (/*IO*/URISyntaxException ioe) {
@@ -315,6 +320,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 					}
 				}
 			}
+
 		}
 
 	}
@@ -324,8 +330,25 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 * Enables or disables the back and forward actions as appropriate.
 	 */
 	private void setActionStates() {
-		backAction.setEnabled(historyPos>0);
-		forwardAction.setEnabled(historyPos>-1 && historyPos<history.size()-1);
+		// TODO: Localize this text!
+		String desc = null;
+		if (historyPos>0) {
+			backAction.setEnabled(true);
+			desc = "Back to " + history.get(historyPos-1);
+		}
+		else {
+			backAction.setEnabled(false);
+		}
+		backAction.putValue(Action.SHORT_DESCRIPTION, desc);
+		if (historyPos>-1 && historyPos<history.size()-1) {
+			forwardAction.setEnabled(true);
+			desc = "Forward to " + history.get(historyPos+1);
+		}
+		else {
+			forwardAction.setEnabled(false);
+			desc = null;
+		}
+		forwardAction.putValue(Action.SHORT_DESCRIPTION, desc);
 	}
 
 
@@ -348,26 +371,51 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 	 *        (as opposed to clearing it and starting anew).
 	 */
 	protected void setDescriptionFor(Completion item, boolean addToHistory) {
+		setDescriptionFor(item, null, addToHistory);
+	}
+
+
+	/**
+	 * Sets the description displayed in this window.
+	 *
+	 * @param item The item whose description you want to display.
+	 * @parma anchor The anchor to jump to, or <code>null</code> if none.
+	 * @param addToHistory Whether to add this page to the page history
+	 *        (as opposed to clearing it and starting anew).
+	 */
+	protected void setDescriptionFor(Completion item, String anchor,
+									boolean addToHistory) {
 		timer.stop();
-		timerAction.setCompletion(item, addToHistory);
+		timerAction.setCompletion(item, anchor, addToHistory);
 		timer.start();
 	}
 
 
-	private void setDisplayedDesc(String desc, boolean addToHistory) {
+	private void setDisplayedDesc(Completion completion, final String anchor,
+									boolean addToHistory) {
 
+		String desc = completion==null ? null : completion.getSummary();
 		if (desc==null) {
 			desc = "<html><em>" + getString("NoDescAvailable") + "</em>";
 		}
 		descArea.setText(desc);
-		descArea.setCaretPosition(0); // In case of scrolling
+		if (anchor!=null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					descArea.scrollToReference(anchor);
+				}
+			});
+		}
+		else {
+			descArea.setCaretPosition(0); // In case of scrolling
+		}
 
 		if (!addToHistory) {
 			// Remove everything first if this is going to be the only
 			// thing in history.
 			clearHistory();
 		}
-		addToHistory(desc);
+		addToHistory(new HistoryEntry(completion, desc, null));
 
 	}
 
@@ -381,6 +429,19 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 		}
 		super.setVisible(visible);
 	}
+
+
+	/**
+	 * Callback for custom <code>ExternalURLHandler</code>s.
+	 *
+	 * @param completion The completion to display.
+	 * @param anchor The anchor in the HTML to jump to, or <code>null</code>
+	 *        if none.
+	 */
+	public void showSummaryFor(Completion completion, String anchor) {
+		setDescriptionFor(completion, anchor, true);
+	}
+
 
 	/**
 	 * Called by the parent completion popup window the LookAndFeel is updated.
@@ -396,23 +457,54 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 
 
 	/**
+	 * A completion and its cached summary text.
+	 */
+	private static class HistoryEntry {
+
+		public Completion completion;
+		public String summary;
+		public String anchor;
+
+		public HistoryEntry(Completion completion, String summary,
+									String anchor) {
+			this.completion = completion;
+			this.summary = summary;
+			this.anchor = anchor;
+		}
+
+		/**
+		 * Overridden to display a short name for the completion, since it's
+		 * used in the tool tips for the "back" and "forward" buttons.
+		 *
+		 * @return A string representation of this history entry.
+		 */
+		public String toString() {
+			return completion.getInputText();
+		}
+
+	}
+
+
+	/**
 	 * Action that actually updates the summary text displayed.
 	 */
 	private class TimerAction extends AbstractAction {
 
 		private Completion completion;
+		private String anchor;
 		private boolean addToHistory;
 
 		/**
 		 * Called when the timer is fired.
 		 */
 		public void actionPerformed(ActionEvent e) {
-			String desc = completion==null ? null : completion.getSummary();
-			setDisplayedDesc(desc, addToHistory);
+			setDisplayedDesc(completion, anchor, addToHistory);
 		}
 
-		public void setCompletion(Completion c, boolean addToHistory) {
+		public void setCompletion(Completion c, String anchor,
+									boolean addToHistory) {
 			this.completion = c;
+			this.anchor = anchor;
 			this.addToHistory = addToHistory;
 		}
 
@@ -428,20 +520,22 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			String img = "org/fife/ui/autocomplete/arrow_" +
 						(ltr ? "left.png" : "right.png");
 			ClassLoader cl = getClass().getClassLoader();
-			URL url = cl.getResource(img);
-			try {
-				Icon icon = new ImageIcon(ImageIO.read(url));
-				putValue(Action.SMALL_ICON, icon);
-			} catch (IOException ioe) { // Never happens
-				ioe.printStackTrace();
-				putValue(Action.SHORT_DESCRIPTION, "Back");
-			}
+			Icon icon = new ImageIcon(cl.getResource(img));
+			putValue(Action.SMALL_ICON, icon);
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			if (historyPos>0) {
-				descArea.setText((String)history.get(--historyPos));
-				descArea.setCaretPosition(0);
+				HistoryEntry pair = (HistoryEntry)history.
+													get(--historyPos);
+				descArea.setText(pair.summary);
+				if (pair.anchor!=null) {
+					System.out.println("Scrolling to: " + pair.anchor);
+					descArea.scrollToReference(pair.anchor);
+				}
+				else {
+					descArea.setCaretPosition(0);
+				}
 				setActionStates();
 			}
 		}
@@ -458,20 +552,22 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener {
 			String img = "org/fife/ui/autocomplete/arrow_" +
 							(ltr ? "right.png" : "left.png");
 			ClassLoader cl = getClass().getClassLoader();
-			URL url = cl.getResource(img);
-			try {
-				Icon icon = new ImageIcon(ImageIO.read(url));
-				putValue(Action.SMALL_ICON, icon);
-			} catch (IOException ioe) { // Never happens
-				ioe.printStackTrace();
-				putValue(Action.SHORT_DESCRIPTION, "Forward");
-			}
+			Icon icon = new ImageIcon(cl.getResource(img));
+			putValue(Action.SMALL_ICON, icon);
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			if (history!=null && historyPos<history.size()-1) {
-				descArea.setText((String)history.get(++historyPos));
-				descArea.setCaretPosition(0);
+				HistoryEntry pair = (HistoryEntry)history.
+											get(++historyPos);
+				descArea.setText(pair.summary);
+				if (pair.anchor!=null) {
+					System.out.println("Scrolling to: " + pair.anchor);
+					descArea.scrollToReference(pair.anchor);
+				}
+				else {
+					descArea.setCaretPosition(0);
+				}
 				setActionStates();
 			}
 		}
