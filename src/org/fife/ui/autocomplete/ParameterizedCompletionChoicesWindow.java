@@ -137,7 +137,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	public void incSelection(int amount) {
 		int selection = list.getSelectedIndex();
 		selection += amount;
-		if (selection<0) {
+		if (selection<=0) {
 			// Account for nothing selected yet
 			selection = model.getSize()-1;//+= model.getSize();
 		}
