@@ -11,7 +11,9 @@ package org.fife.ui.autocomplete;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.Position;
 
 
 /**
@@ -144,12 +146,63 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
+	public ParameterizedCompletionInsertionInfo getInsertionInfo(
+			JTextComponent tc, boolean addParamStartList) {
+
+		ParameterizedCompletionInsertionInfo info =
+			new ParameterizedCompletionInsertionInfo();
+
+		StringBuffer sb = new StringBuffer();
+		if (addParamStartList) {
+			sb.append(getProvider().getParameterListStart());
+		}
+		int dot = tc.getCaretPosition() + sb.length();
+		int paramCount = getParamCount();
+
+		// Get the range in which the caret can move before we hide
+		// this tool tip.
+		int minPos = dot;
+		Position maxPos = null;
+		try {
+			maxPos = tc.getDocument().createPosition(dot-sb.length());
+		} catch (BadLocationException ble) {
+			ble.printStackTrace(); // Never happens
+		}
+		info.setCaretRange(minPos, maxPos);
+		int firstParamLen = 0;
+
+		// Create the text to insert (keep it one completion for
+		// performance and simplicity of undo/redo).
+		int start = dot;
+		for (int i=0; i<paramCount; i++) {
+			Parameter param = getParam(i);
+			String paramText = getParamText(param);
+			if (i==0) {
+				firstParamLen = paramText.length();
+			}
+			sb.append(paramText);
+			int end = start + paramText.length();
+			info.addReplacementLocation(start, end);
+			// Patch for param. list separators with length > 2 -
+			// thanks to Matthew Adereth!
+			String sep = getProvider().getParameterListSeparator();
+			if (i<paramCount-1 && sep!=null) {
+				sb.append(sep);
+				start = end + sep.length();
+			}
+		}
+		sb.append(getProvider().getParameterListEnd());
+
+		int selectionEnd = paramCount>0 ? (dot+firstParamLen) : dot;
+		info.setInitialSelection(dot, selectionEnd);
+		info.setTextToInsert(sb.toString());
+		return info;
+
+	}
+
+
 	/**
-	 * Returns the specified {@link ParameterizedCompletion.Parameter}.
-	 *
-	 * @param index The index of the parameter to retrieve.
-	 * @return The parameter.
-	 * @see #getParamCount()
+	 * {@inheritDoc}
 	 */
 	public Parameter getParam(int index) {
 		return (Parameter)params.get(index);
@@ -164,6 +217,24 @@ public class FunctionCompletion extends VariableCompletion
 	 */
 	public int getParamCount() {
 		return params==null ? 0 : params.size();
+	}
+
+
+	/**
+	 * Returns the text to insert for a parameter.
+	 *
+	 * @param param The parameter.
+	 * @return The text.
+	 */
+	private String getParamText(ParameterizedCompletion.Parameter param) {
+		String text = param.getName();
+		if (text==null) {
+			text = param.getType();
+			if (text==null) { // Shouldn't ever happen
+				text = "arg";
+			}
+		}
+		return text;
 	}
 
 
@@ -194,20 +265,7 @@ public class FunctionCompletion extends VariableCompletion
 
 
 	/**
-	 * Returns the tool tip text to display for mouse hovers over this
-	 * completion.<p>
-	 *
-	 * Note that for this functionality to be enabled, a
-	 * <tt>JTextComponent</tt> must be registered with the
-	 * <tt>ToolTipManager</tt>, and the text component must know to search
-	 * for this value.  In the case of an
-	 * <a href="http://fifesoft.com/rsyntaxtextarea">RSyntaxTextArea</a>, this
-	 * can be done with a <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> that
-	 * calls into
-	 * {@link CompletionProvider#getCompletionsAt(JTextComponent, java.awt.Point)}.
-	 *
-	 * @return The tool tip text for this completion, or <code>null</code> if
-	 *         none.
+	 * {@inheritDoc}
 	 */
 	public String getToolTipText() {
 		String text = getSummary();

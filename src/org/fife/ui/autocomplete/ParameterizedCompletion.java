@@ -8,6 +8,8 @@
  */
 package org.fife.ui.autocomplete;
 
+import javax.swing.text.JTextComponent;
+
 
 /**
  * A completion option that takes parameters, such as a function or method.
@@ -45,6 +47,10 @@ public interface ParameterizedCompletion extends Completion {
 	 * @see #getParam(int)
 	 */
 	public int getParamCount();
+
+
+	public ParameterizedCompletionInsertionInfo getInsertionInfo(
+			JTextComponent tc, boolean addParamStartList);
 
 
 	/**

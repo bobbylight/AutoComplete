@@ -1,8 +1,8 @@
 /*
  * 12/21/2008
  *
- * AutoCompleteDescWindow.java - A window containing a description of the
- * currently selected completion.
+ * ParameterizedCompletionDescriptionToolTip.java - A "tool tip" displaying
+ * information on the function or method currently being entered.
  * 
  * This library is distributed under a modified BSD license.  See the included
  * RSyntaxTextArea.License.txt file for details.
@@ -948,24 +948,6 @@ class ParameterizedCompletionDescriptionToolTip {
 
 
 		/**
-		 * Returns the text to insert for a parameter.
-		 *
-		 * @param param The parameter.
-		 * @return The text.
-		 */
-		private String getParamText(ParameterizedCompletion.Parameter param) {
-			String text = param.getName();
-			if (text==null) {
-				text = param.getType();
-				if (text==null) { // Shouldn't ever happen
-					text = "arg";
-				}
-			}
-			return text;
-		}
-
-
-		/**
 		 * Installs this listener onto a text component.
 		 *
 		 * @param tc The text component to install onto.
@@ -981,62 +963,30 @@ class ParameterizedCompletionDescriptionToolTip {
 			tc.addFocusListener(this);
 			installKeyBindings();
 
-			StringBuffer sb = new StringBuffer();
-			if (addParamStartList) {
-				sb.append(pc.getProvider().getParameterListStart());
-			}
-			int dot = tc.getCaretPosition() + sb.length();
-			int paramCount = pc.getParamCount();
-			List paramLocs = null;
-			if (paramCount>0) {
-				paramLocs = new ArrayList(paramCount);
-			}
 			Highlighter h = tc.getHighlighter();
 
 			try {
 
-				// Get the range in which the caret can move before we hide
-				// this tooltip.
-				minPos = dot;
-				maxPos = tc.getDocument().createPosition(dot-sb.length());
-				int firstParamLen = 0;
-
-				// Create the text to insert (keep it one completion for
-				// performance and simplicity of undo/redo).
-				int start = dot;
-				for (int i=0; i<paramCount; i++) {
-					FunctionCompletion.Parameter param = pc.getParam(i);
-					String paramText = getParamText(param);
-					if (i==0) {
-						firstParamLen = paramText.length();
-					}
-					sb.append(paramText);
-					int end = start + paramText.length();
-					paramLocs.add(new Point(start, end));
-					// Patch for param. list separators with length > 2 -
-					// thanks to Matthew Adereth!
-					String sep = pc.getProvider().getParameterListSeparator();
-					if (i<paramCount-1 && sep!=null) {
-						sb.append(sep);
-						start = end + sep.length();
-					}
-				}
-				sb.append(pc.getProvider().getParameterListEnd());
+				ParameterizedCompletionInsertionInfo info =
+								pc.getInsertionInfo(tc, addParamStartList);
 
 				// Insert the parameter text and add highlights around the
 				// parameters.
-				tc.replaceSelection(sb.toString());
-				for (int i=0; i<paramCount; i++) {
-					Point pt = (Point)paramLocs.get(i);
+				tc.replaceSelection(info.getTextToInsert());
+				for (int i=0; i<info.getReplacementCount(); i++) {
+					Point pt = info.getReplacementLocation(i);
 					 // "-1" is a workaround for Java Highlight issues.
 					tags.add(h.addHighlight(pt.x-1, pt.y, p));
 				}
 
 				// Go back and start at the first parameter.
-				tc.setCaretPosition(dot);
-				if (pc.getParamCount()>0) {
-					tc.moveCaretPosition(dot+firstParamLen);
+				tc.setCaretPosition(info.getSelectionStart());
+				if (info.hasSelection()) {
+					tc.moveCaretPosition(info.getSelectionEnd());
 				}
+
+				minPos = info.getMinOffset();
+				maxPos = info.getMaxOffset();
 
 			} catch (BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
