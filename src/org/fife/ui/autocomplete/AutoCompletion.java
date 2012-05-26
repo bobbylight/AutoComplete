@@ -187,6 +187,12 @@ public class AutoCompletion {
 	private AutoActivationListener autoActivationListener;
 
 	/**
+	 * Listens for LAF changes so the auto-complete windows automatically
+	 * update themselves accordingly.
+	 */
+	private LookAndFeelChangeListener lafListener;
+
+	/**
 	 * The key used in the input map for the AutoComplete action.
 	 */
 	private static final String PARAM_TRIGGER_KEY	= "AutoComplete";
@@ -223,16 +229,7 @@ public class AutoCompletion {
 		parentWindowListener = new ParentWindowListener();
 		textComponentListener = new TextComponentListener();
 		autoActivationListener = new AutoActivationListener();
-
-		// Automatically update LAF of popup windows on LookAndFeel changes
-		UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent e) {
-				String name = e.getPropertyName();
-				if (name.equals("lookAndFeel")) {
-					updateUI();
-				}
-			}
-		});
+		lafListener = new LookAndFeelChangeListener();
 
 	}
 
@@ -598,6 +595,9 @@ public class AutoCompletion {
 		if (isAutoActivationEnabled()) {
 			autoActivationListener.addTo(this.textComponent);
 		}
+
+		UIManager.addPropertyChangeListener(lafListener);
+		updateUI(); // In case there have been changes since we uninstalled
 
 	}
 
@@ -1002,6 +1002,8 @@ public class AutoCompletion {
 				autoActivationListener.removeFrom(textComponent);
 			}
 
+			UIManager.removePropertyChangeListener(lafListener);
+
 			textComponent = null;
 			popupWindow = null;
 
@@ -1133,6 +1135,22 @@ public class AutoCompletion {
 			}
 			else if (oldTriggerAction!=null) {
 				oldTriggerAction.actionPerformed(e);
+			}
+		}
+
+	}
+
+
+	/**
+	 * Listens for LookAndFeel changes and updates the various popup windows
+	 * involved in auto-completion accordingly.
+	 */
+	private class LookAndFeelChangeListener implements PropertyChangeListener {
+
+		public void propertyChange(PropertyChangeEvent e) {
+			String name = e.getPropertyName();
+			if ("lookAndFeel".equals(name)) {
+				updateUI();
 			}
 		}
 
