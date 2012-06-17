@@ -20,6 +20,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -34,6 +35,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
@@ -41,7 +45,13 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 import javax.swing.text.Highlighter.Highlight;
 
+import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
+import org.fife.ui.autocomplete.ParameterizedCompletionInsertionInfo.ReplacementCopy;
+import org.fife.ui.rsyntaxtextarea.DocumentRange;
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
+import org.fife.ui.rtextarea.ChangeableHighlightPainter;
 
 
 /**
@@ -63,10 +73,16 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	Highlighter.HighlightPainter p;
 
+	Highlighter.HighlightPainter paramCopyP;
+
 	/**
 	 * The tags for the highlights around parameters.
 	 */
 	List tags;
+
+	private List paramCopyInfos;
+
+	private transient boolean ignoringDocumentEvents;
 
 	/**
 	 * The parent AutoCompletion instance.
@@ -99,6 +115,8 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * before this tool tip disappears.
 	 */
 	private Position maxPos; // Moves with text inserted.
+
+	private Position defaultEndOffs;
 
 	/**
 	 * A small popup window giving likely choices for parameterized completions.
@@ -158,7 +176,7 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		descLabel = new JLabel();
 		descLabel.setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(Color.BLACK),
+					TipUtil.getToolTipBorder(),
 					BorderFactory.createEmptyBorder(2, 5, 2, 5)));
 		descLabel.setOpaque(true);
 		descLabel.setBackground(TipUtil.getToolTipBackground());
@@ -185,7 +203,9 @@ class ParameterizedCompletionDescriptionToolTip {
 		listener = new Listener();
 
 		p = new OutlineHighlightPainter(Color.GRAY);
+		paramCopyP = new ChangeableHighlightPainter(new Color(255, 224, 224));
 		tags = new ArrayList(1); // Usually small
+		paramCopyInfos = new ArrayList(1);
 
 		paramChoicesWindow = createParamChoicesWindow();
 
@@ -203,6 +223,31 @@ class ParameterizedCompletionDescriptionToolTip {
 														ac, this);
 		pcw.initialize(pc);
 		return pcw;
+	}
+
+
+	public String getArgumentText(int offs) {
+		List paramHighlights = getParameterHighlights();
+		if (paramHighlights==null || paramHighlights.size()==0) {
+			return null;
+		}
+		for (int i=0; i<paramHighlights.size(); i++) {
+			Highlight h = (Highlight)paramHighlights.get(i);
+			if (offs>=h.getStartOffset() && offs<=h.getEndOffset()) {
+				int start = h.getStartOffset() + 1;
+				int len = h.getEndOffset() - start;
+				JTextComponent tc = ac.getTextComponent();
+				Document doc = tc.getDocument();
+				try {
+					return doc.getText(start, len);
+				} catch (BadLocationException ble) {
+					UIManager.getLookAndFeel().provideErrorFeedback(tc);
+					ble.printStackTrace();
+					return null;
+				}
+			}
+		}
+		return null;
 	}
 
 
@@ -234,6 +279,27 @@ class ParameterizedCompletionDescriptionToolTip {
 	}
 
 
+	private int getCurrentParameterIndex() {
+
+		JTextComponent tc = ac.getTextComponent();
+		int dot = tc.getCaretPosition();
+		if (dot>0) {
+			dot--; // Workaround for Java Highlight issues
+		}
+
+		List paramHighlights = getParameterHighlights();
+		for (int i=0; i<paramHighlights.size(); i++) {
+			Highlight h = (Highlight)paramHighlights.get(i);
+			if (dot>=h.getStartOffset() && dot<h.getEndOffset()) {
+				return i;
+			}
+		}
+
+		return -1;
+
+	}
+
+
 	/**
 	 * Returns the starting offset of the current parameter.
 	 *
@@ -244,6 +310,54 @@ class ParameterizedCompletionDescriptionToolTip {
 	private int getCurrentParameterStartOffset() {
 		Highlight h = getCurrentParameterHighlight();
 		return h!=null ? h.getStartOffset()+1 : -1;
+	}
+
+
+	/**
+	 * Returns the highlight from a list that comes "first" in a list.  Even
+	 * though most parameter highlights are ordered, sometimes they aren't
+	 * (e.g. the "cursor" parameter in a template completion is always last,
+	 * even though it can be anywhere in the template).
+	 *
+	 * @param highlights The list of highlights.  Assumed to be non-empty.
+	 * @return The highlight that comes first in the document.
+	 * @see #getLastHighlight(List)
+	 */
+	private static final int getFirstHighlight(List highlights) {
+		int first = -1;
+		Highlight firstH = null;
+		for (int i=0; i<highlights.size(); i++) {
+			Highlight h = (Highlight)highlights.get(i);
+			if (firstH==null || h.getStartOffset()<firstH.getStartOffset()) {
+				firstH = h;
+				first = i;
+			}
+		}
+		return first;
+	}
+
+
+	/**
+	 * Returns the highlight from a list that comes "last" in that list.  Even
+	 * though most parameter highlights are ordered, sometimes they aren't
+	 * (e.g. the "cursor" parameter in a template completion is always last,
+	 * even though it can be anywhere in the template.
+	 *
+	 * @param highlights The list of highlights.  Assumed to be non-empty.
+	 * @return The highlight that comes last in the document.
+	 * @see #getFirstHighlight(List)
+	 */
+	private static final int getLastHighlight(List highlights) {
+		int last = -1;
+		Highlight lastH = null;
+		for (int i=highlights.size()-1; i>=0; i--) {
+			Highlight h = (Highlight)highlights.get(i);
+			if (lastH==null || h.getStartOffset()>lastH.getStartOffset()) {
+				lastH = h;
+				last = i;
+			}
+		}
+		return last;
 	}
 
 
@@ -360,7 +474,6 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		JTextComponent tc = ac.getTextComponent();
 		int dot = tc.getCaretPosition();
-
 		int tagCount = tags.size();
 		if (tagCount==0) {
 			tc.setCaretPosition(maxPos.getOffset());
@@ -383,16 +496,17 @@ class ParameterizedCompletionDescriptionToolTip {
 			}
 		}
 
-		if (currentNext!=null && dot<=currentNext.getStartOffset()) {
-			 // "+1" is a workaround for Java Highlight issues.
-			tc.setSelectionStart(currentNext.getStartOffset()+1);
-			tc.setSelectionEnd(currentNext.getEndOffset());
-			updateText(pos);
+		// No params after caret - go to first one
+		if (currentNext.getStartOffset()+1<=dot) {
+			int nextIndex = getFirstHighlight(highlights);
+			currentNext = (Highlight)highlights.get(nextIndex);
+			pos = 0;
 		}
-		else {
-			tc.setCaretPosition(maxPos.getOffset());
-			setVisible(false, false);
-		}
+
+		// "+1" is a workaround for Java Highlight issues.
+		tc.setSelectionStart(currentNext.getStartOffset()+1);
+		tc.setSelectionEnd(currentNext.getEndOffset());
+		updateText(pos);
 
 	}
 
@@ -422,15 +536,18 @@ class ParameterizedCompletionDescriptionToolTip {
 			Highlight h = (Highlight)highlights.get(i);
 			if (currentPrev==null || currentPrev.getStartOffset()>=dot ||
 					(h.getStartOffset()<selStart &&
-					h.getStartOffset()>currentPrev.getStartOffset())) {
+					(h.getStartOffset()>currentPrev.getStartOffset() ||
+							pos==lastSelectedParam))) {
 				currentPrev = h;
 				pos = i;
 			}
 		}
 
 		// Loop back from param 0 to last param.
-		if (pos==0 && lastSelectedParam==0 && highlights.size()>1) {
-			pos = highlights.size() - 1;
+		int firstIndex = getFirstHighlight(highlights);
+		//if (pos==0 && lastSelectedParam==0 && highlights.size()>1) {
+		if (pos==firstIndex && lastSelectedParam==firstIndex && highlights.size()>1) {
+			pos = getLastHighlight(highlights);
 			currentPrev = (Highlight)highlights.get(pos);
 			 // "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentPrev.getStartOffset()+1);
@@ -445,6 +562,49 @@ class ParameterizedCompletionDescriptionToolTip {
 		}
 		else {
 			tc.setCaretPosition(maxPos.getOffset());
+			setVisible(false, false);
+		}
+
+	}
+
+
+	private void possiblyUpdateParamCopies(Document doc) {
+		
+		int index = getCurrentParameterIndex();
+		// FunctionCompletions add an extra param at end of inserted text
+		if (index>-1 && index<pc.getParamCount()) {
+
+			// Typing in an "end parameter" => stop parameter assistance.
+			Parameter param = pc.getParam(index);
+			if (param.isEndParam()) {
+				setVisible(false, false);
+				return;
+			}
+
+			// Get the current value of the current parameter.
+			List paramHighlights = getParameterHighlights();
+			Highlight h = (Highlight)paramHighlights.get(index);
+			int start = h.getStartOffset() + 1; // param offsets are offset (!) by 1
+			int len = h.getEndOffset() - start;
+			String replacement = null;
+			try {
+				replacement = doc.getText(start, len);
+			} catch (BadLocationException ble) {
+				ble.printStackTrace(); // Never happens
+			}
+
+			// Replace any param copies tracking this parameter with the
+			// value of this parameter.
+			for (Iterator i=paramCopyInfos.iterator(); i.hasNext(); ) {
+				ParamCopyInfo pci = (ParamCopyInfo)i.next();
+				if (pci.paramName.equals(param.getName())) {
+					pci.h = replaceHighlightedText(doc, pci.h, replacement);
+				}
+			}
+
+		}
+
+		else { // Probably the "end parameter" for FunctionCompletions.
 			setVisible(false, false);
 		}
 
@@ -496,6 +656,52 @@ class ParameterizedCompletionDescriptionToolTip {
 			h.removeHighlight(tags.get(i));
 		}
 		tags.clear();
+		for (int i=0; i<paramCopyInfos.size(); i++) {
+			ParamCopyInfo pci = (ParamCopyInfo)paramCopyInfos.get(i);
+			h.removeHighlight(pci.h);
+		}
+		paramCopyInfos.clear();
+	}
+
+
+	/**
+	 * Replaces highlighted text with new text.  Takes special care so that
+	 * the highlight stays just around the newly-highlighted text, since
+	 * Swing's <code>Highlight</code> classes are funny about insertions at
+	 * their start offsets.
+	 *
+	 * @param doc The document.
+	 * @param h The highlight whose text to change.
+	 * @param replacement The new text to be in the highlight.
+	 * @return The replacement highlight for <code>h</code>.
+	 */
+	private Highlight replaceHighlightedText(Document doc, Highlight h,
+									String replacement) {
+		try {
+
+			int start = h.getStartOffset();
+			int len = h.getEndOffset() - start;
+			Highlighter highlighter = ac.getTextComponent().getHighlighter();
+			highlighter.removeHighlight(h);
+
+			if (doc instanceof AbstractDocument) {
+				((AbstractDocument)doc).replace(start, len, replacement, null);
+			}
+			else {
+				doc.remove(start, len);
+				doc.insertString(start, replacement, null);
+			}
+
+			int newEnd = start + replacement.length();
+			h = (Highlight)highlighter.addHighlight(start, newEnd, paramCopyP);
+			return h;
+
+		} catch (BadLocationException ble) {
+			ble.printStackTrace(); // Never happens
+		}
+
+		return null;
+
 	}
 
 
@@ -693,28 +899,7 @@ class ParameterizedCompletionDescriptionToolTip {
 			// (such as type parameters in Java).  We need to take care to
 			// escape these.
 			String temp = pc.getParam(i).toString();
-			int lt = temp.indexOf('<');
-			if (lt>-1) {
-				sb.append(temp.substring(0, lt));
-				sb.append("&lt;");
-				for (int j=lt+1; j<temp.length(); j++) {
-					char ch = temp.charAt(j);
-					switch (ch) {
-						case '<':
-							sb.append("&lt;");
-							break;
-						case '>':
-							sb.append("&gt;");
-							break;
-						default:
-							sb.append(ch);
-							break;
-					}
-				}
-			}
-			else {
-				sb.append(temp);
-			}
+			sb.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false));
 
 			if (i==selectedParam) {
 				sb.append("</b>");
@@ -775,7 +960,7 @@ class ParameterizedCompletionDescriptionToolTip {
 
 			// Otherwise, just move to the end.
 			JTextComponent tc = ac.getTextComponent();
-			tc.setCaretPosition(maxPos.getOffset());
+			tc.setCaretPosition(defaultEndOffs.getOffset());
 			setVisible(false, false);
 
 		}
@@ -799,9 +984,9 @@ class ParameterizedCompletionDescriptionToolTip {
 			char end = pc.getProvider().getParameterListEnd();
 
 			// Are they at or past the end of the parameters?
-			if (dot>=maxPos.getOffset()-1) { // ">=" for overwrite mode
+			if (dot>=maxPos.getOffset()-2) { // ">=" for overwrite mode
 
-				if (dot==maxPos.getOffset()) { // Happens in overwrite mode
+				if (dot==maxPos.getOffset()-1) { // Happens in overwrite mode
 					tc.replaceSelection(Character.toString(end));
 				}
 
@@ -818,7 +1003,8 @@ class ParameterizedCompletionDescriptionToolTip {
 							return;
 						}
 					}
-					tc.setCaretPosition(maxPos.getOffset());
+					//tc.setCaretPosition(maxPos.getOffset());
+					tc.setCaretPosition(tc.getCaretPosition()+1);
 				}
 
 				setVisible(false, false);
@@ -830,30 +1016,6 @@ class ParameterizedCompletionDescriptionToolTip {
 				tc.replaceSelection(Character.toString(end));
 			}
 
-		}
-
-		public String getArgumentText(int offs) {
-			List paramHighlights = getParameterHighlights();
-			if (paramHighlights==null || paramHighlights.size()==0) {
-				return null;
-			}
-			for (int i=0; i<paramHighlights.size(); i++) {
-				Highlight h = (Highlight)paramHighlights.get(i);
-				if (offs>=h.getStartOffset() && offs<=h.getEndOffset()) {
-					int start = h.getStartOffset() + 1;
-					int len = h.getEndOffset() - start;
-					JTextComponent tc = ac.getTextComponent();
-					Document doc = tc.getDocument();
-					try {
-						return doc.getText(start, len);
-					} catch (BadLocationException ble) {
-						UIManager.getLookAndFeel().provideErrorFeedback(tc);
-						ble.printStackTrace();
-						return null;
-					}
-				}
-			}
-			return null;
 		}
 
 		public int getCount(String text, char ch) {
@@ -903,7 +1065,10 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @author Robert Futrell
 	 * @version 1.0
 	 */
-	private class Listener implements FocusListener, CaretListener {
+	private class Listener implements FocusListener, CaretListener,
+							DocumentListener {
+
+		private boolean markOccurrencesEnabled;
 
 		/**
 		 * Called when the text component's caret moves.
@@ -917,6 +1082,7 @@ class ParameterizedCompletionDescriptionToolTip {
 			}
 			int dot = e.getDot();
 			if (dot<minPos || dot>=maxPos.getOffset()) {
+				System.err.println(">>>>> dot==" + dot + ", " + minPos + ", " + maxPos);
 				setVisible(false, false);
 				return;
 			}
@@ -924,6 +1090,10 @@ class ParameterizedCompletionDescriptionToolTip {
 			if (tooltip.isVisible()) {
 				prepareParamChoicesWindow();
 			}
+		}
+
+
+		public void changedUpdate(DocumentEvent e) {
 		}
 
 
@@ -947,6 +1117,24 @@ class ParameterizedCompletionDescriptionToolTip {
 		}
 
 
+		private void handleDocumentEvent(final DocumentEvent e) {
+			if (!ignoringDocumentEvents) {
+				ignoringDocumentEvents = true;
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						possiblyUpdateParamCopies(e.getDocument());
+						ignoringDocumentEvents = false;
+					}
+				});
+			}
+		}
+
+
+		public void insertUpdate(DocumentEvent e) {
+			handleDocumentEvent(e);
+		}
+
+
 		/**
 		 * Installs this listener onto a text component.
 		 *
@@ -963,20 +1151,34 @@ class ParameterizedCompletionDescriptionToolTip {
 			tc.addFocusListener(this);
 			installKeyBindings();
 
+			boolean replaceTabs = false;
+			if (tc instanceof RSyntaxTextArea) {
+				RSyntaxTextArea textArea = (RSyntaxTextArea)tc;
+				markOccurrencesEnabled = textArea.getMarkOccurrences();
+				textArea.setMarkOccurrences(false);
+				replaceTabs = textArea.getTabsEmulated();
+			}
+
 			Highlighter h = tc.getHighlighter();
 
 			try {
 
+				// Insert the parameter text
 				ParameterizedCompletionInsertionInfo info =
-								pc.getInsertionInfo(tc, addParamStartList);
-
-				// Insert the parameter text and add highlights around the
-				// parameters.
+					pc.getInsertionInfo(tc, addParamStartList, replaceTabs);
 				tc.replaceSelection(info.getTextToInsert());
+
+				// Add highlights around the parameters.
 				for (int i=0; i<info.getReplacementCount(); i++) {
-					Point pt = info.getReplacementLocation(i);
+					DocumentRange dr = info.getReplacementLocation(i);
 					 // "-1" is a workaround for Java Highlight issues.
-					tags.add(h.addHighlight(pt.x-1, pt.y, p));
+					tags.add(h.addHighlight(dr.getStartOffset()-1, dr.getEndOffset(), p));
+				}
+				for (int i=0; i<info.getReplacementCopyCount(); i++) {
+					ReplacementCopy rc = info.getReplacementCopy(i);
+					paramCopyInfos.add(new ParamCopyInfo(rc.getId(),
+						(Highlight)h.addHighlight(rc.getStart(), rc.getEnd(),
+								paramCopyP)));
 				}
 
 				// Go back and start at the first parameter.
@@ -987,11 +1189,25 @@ class ParameterizedCompletionDescriptionToolTip {
 
 				minPos = info.getMinOffset();
 				maxPos = info.getMaxOffset();
+				try {
+					defaultEndOffs = tc.getDocument().createPosition(
+							info.getDefaultEndOffs());
+				} catch (BadLocationException ble) {
+					ble.printStackTrace(); // Never happens
+				}
+
+				// Listen for document events AFTER we insert
+				tc.getDocument().addDocumentListener(this);
 
 			} catch (BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
 			}
 
+		}
+
+
+		public void removeUpdate(DocumentEvent e) {
+			handleDocumentEvent(e);
 		}
 
 
@@ -1004,7 +1220,12 @@ class ParameterizedCompletionDescriptionToolTip {
 			JTextComponent tc = ac.getTextComponent();
 			tc.removeCaretListener(this);
 			tc.removeFocusListener(this);
+			tc.getDocument().removeDocumentListener(this);
 			uninstallKeyBindings();
+
+			if (markOccurrencesEnabled) {
+				((RSyntaxTextArea)tc).setMarkOccurrences(markOccurrencesEnabled);
+			}
 
 			// Remove WeakReferences in javax.swing.text.
 			maxPos = null;
@@ -1059,6 +1280,19 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		public void actionPerformed(ActionEvent e) {
 			moveToNextParam();
+		}
+
+	}
+
+
+	private static class ParamCopyInfo {
+
+		private String paramName;
+		private Highlight h;
+
+		public ParamCopyInfo(String paramName, Highlight h) {
+			this.paramName = paramName;
+			this.h = h;
 		}
 
 	}

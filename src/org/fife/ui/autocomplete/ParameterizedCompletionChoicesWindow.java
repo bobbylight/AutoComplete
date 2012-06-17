@@ -280,6 +280,10 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 		}
 
+		else {
+			setVisible(false);
+		}
+
 	}
 
 

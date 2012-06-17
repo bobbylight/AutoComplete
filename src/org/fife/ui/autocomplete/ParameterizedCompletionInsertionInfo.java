@@ -9,10 +9,11 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.text.Position;
+
+import org.fife.ui.rsyntaxtextarea.DocumentRange;
 
 
 /**
@@ -26,13 +27,24 @@ class ParameterizedCompletionInsertionInfo {
 
 	private int minOffs;
 	private Position maxOffs;
+	private int defaultEnd;
 	private int selStart;
 	private int selEnd;
 	private String textToInsert;
 	private List replacementLocations;
+	private List replacementCopies;
 
 
 	public ParameterizedCompletionInsertionInfo() {
+		defaultEnd = -1;
+	}
+
+
+	public void addReplacementCopy(String id, int start, int end) {
+		if (replacementCopies==null) {
+			replacementCopies = new ArrayList(1);
+		}
+		replacementCopies.add(new ReplacementCopy(id, start, end));
 	}
 
 
@@ -49,7 +61,12 @@ class ParameterizedCompletionInsertionInfo {
 		if (replacementLocations==null) {
 			replacementLocations = new ArrayList(1);
 		}
-		replacementLocations.add(new Point(start, end));
+		replacementLocations.add(new DocumentRange(start, end));
+	}
+
+
+	public int getDefaultEndOffs() {
+		return defaultEnd>-1 ? defaultEnd : getMaxOffset().getOffset();
 	}
 
 
@@ -77,6 +94,11 @@ class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	public int getReplacementCopyCount() {
+		return replacementCopies==null ? 0 : replacementCopies.size();
+	}
+
+
 	/**
 	 * Returns the number of replacements in the completion.
 	 *
@@ -84,6 +106,11 @@ class ParameterizedCompletionInsertionInfo {
 	 */
 	public int getReplacementCount() {
 		return replacementLocations==null ? 0 : replacementLocations.size();
+	}
+
+
+	public ReplacementCopy getReplacementCopy(int index) {
+		return (ReplacementCopy)replacementCopies.get(index);
 	}
 
 
@@ -95,8 +122,8 @@ class ParameterizedCompletionInsertionInfo {
 	 * @return The range in the document of that replacement region.
 	 * @see #getReplacementCount()
 	 */
-	public Point getReplacementLocation(int index) {
-		return (Point)replacementLocations.get(index);
+	public DocumentRange getReplacementLocation(int index) {
+		return (DocumentRange)replacementLocations.get(index);
 	}
 
 
@@ -178,6 +205,11 @@ class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	public void setDefaultEndOffs(int end) {
+		defaultEnd = end;
+	}
+
+
 	/**
 	 * Sets the text to insert for the completion.
 	 *
@@ -186,6 +218,33 @@ class ParameterizedCompletionInsertionInfo {
 	 */
 	public void setTextToInsert(String text) {
 		this.textToInsert = text;
+	}
+
+
+	public static class ReplacementCopy {
+
+		private String id;
+		private int start;
+		private int end;
+
+		public ReplacementCopy(String id, int start, int end) {
+			this.id = id;
+			this.start = start;
+			this.end = end;
+		}
+
+		public int getEnd() {
+			return end;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public int getStart() {
+			return start;
+		}
+
 	}
 
 

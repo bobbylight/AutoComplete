@@ -15,8 +15,11 @@ import java.util.List;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.PlainDocument;
 import javax.swing.text.Position;
 
+import org.fife.ui.autocomplete.TemplatePiece.Param;
+import org.fife.ui.autocomplete.TemplatePiece.ParamCopy;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 
 
@@ -25,7 +28,26 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * can tab through and fill in.  This completion type is useful for inserting
  * common boilerplate code, such as for-loops.<p>
  *
- * This class is a work in progress and currently should not be used.
+ * The format of a template is similar to those in Eclipse.  The following
+ * example would be the format for a for-loop template:
+ * 
+ * <pre>
+ * for (int ${i} = 0; ${i} &lt; ${array}.length; ${i}++) {
+ *    ${cursor}
+ * }
+ * </pre>
+ *
+ * In the above example, the first <code>${i}</code> is a parameter for the
+ * user to type into; all the other <code>${i}</code> instances are
+ * automatically changed to what the user types in the first one.  The parameter
+ * named <code>${cursor}</code> is the "ending position" of the template.  It's
+ * where the caret moves after it cycles through all other parameters.  If the
+ * user types into it, template mode terminates.  If more than one
+ * <code>${cursor}</code> parameter is specified, behavior is undefined.<p>
+ * 
+ * Leading whitespace is automatically added to lines if the template spans
+ * more than one line, and if used with a text component using a
+ * <code>PlainDocument</code>, tabs will be converted to spaces if requested.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -35,7 +57,7 @@ public class TemplateCompletion extends AbstractCompletion
 
 	private List pieces;
 
-	private String replacementText;
+	private String inputText;
 
 	private String definitionString;
 
@@ -45,43 +67,35 @@ public class TemplateCompletion extends AbstractCompletion
 	private List params;
 
 
-
-	public TemplateCompletion(CompletionProvider provider, String replacementText,
-			String definitionString) {
+	public TemplateCompletion(CompletionProvider provider,
+				String inputText, String definitionString, String template) {
 		super(provider);
-		this.replacementText = replacementText;
+		this.inputText = inputText;
 		this.definitionString = definitionString;
 		pieces = new ArrayList(3);
 		params = new ArrayList(3);
+		parse(template);
 	}
 
 
-	public void addTemplatePiece(TemplatePiece piece) {
+	private void addTemplatePiece(TemplatePiece piece) {
 		pieces.add(piece);
-		if (piece.isParam) {
+		if (piece instanceof Param && !"cursor".equals(piece.getText())) {
 			final String type = null; // TODO
-			Parameter param = new Parameter(type, piece.text);
+			Parameter param = new Parameter(type, piece.getText());
 			params.add(param);
 		}
 	}
 
 
+	public String getInputText() {
+		return inputText;
+	}
+
+
 	private String getPieceText(int index, String leadingWS) {
-		String text = null;
 		TemplatePiece piece = (TemplatePiece)pieces.get(index);
-		if (piece.id!=null) {
-			final String id = piece.id;
-			for (int i=0; i<pieces.size(); i++) {
-				piece = (TemplatePiece)pieces.get(i);
-				if (id.equals(piece.id)) {
-					text = piece.text;
-					break;
-				}
-			}
-		}
-		else {
-			text = piece.text;
-		}
+		String text = piece.getText();
 		if (text.indexOf('\n')>-1) {
 			text = text.replaceAll("\n", "\n" + leadingWS);
 		}
@@ -90,13 +104,13 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	/**
-	 * For template completions, the "replacement text" is really just the
-	 * first piece of the template, not the entire thing.  You should add
-	 * template pieces so that the rest of the template is dynamically
-	 * generated.
+	 * Returns <code>null</code>; template completions insert all of their
+	 * text via <code>getInsertionInfo()</code>.
+	 *
+	 * @return <code>null</code> always.
 	 */
 	public String getReplacementText() {
-		return replacementText;
+		return null;
 	}
 
 
@@ -112,19 +126,20 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean addParamStartList) {
+			JTextComponent tc, boolean addParamStartList,
+			boolean replaceTabsWithSpaces) {
 
 		ParameterizedCompletionInsertionInfo info =
 			new ParameterizedCompletionInsertionInfo();
 
 		StringBuffer sb = new StringBuffer();
 		int dot = tc.getCaretPosition();
-		int paramCount = getParamCount();
 
 		// Get the range in which the caret can move before we hide
 		// this tool tip.
 		int minPos = dot;
 		Position maxPos = null;
+		int defaultEndOffs = -1;
 		try {
 			maxPos = tc.getDocument().createPosition(dot);
 		} catch (BadLocationException ble) {
@@ -132,6 +147,8 @@ public class TemplateCompletion extends AbstractCompletion
 		}
 		info.setCaretRange(minPos, maxPos);
 		int firstParamLen = 0;
+		int selStart = dot; // Default value
+		int selEnd = selStart;
 
 		Document doc = tc.getDocument();
 		String leadingWS = null;
@@ -148,19 +165,38 @@ public class TemplateCompletion extends AbstractCompletion
 		for (int i=0; i<pieces.size(); i++) {
 			TemplatePiece piece = (TemplatePiece)pieces.get(i);
 			String text = getPieceText(i, leadingWS);
-			sb.append(text);
-			int end = start + text.length();
-			if (piece.isParam) {
-				info.addReplacementLocation(start, end);
-				if (firstParamLen==0) {
-					firstParamLen = text.length();
+			if (piece instanceof Param && "cursor".equals(text)) {
+				if (replaceTabsWithSpaces) {
+					start = possiblyReplaceTabsWithSpaces(sb, tc, start);
 				}
+				defaultEndOffs = start;
 			}
-			start = end;
+			else {
+				int end = start + text.length();
+				sb.append(text);
+				if (piece instanceof Param) {
+					info.addReplacementLocation(start, end);
+					if (firstParamLen==0) {
+						firstParamLen = text.length();
+						selStart = start;
+						selEnd = selStart + firstParamLen;
+					}
+				}
+				else if (piece instanceof ParamCopy) {
+					info.addReplacementCopy(piece.getText(), start, end);
+				}
+				start = end;
+			}
 		}
-		int selectionEnd = paramCount>0 ? (dot+firstParamLen) : dot;
-		info.setInitialSelection(dot, selectionEnd);
+
+		info.setInitialSelection(selStart, selEnd);
+		if (defaultEndOffs>-1) {
+			// Keep this location "after" all others when tabbing
+			info.addReplacementLocation(defaultEndOffs, defaultEndOffs);
+		}
+		info.setDefaultEndOffs(defaultEndOffs);
 		info.setTextToInsert(sb.toString());
+
 		return info;
 
 	}
@@ -182,23 +218,102 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
-	public String toString() {
-		return getDefinitionString();
+	/**
+	 * Returns whether a parameter is already defined with a specific name.
+	 *
+	 * @param name The name.
+	 * @return Whether a parameter is defined with that name.
+	 */
+	private boolean isParamDefined(String name) {
+		for (int i=0; i<getParamCount(); i++) {
+			Parameter param = getParam(i);
+			if (name.equals(param.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 
-	public static class TemplatePiece {
+	/**
+	 * Parses a template string into logical pieces used by this class.
+	 *
+	 * @param template The template to parse.
+	 */
+	private void parse(String template) {
 
-		private String id;
-		private String text;
-		private boolean isParam;
+		int offs = 0;
+		int lastOffs = 0;
 
-		public TemplatePiece(String id, String text, boolean isParam) {
-			this.id = id;
-			this.text = text;
-			this.isParam = isParam;
+		while ((offs=template.indexOf('$', lastOffs))>-1 && offs<template.length()-1) {
+
+			char next = template.charAt(offs+1);
+			switch (next) {
+				case '$': // "$$" => escaped single dollar sign
+					addTemplatePiece(new TemplatePiece.Text(
+							template.substring(lastOffs, offs+1)));
+					lastOffs = offs += 2;
+					break;
+				case '{': // "${...}" => variable
+					int closingCurly = template.indexOf('}', offs+2);
+					if (closingCurly>-1) {
+						addTemplatePiece(new TemplatePiece.Text(
+								template.substring(lastOffs, offs)));
+						String varName = template.substring(offs+2, closingCurly);
+						if (!"cursor".equals(varName) && isParamDefined(varName)) {
+							addTemplatePiece(new TemplatePiece.ParamCopy(varName));
+						}
+						else {
+							addTemplatePiece(new TemplatePiece.Param(varName));
+						}
+						lastOffs = offs = closingCurly + 1;
+					}
+					break;
+			}
+
 		}
 
+		if (lastOffs<template.length()) {
+			String text = template.substring(lastOffs);
+			addTemplatePiece(new TemplatePiece.Text(text));
+		}
+
+	}
+
+
+	private int possiblyReplaceTabsWithSpaces(StringBuffer sb, JTextComponent tc,
+											int start) {
+
+		int size = 4;
+		Document doc = tc.getDocument();
+		if (doc != null) {
+			Integer i = (Integer) doc.getProperty(PlainDocument.tabSizeAttribute);
+			if (i != null) {
+				size = i.intValue();
+			}
+		}
+		String tab = "";
+		for (int i=0; i<size; i++) {
+			tab += " ";
+		}
+
+		int lastNewline = sb.lastIndexOf("\n");
+		int lineOffs = 0;
+		for (int j=lastNewline+1; j<sb.length(); j++) {
+			if (sb.charAt(j)=='\t') {
+				int count = size - (lineOffs%size);
+				sb.replace(j, j+1, tab.substring(0, count));
+				start += count - 1;
+			}
+		}
+
+		return start;
+
+	}
+
+
+	public String toString() {
+		return getDefinitionString();
 	}
 
 

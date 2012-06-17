@@ -193,9 +193,6 @@ class SizeGrip extends JPanel {
 	/**
 	 * Listens for mouse events on this panel and resizes the parent window
 	 * appropriately.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	/*
 	 * NOTE: We use SwingUtilities.convertPointToScreen() instead of just using

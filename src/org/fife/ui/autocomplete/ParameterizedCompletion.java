@@ -50,7 +50,8 @@ public interface ParameterizedCompletion extends Completion {
 
 
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean addParamStartList);
+			JTextComponent tc, boolean addParamStartList,
+			boolean replaceTabsWithSpaces);
 
 
 	/**
@@ -64,6 +65,7 @@ public interface ParameterizedCompletion extends Completion {
 		private String name;
 		private Object type;
 		private String desc;
+		private boolean isEndParam;
 
 		/**
 		 * Constructor.
@@ -77,8 +79,30 @@ public interface ParameterizedCompletion extends Completion {
 		 * @param name The name of the parameter.
 		 */
 		public Parameter(Object type, String name) {
+			this(type, name, false);
+		}
+
+		/**
+		 * Constructor.
+		 *
+		 * @param type The type of this parameter.  This may be
+		 *        <code>null</code> for languages without specific types,
+		 *        dynamic typing, etc.  Usually you'll pass a String for this
+		 *        value, but you may pass any object representing a type in
+		 *        your language, as long as its <code>toString()</code> method
+		 *        returns a string representation of the type.
+		 * @param name The name of the parameter.
+		 * @param endParam Whether this parameter is an "ending parameter;"
+		 *        that is, whether this parameter is at a logical "ending
+		 *        point" in the completion text.  If the user types in a
+		 *        parameter that is an ending point, parameter completion mode
+		 *        terminates.  Set this to <code>true</code> for a trailing
+		 *        parameter after a function call's closing ')', for example.
+		 */
+		public Parameter(Object type, String name, boolean endParam) {
 			this.name = name;
 			this.type = type;
+			this.isEndParam = endParam;
 		}
 
 		public String getDescription() {
@@ -105,6 +129,17 @@ public interface ParameterizedCompletion extends Completion {
 		 */
 		public Object getTypeObject() {
 			return type;
+		}
+
+		/**
+		 * @return Whether this parameter is an "ending parameter;"
+		 *         that is, whether this parameter is at a logical "ending
+		 *         point" in the completion text.  If the user types in a
+		 *         parameter that is an ending point, parameter completion mode
+		 *         terminates.
+		 */
+		public boolean isEndParam() {
+			return isEndParam;
 		}
 
 		public void setDescription(String desc) {

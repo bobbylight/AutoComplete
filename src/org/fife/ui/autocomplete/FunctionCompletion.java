@@ -147,7 +147,8 @@ public class FunctionCompletion extends VariableCompletion
 
 
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean addParamStartList) {
+			JTextComponent tc, boolean addParamStartList,
+			boolean replaceTabsWithSpaces) {
 
 		ParameterizedCompletionInsertionInfo info =
 			new ParameterizedCompletionInsertionInfo();
@@ -163,8 +164,10 @@ public class FunctionCompletion extends VariableCompletion
 		// this tool tip.
 		int minPos = dot;
 		Position maxPos = null;
+		int defaultEndOffs = -1;
 		try {
-			maxPos = tc.getDocument().createPosition(dot-sb.length());
+			maxPos = tc.getDocument().createPosition(dot-sb.length()+1);
+			defaultEndOffs = dot-sb.length();
 		} catch (BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 		}
@@ -192,7 +195,13 @@ public class FunctionCompletion extends VariableCompletion
 			}
 		}
 		sb.append(getProvider().getParameterListEnd());
-
+		int endOffs = dot + sb.length();
+		if (addParamStartList) {
+			endOffs -= 1;//getProvider().getParameterListStart().length();
+		}
+		info.addReplacementLocation(endOffs, endOffs); // offset after function
+		info.setDefaultEndOffs(endOffs);
+		
 		int selectionEnd = paramCount>0 ? (dot+firstParamLen) : dot;
 		info.setInitialSelection(dot, selectionEnd);
 		info.setTextToInsert(sb.toString());
