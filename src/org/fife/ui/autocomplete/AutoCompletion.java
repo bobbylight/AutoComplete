@@ -82,9 +82,9 @@ public class AutoCompletion {
 	private Dimension preferredDescWindowSize;
 
 	/**
-	 * A "tool tip" describing a function just entered.
+	 * Manages any parameterized completions that are inserted.
 	 */
-	private ParameterizedCompletionDescriptionToolTip descToolTip;
+	private ParameterizedCompletionContext pcc;
 
 	/**
 	 * Provides the completion options relevant to the current caret position.
@@ -230,51 +230,6 @@ public class AutoCompletion {
 		textComponentListener = new TextComponentListener();
 		autoActivationListener = new AutoActivationListener();
 		lafListener = new LookAndFeelChangeListener();
-
-	}
-
-
-	/**
-	 * Displays a "tooltip" detailing the inputs to the function just entered.
-	 *
-	 * @param pc The completion.
-	 * @param addParamListStart Whether or not
-	 *        {@link CompletionProvider#getParameterListStart()} should be
-	 *        added to the text component.
-	 */
-	private void displayDescriptionToolTip(ParameterizedCompletion pc,
-										boolean addParamListStart) {
-
-		// Get rid of the previous tooltip window, if there is one.
-		hideToolTipWindow();
-
-		// Don't bother with a tooltip if there are no parameters.
-		if (pc.getParamCount()==0) {
-			CompletionProvider p = pc.getProvider();
-			char end = p.getParameterListEnd(); // Might be '\0'
-			String text = end=='\0' ? "" : Character.toString(end);
-			if (addParamListStart) {
-				text = p.getParameterListStart() + text;
-			}
-			textComponent.replaceSelection(text);
-			return;
-		}
-
-		descToolTip = new ParameterizedCompletionDescriptionToolTip(
-													parentWindow, this, pc);
-		try {
-			int dot = textComponent.getCaretPosition();
-			Rectangle r = textComponent.modelToView(dot);
-			Point p = new Point(r.x, r.y);
-			SwingUtilities.convertPointToScreen(p, textComponent);
-			r.x = p.x;
-			r.y = p.y;
-			descToolTip.setLocationRelativeTo(r);
-			descToolTip.setVisible(true, addParamListStart);
-		} catch (BadLocationException ble) { // Should never happen
-			UIManager.getLookAndFeel().provideErrorFeedback(textComponent);
-			ble.printStackTrace();
-		}
 
 	}
 
@@ -465,8 +420,23 @@ public class AutoCompletion {
 	public boolean hideChildWindows() {
 		//return hidePopupWindow() || hideToolTipWindow();
 		boolean res = hidePopupWindow();
-		res |= hideToolTipWindow();
+		res |= hideParameterCompletionPopups();
 		return res;
+	}
+
+
+	/**
+	 * Hides and disposes of any parameter completion-related popups.
+	 *
+	 * @return Whether any such windows were visible (and thus hidden).
+	 */
+	private boolean hideParameterCompletionPopups() {
+		if (pcc!=null) {
+			pcc.setVisible(false, false);
+			pcc = null;
+			return true;
+		}
+		return false;
 	}
 
 
@@ -481,23 +451,6 @@ public class AutoCompletion {
 				popupWindow.setVisible(false);
 				return true;
 			}
-		}
-		return false;
-	}
-
-
-	/**
-	 * Hides the parameter tool tip and/or the parameter choices window, if
-	 * either one is visible.
-	 *
-	 * @return Whether either of the two windows were visible (and thus
-	 *         hidden).
-	 */
-	private boolean hideToolTipWindow() {
-		if (descToolTip!=null) {
-			descToolTip.setVisible(false, false);
-			descToolTip = null;
-			return true;
 		}
 		return false;
 	}
@@ -547,7 +500,7 @@ public class AutoCompletion {
 		if (isParameterAssistanceEnabled() &&
 				(c instanceof ParameterizedCompletion)) {
 			ParameterizedCompletion pc = (ParameterizedCompletion)c;
-			displayDescriptionToolTip(pc, true);
+			startParameterizedCompletionAssistance(pc, true);
 		}
 
 	}
@@ -970,6 +923,38 @@ public class AutoCompletion {
 
 
 	/**
+	 * Displays a "tooltip" detailing the inputs to the function just entered.
+	 *
+	 * @param pc The completion.
+	 * @param addParamListStart Whether or not
+	 *        {@link CompletionProvider#getParameterListStart()} should be
+	 *        added to the text component.
+	 */
+	private void startParameterizedCompletionAssistance(ParameterizedCompletion pc,
+										boolean addParamListStart) {
+
+		// Get rid of the previous tooltip window, if there is one.
+		hideParameterCompletionPopups();
+
+		// Don't bother with a tooltip if there are no parameters.
+		if (pc.getParamCount()==0) {
+			CompletionProvider p = pc.getProvider();
+			char end = p.getParameterListEnd(); // Might be '\0'
+			String text = end=='\0' ? "" : Character.toString(end);
+			if (addParamListStart) {
+				text = p.getParameterListStart() + text;
+			}
+			textComponent.replaceSelection(text);
+			return;
+		}
+
+		pcc = new ParameterizedCompletionContext(parentWindow, this, pc);
+		pcc.setVisible(true, addParamListStart);
+
+	}
+
+
+	/**
 	 * Uninstalls this auto-completion from its text component.  If it is not
 	 * installed on any text component, nothing happens.
 	 *
@@ -1035,8 +1020,8 @@ public class AutoCompletion {
 		if (popupWindow!=null) {
 			popupWindow.updateUI();
 		}
-		if (descToolTip!=null) {
-			descToolTip.updateUI();
+		if (pcc!=null) {
+			pcc.updateUI();
 		}
 		// Will practically always be a JComponent (a JLabel)
 		if (paramChoicesRenderer instanceof JComponent) {

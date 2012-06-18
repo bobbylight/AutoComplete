@@ -80,11 +80,11 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *
 	 * @param parent The parent window (hosting the text component).
 	 * @param ac The auto-completion instance.
-	 * @param tip The parent parameter description tool tip.
+	 * @param context The completion context.
 	 */
 	public ParameterizedCompletionChoicesWindow(Window parent,
 						AutoCompletion ac,
-						final ParameterizedCompletionDescriptionToolTip tip) {
+						final ParameterizedCompletionContext context) {
 
 		super(parent);
 		this.ac = ac;
@@ -98,7 +98,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 		list.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount()==2) {
-					tip.insertSelectedChoice();
+					context.insertSelectedChoice();
 				}
 			}
 		});
