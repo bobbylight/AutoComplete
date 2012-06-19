@@ -12,15 +12,11 @@ package org.fife.ui.autocomplete;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.Window;
-import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.Highlighter.Highlight;
 
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
@@ -36,19 +32,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 class ParameterizedCompletionDescriptionToolTip {
 
 	/**
-	 * The parent context.
-	 */
-	private ParameterizedCompletionContext context;
-
-	/**
 	 * The actual tool tip.
 	 */
 	private JWindow tooltip;
-
-	/**
-	 * The parent AutoCompletion instance.
-	 */
-	private AutoCompletion ac;
 
 	/**
 	 * The label that holds the description.
@@ -59,11 +45,6 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * The completion being described.
 	 */
 	private ParameterizedCompletion pc;
-
-	/**
-	 * The currently "selected" parameter in the displayed text.
-	 */
-	private int lastSelectedParam;
 
 
 	/**
@@ -79,8 +60,6 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		tooltip = new JWindow(owner);
 
-		this.context = context;
-		this.ac = ac;
 		this.pc = pc;
 
 		descLabel = new JLabel();
@@ -105,16 +84,10 @@ class ParameterizedCompletionDescriptionToolTip {
 			decorator.decorate(tooltip);
 		}
 
-		lastSelectedParam = -1;
 		updateText(0);
 
 		tooltip.setFocusableWindowState(false);
 
-	}
-
-
-	public int getLastSelectedParam() {
-		return lastSelectedParam;
 	}
 
 
@@ -178,60 +151,12 @@ class ParameterizedCompletionDescriptionToolTip {
 
 	/**
 	 * Updates the text in the tool tip to have the current parameter
-	 * displayed in bold.  The "current parameter" is determined from the
-	 * current caret position.
-	 *
-	 * @return The "prefix" of text in the caret's parameter before the caret.
-	 */
-	public String updateText() {
-
-		JTextComponent tc = ac.getTextComponent();
-		int dot = tc.getSelectionStart();
-		int mark = tc.getSelectionEnd();
-		int index = -1;
-		String paramPrefix = null;
-
-		List paramHighlights = context.getParameterHighlights();
-		for (int i=0; i<paramHighlights.size(); i++) {
-			Highlight h = (Highlight)paramHighlights.get(i);
-			// "+1" because of param hack - see OutlineHighlightPainter
-			int start = h.getStartOffset()+1;
-			if (dot>=start && dot<=h.getEndOffset()) {
-				try {
-					// All text selected => offer all suggestions, otherwise
-					// use prefix before selection
-					if (dot!=start || mark!=h.getEndOffset()) {
-						paramPrefix = tc.getText(start, dot-start);
-					}
-				} catch (BadLocationException ble) {
-					ble.printStackTrace();
-				}
-				index = i;
-				break;
-			}
-		}
-
-		updateText(index);
-		return paramPrefix;
-
-	}
-
-
-	/**
-	 * Updates the text in the tool tip to have the current parameter
 	 * displayed in bold.
 	 *
 	 * @param selectedParam The index of the selected parameter.
 	 * @return Whether the text needed to be updated.
 	 */
 	public boolean updateText(int selectedParam) {
-
-		// Don't redo everything if they're just using the arrow keys to move
-		// through each char of a single parameter, for example.
-		if (selectedParam==lastSelectedParam) {
-			return false;
-		}
-		lastSelectedParam = selectedParam;
 
 		StringBuffer sb = new StringBuffer("<html>");
 		int paramCount = pc.getParamCount();

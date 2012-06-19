@@ -116,6 +116,11 @@ class ParameterizedCompletionContext {
 	private Position defaultEndOffs;
 
 	/**
+	 * The currently "selected" parameter in the displayed text.
+	 */
+	private int lastSelectedParam;
+
+	/**
 	 * A small popup window giving likely choices for parameterized completions.
 	 */
 	private ParameterizedCompletionChoicesWindow paramChoicesWindow;
@@ -169,8 +174,6 @@ class ParameterizedCompletionContext {
 
 		tip = new ParameterizedCompletionDescriptionToolTip(parentWindow,
 															this, ac, pc);
-
-		paramChoicesWindow = createParamChoicesWindow();
 
 	}
 
@@ -477,7 +480,7 @@ class ParameterizedCompletionContext {
 		// "+1" is a workaround for Java Highlight issues.
 		tc.setSelectionStart(currentNext.getStartOffset()+1);
 		tc.setSelectionEnd(currentNext.getEndOffset());
-		tip.updateText(pos);
+		updateToolTipText(pos);
 
 	}
 
@@ -502,7 +505,6 @@ class ParameterizedCompletionContext {
 		Highlight currentPrev = null;
 		int pos = 0;
 		List highlights = getParameterHighlights();
-		int lastSelectedParam = tip.getLastSelectedParam();
 
 		for (int i=0; i<highlights.size(); i++) {
 			Highlight h = (Highlight)highlights.get(i);
@@ -524,13 +526,13 @@ class ParameterizedCompletionContext {
 			 // "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentPrev.getStartOffset()+1);
 			tc.setSelectionEnd(currentPrev.getEndOffset());
-			tip.updateText(pos);
+			updateToolTipText(pos);
 		}
 		else if (currentPrev!=null && dot>currentPrev.getStartOffset()) {
 			 // "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentPrev.getStartOffset()+1);
 			tc.setSelectionEnd(currentPrev.getEndOffset());
-			tip.updateText(pos);
+			updateToolTipText(pos);
 		}
 		else {
 			tc.setCaretPosition(maxPos.getOffset());
@@ -611,7 +613,6 @@ class ParameterizedCompletionContext {
 			}
 
 			// Toggles visibility, if necessary.
-			int lastSelectedParam = tip.getLastSelectedParam();
 			paramChoicesWindow.setParameter(lastSelectedParam, paramPrefix);
 
 		}
@@ -695,6 +696,8 @@ class ParameterizedCompletionContext {
 
 			if (visible) {
 
+				lastSelectedParam = -1;
+
 				try {
 					int dot = tc.getCaretPosition();
 					Rectangle r = tc.modelToView(dot);
@@ -713,6 +716,7 @@ class ParameterizedCompletionContext {
 				if (paramChoicesWindow==null) {
 					paramChoicesWindow = createParamChoicesWindow();
 				}
+				lastSelectedParam = getCurrentParameterIndex();
 				prepareParamChoicesWindow();
 
 			}
@@ -776,6 +780,55 @@ class ParameterizedCompletionContext {
 		im.put(ks, oldClosingKey);
 		am.put(IM_KEY_CLOSING, oldClosingAction);
 
+	}
+
+
+	/**
+	 * Updates the text in the tool tip to have the current parameter
+	 * displayed in bold.  The "current parameter" is determined from the
+	 * current caret position.
+	 *
+	 * @return The "prefix" of text in the caret's parameter before the caret.
+	 */
+	private String updateToolTipText() {
+
+		JTextComponent tc = ac.getTextComponent();
+		int dot = tc.getSelectionStart();
+		int mark = tc.getSelectionEnd();
+		int index = -1;
+		String paramPrefix = null;
+
+		List paramHighlights = getParameterHighlights();
+		for (int i=0; i<paramHighlights.size(); i++) {
+			Highlight h = (Highlight)paramHighlights.get(i);
+			// "+1" because of param hack - see OutlineHighlightPainter
+			int start = h.getStartOffset()+1;
+			if (dot>=start && dot<=h.getEndOffset()) {
+				try {
+					// All text selected => offer all suggestions, otherwise
+					// use prefix before selection
+					if (dot!=start || mark!=h.getEndOffset()) {
+						paramPrefix = tc.getText(start, dot-start);
+					}
+				} catch (BadLocationException ble) {
+					ble.printStackTrace();
+				}
+				index = i;
+				break;
+			}
+		}
+
+		updateToolTipText(index);
+		return paramPrefix;
+
+	}
+
+
+	private void updateToolTipText(int selectedParam) {
+		if (selectedParam!=lastSelectedParam) {
+			tip.updateText(selectedParam);
+			this.lastSelectedParam = selectedParam;
+		}
 	}
 
 
@@ -937,7 +990,7 @@ class ParameterizedCompletionContext {
 				setVisible(false, false);
 				return;
 			}
-			paramPrefix = tip.updateText();
+			paramPrefix = updateToolTipText();
 			if (tip.isVisible()) {
 				prepareParamChoicesWindow();
 			}
