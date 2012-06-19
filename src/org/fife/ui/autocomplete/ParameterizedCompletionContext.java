@@ -693,27 +693,28 @@ class ParameterizedCompletionContext {
 
 			JTextComponent tc = ac.getTextComponent();
 
-			try {
-				int dot = tc.getCaretPosition();
-				Rectangle r = tc.modelToView(dot);
-				Point p = new Point(r.x, r.y);
-				SwingUtilities.convertPointToScreen(p, tc);
-				r.x = p.x;
-				r.y = p.y;
-				tip.setLocationRelativeTo(r);
-				tip.setVisible(true);
-			} catch (BadLocationException ble) { // Should never happen
-				UIManager.getLookAndFeel().provideErrorFeedback(tc);
-				ble.printStackTrace();
-			}
-
 			if (visible) {
+
+				try {
+					int dot = tc.getCaretPosition();
+					Rectangle r = tc.modelToView(dot);
+					Point p = new Point(r.x, r.y);
+					SwingUtilities.convertPointToScreen(p, tc);
+					r.x = p.x;
+					r.y = p.y;
+					tip.setLocationRelativeTo(r);
+				} catch (BadLocationException ble) { // Should never happen
+					UIManager.getLookAndFeel().provideErrorFeedback(tc);
+					ble.printStackTrace();
+				}
+
 				listener.install(tc, addParamListStart);
 				// First time through, we'll need to create this window.
 				if (paramChoicesWindow==null) {
 					paramChoicesWindow = createParamChoicesWindow();
 				}
 				prepareParamChoicesWindow();
+
 			}
 			else {
 				listener.uninstall();

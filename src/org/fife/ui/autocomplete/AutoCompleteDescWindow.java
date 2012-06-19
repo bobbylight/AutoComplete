@@ -530,7 +530,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 													get(--historyPos);
 				descArea.setText(pair.summary);
 				if (pair.anchor!=null) {
-					System.out.println("Scrolling to: " + pair.anchor);
+					//System.out.println("Scrolling to: " + pair.anchor);
 					descArea.scrollToReference(pair.anchor);
 				}
 				else {
@@ -562,7 +562,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 											get(++historyPos);
 				descArea.setText(pair.summary);
 				if (pair.anchor!=null) {
-					System.out.println("Scrolling to: " + pair.anchor);
+					//System.out.println("Scrolling to: " + pair.anchor);
 					descArea.scrollToReference(pair.anchor);
 				}
 				else {

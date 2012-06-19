@@ -195,7 +195,7 @@ this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 			else {
 				int textX = paintTextR.x;
 				int textY = paintTextR.y;// + g.getFontMetrics().getAscent();
-				System.out.println(g.getFontMetrics().getAscent());
+				//System.out.println(g.getFontMetrics().getAscent());
 				g.drawString(text, textX, textY);
 			}
 		}

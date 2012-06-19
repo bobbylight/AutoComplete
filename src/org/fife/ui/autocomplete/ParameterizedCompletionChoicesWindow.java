@@ -137,7 +137,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	public void incSelection(int amount) {
 		int selection = list.getSelectedIndex();
 		selection += amount;
-		if (selection<=0) {
+		if (selection<0) {
 			// Account for nothing selected yet
 			selection = model.getSize()-1;//+= model.getSize();
 		}
@@ -213,7 +213,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 	/**
 	 * Displays the choices for the specified parameter matching the given
-	 * text.
+	 * text.  This will display or hide this popup window as necessary.
 	 *
 	 * @param param The index of the parameter the caret is currently in.
 	 *        This may be <code>-1</code> if not in a parameter (i.e., on
@@ -295,7 +295,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	public void setVisible(boolean visible) {
 		if (visible!=isVisible()) {
 			// i.e. if no possibilities matched what's been typed
-			if (visible && list.getVisibleRowCount()==0) {
+			if (visible && model.size()==0) {//list.getVisibleRowCount()==0) {
 				return;
 			}
 			super.setVisible(visible);
