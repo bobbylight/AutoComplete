@@ -125,6 +125,14 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean getShowParameterToolTip() {
+		return false;
+	}
+
+
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
 			JTextComponent tc, boolean addParamStartList,
 			boolean replaceTabsWithSpaces) {

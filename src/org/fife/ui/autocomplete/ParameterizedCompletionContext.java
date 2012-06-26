@@ -9,7 +9,6 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -39,6 +38,7 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 import javax.swing.text.Highlighter.Highlight;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
 import org.fife.ui.autocomplete.ParameterizedCompletionInsertionInfo.ReplacementCopy;
@@ -76,6 +76,11 @@ class ParameterizedCompletionContext {
 	private ParameterizedCompletion pc;
 
 	/**
+	 * Whether parameterized completion assistance is active.
+	 */
+	private boolean active;
+
+	/**
 	 * A tool tip displaying the currently edited parameter name and type.
 	 */
 	private ParameterizedCompletionDescriptionToolTip tip;
@@ -84,6 +89,8 @@ class ParameterizedCompletionContext {
 	 * The painter to paint borders around the variables.
 	 */
 	private Highlighter.HighlightPainter p;
+
+	private Highlighter.HighlightPainter endingP;
 
 	private Highlighter.HighlightPainter paramCopyP;
 
@@ -167,13 +174,61 @@ class ParameterizedCompletionContext {
 		this.pc = pc;
 		listener = new Listener();
 
-		p = new OutlineHighlightPainter(Color.GRAY);
-		paramCopyP = new ChangeableHighlightPainter(new Color(255, 224, 224));
+		AutoCompletionStyleContext sc = AutoCompletion.getStyleContext();
+		p = new OutlineHighlightPainter(sc.getParameterOutlineColor());
+		endingP = new OutlineHighlightPainter(
+				sc.getParameterizedCompletionCursorPositionColor());
+		paramCopyP = new ChangeableHighlightPainter(sc.getParameterCopyColor());
 		tags = new ArrayList(1); // Usually small
 		paramCopyInfos = new ArrayList(1);
 
-		tip = new ParameterizedCompletionDescriptionToolTip(parentWindow,
-															this, ac, pc);
+	}
+
+
+	/**
+	 * Activates parameter completion support.
+	 *
+	 * @param addParamListStart Whether the parameter list start token should
+	 *        be inserted at the caret position before the parameters.
+	 * @see #deactivate()
+	 */
+	public void activate(boolean addParamListStart) {
+
+		if (active) {
+			return;
+		}
+
+		active = true;
+		JTextComponent tc = ac.getTextComponent();
+		lastSelectedParam = -1;
+
+		if (pc.getShowParameterToolTip()) {
+			tip = new ParameterizedCompletionDescriptionToolTip(
+					parentWindow, this, ac, pc);
+			try {
+				int dot = tc.getCaretPosition();
+				Rectangle r = tc.modelToView(dot);
+				Point p = new Point(r.x, r.y);
+				SwingUtilities.convertPointToScreen(p, tc);
+				r.x = p.x;
+				r.y = p.y;
+				tip.setLocationRelativeTo(r);
+				tip.setVisible(true);
+			} catch (BadLocationException ble) { // Should never happen
+				UIManager.getLookAndFeel().provideErrorFeedback(tc);
+				ble.printStackTrace();
+				tip = null;
+			}
+		}
+
+		listener.install(tc, addParamListStart);
+		// First time through, we'll need to create this window.
+		if (paramChoicesWindow==null) {
+			paramChoicesWindow = createParamChoicesWindow();
+		}
+		lastSelectedParam = getCurrentParameterIndex();
+		prepareParamChoicesWindow();
+		paramChoicesWindow.setVisible(true);
 
 	}
 
@@ -189,6 +244,27 @@ class ParameterizedCompletionContext {
 														ac, this);
 		pcw.initialize(pc);
 		return pcw;
+	}
+
+
+	/**
+	 * Hides any popup windows and terminates parameterized completion
+	 * assistance.
+	 *
+	 * @see #activate(boolean)
+	 */
+	public void deactivate() {
+		if (!active) {
+			return;
+		}
+		active = false;
+		listener.uninstall();
+		if (tip!=null) {
+			tip.setVisible(false);
+		}
+		if (paramChoicesWindow!=null) {
+			paramChoicesWindow.setVisible(false);
+		}
 	}
 
 
@@ -336,11 +412,12 @@ class ParameterizedCompletionContext {
 
 
 	public List getParameterHighlights() {
-		List paramHighlights = new ArrayList(1);
+		List paramHighlights = new ArrayList(2);
 		JTextComponent tc = ac.getTextComponent();
 		Highlight[] highlights = tc.getHighlighter().getHighlights();
 		for (int i=0; i<highlights.length; i++) {
-			if (highlights[i].getPainter()==p) {
+			HighlightPainter painter = highlights[i].getPainter();
+			if (painter==p || painter==endingP) {
 				paramHighlights.add(highlights[i]);
 			}
 		}
@@ -451,7 +528,7 @@ class ParameterizedCompletionContext {
 		int tagCount = tags.size();
 		if (tagCount==0) {
 			tc.setCaretPosition(maxPos.getOffset());
-			setVisible(false, false);
+			deactivate();
 		}
 
 		Highlight currentNext = null;
@@ -497,7 +574,7 @@ class ParameterizedCompletionContext {
 		int tagCount = tags.size();
 		if (tagCount==0) { // Should never happen
 			tc.setCaretPosition(maxPos.getOffset());
-			setVisible(false, false);
+			deactivate();
 		}
 
 		int dot = tc.getCaretPosition();
@@ -536,7 +613,7 @@ class ParameterizedCompletionContext {
 		}
 		else {
 			tc.setCaretPosition(maxPos.getOffset());
-			setVisible(false, false);
+			deactivate();
 		}
 
 	}
@@ -551,7 +628,7 @@ class ParameterizedCompletionContext {
 			// Typing in an "end parameter" => stop parameter assistance.
 			Parameter param = pc.getParam(index);
 			if (param.isEndParam()) {
-				setVisible(false, false);
+				deactivate();
 				return;
 			}
 
@@ -579,7 +656,7 @@ class ParameterizedCompletionContext {
 		}
 
 		else { // Probably the "end parameter" for FunctionCompletions.
-			setVisible(false, false);
+			deactivate();
 		}
 
 	}
@@ -680,62 +757,6 @@ class ParameterizedCompletionContext {
 
 
 	/**
-	 * Toggles the visibility of this tool tip.
-	 *
-	 * @param visible Whether the tool tip should be visible.
-	 * @param addParamListStart Whether or not
-	 *        {@link CompletionProvider#getParameterListStart()} should be
-	 *        added to the text component.  If <code>visible</code> is
-	 *        <code>false</code>, this parameter is ignored.
-	 */
-	public void setVisible(boolean visible, boolean addParamListStart) {
-
-		if (visible!=tip.isVisible()) {
-
-			JTextComponent tc = ac.getTextComponent();
-
-			if (visible) {
-
-				lastSelectedParam = -1;
-
-				try {
-					int dot = tc.getCaretPosition();
-					Rectangle r = tc.modelToView(dot);
-					Point p = new Point(r.x, r.y);
-					SwingUtilities.convertPointToScreen(p, tc);
-					r.x = p.x;
-					r.y = p.y;
-					tip.setLocationRelativeTo(r);
-				} catch (BadLocationException ble) { // Should never happen
-					UIManager.getLookAndFeel().provideErrorFeedback(tc);
-					ble.printStackTrace();
-				}
-
-				listener.install(tc, addParamListStart);
-				// First time through, we'll need to create this window.
-				if (paramChoicesWindow==null) {
-					paramChoicesWindow = createParamChoicesWindow();
-				}
-				lastSelectedParam = getCurrentParameterIndex();
-				prepareParamChoicesWindow();
-
-			}
-			else {
-				listener.uninstall();
-			}
-
-			tip.setVisible(visible);
-			if (paramChoicesWindow!=null) {
-				// Only really needed to hide the window (i.e. visible==false)
-				paramChoicesWindow.setVisible(visible);
-			}
-
-		}
-
-	}
-
-
-	/**
 	 * Removes the key bindings we installed.
 	 *
 	 * @see #installKeyBindings()
@@ -826,7 +847,9 @@ class ParameterizedCompletionContext {
 
 	private void updateToolTipText(int selectedParam) {
 		if (selectedParam!=lastSelectedParam) {
-			tip.updateText(selectedParam);
+			if (tip!=null) {
+				tip.updateText(selectedParam);
+			}
 			this.lastSelectedParam = selectedParam;
 		}
 	}
@@ -837,7 +860,9 @@ class ParameterizedCompletionContext {
 	 * manages.
 	 */
 	public void updateUI() {
-		tip.updateUI();
+		if (tip!=null) {
+			tip.updateUI();
+		}
 		if (paramChoicesWindow!=null) {
 			paramChoicesWindow.updateUI();
 		}
@@ -846,9 +871,6 @@ class ParameterizedCompletionContext {
 
 	/**
 	 * Called when the user presses Enter while entering parameters.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private class GotoEndAction extends AbstractAction {
 
@@ -865,7 +887,7 @@ class ParameterizedCompletionContext {
 			// Otherwise, just move to the end.
 			JTextComponent tc = ac.getTextComponent();
 			tc.setCaretPosition(defaultEndOffs.getOffset());
-			setVisible(false, false);
+			deactivate();
 
 		}
 
@@ -875,9 +897,6 @@ class ParameterizedCompletionContext {
 	/**
 	 * Called when the user types the character marking the closing of the
 	 * parameter list, such as '<code>)</code>'.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private class ClosingAction extends AbstractAction {
 
@@ -911,7 +930,7 @@ class ParameterizedCompletionContext {
 					tc.setCaretPosition(tc.getCaretPosition()+1);
 				}
 
-				setVisible(false, false);
+				deactivate();
 
 			}
 
@@ -939,9 +958,6 @@ class ParameterizedCompletionContext {
 
 	/**
 	 * Action performed when the user hits the escape key.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private class HideAction extends AbstractAction {
 
@@ -955,7 +971,7 @@ class ParameterizedCompletionContext {
 				paramChoicesWindow = null;
 			}
 			else {
-				setVisible(false, false);
+				deactivate();
 			}
 		}
 
@@ -965,9 +981,6 @@ class ParameterizedCompletionContext {
 	/**
 	 * Listens for various events in the text component while this tool tip
 	 * is visible.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private class Listener implements FocusListener, CaretListener,
 							DocumentListener {
@@ -981,17 +994,16 @@ class ParameterizedCompletionContext {
 		 */
 		public void caretUpdate(CaretEvent e) {
 			if (maxPos==null) { // Sanity check
-				setVisible(false, false);
+				deactivate();
 				return;
 			}
 			int dot = e.getDot();
 			if (dot<minPos || dot>=maxPos.getOffset()) {
-				System.err.println(">>>>> dot==" + dot + ", " + minPos + ", " + maxPos);
-				setVisible(false, false);
+				deactivate();
 				return;
 			}
 			paramPrefix = updateToolTipText();
-			if (tip.isVisible()) {
+			if (active) {
 				prepareParamChoicesWindow();
 			}
 		}
@@ -1017,7 +1029,7 @@ class ParameterizedCompletionContext {
 		 * @param e The event.
 		 */
 		public void focusLost(FocusEvent e) {
-			setVisible(false, false);
+			deactivate();
 		}
 
 
@@ -1068,10 +1080,13 @@ class ParameterizedCompletionContext {
 				tc.replaceSelection(info.getTextToInsert());
 
 				// Add highlights around the parameters.
-				for (int i=0; i<info.getReplacementCount(); i++) {
+				final int replacementCount = info.getReplacementCount();
+				for (int i=0; i<replacementCount; i++) {
 					DocumentRange dr = info.getReplacementLocation(i);
+					HighlightPainter painter = i<replacementCount-1 ? p : endingP;
 					 // "-1" is a workaround for Java Highlight issues.
-					tags.add(h.addHighlight(dr.getStartOffset()-1, dr.getEndOffset(), p));
+					tags.add(h.addHighlight(
+							dr.getStartOffset()-1, dr.getEndOffset(), painter));
 				}
 				for (int i=0; i<info.getReplacementCopyCount(); i++) {
 					ReplacementCopy rc = info.getReplacementCopy(i);
@@ -1163,7 +1178,7 @@ class ParameterizedCompletionContext {
 				oldAction.actionPerformed(e);
 			}
 			else {
-				setVisible(false, false);
+				deactivate();
 			}
 		}
 

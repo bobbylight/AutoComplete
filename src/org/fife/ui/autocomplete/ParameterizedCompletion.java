@@ -55,10 +55,16 @@ public interface ParameterizedCompletion extends Completion {
 
 
 	/**
-	 * A parameter passed to a parameterized {@link Completion}.
+	 * Returns whether a tool tip displaying assistance for each parameter
+	 * while it is being edited is appropriate for this completion.
 	 *
-	 * @author Robert Futrell
-	 * @version 1.0
+	 * @return Whether the tool tip is appropriate to display.
+	 */
+	public boolean getShowParameterToolTip();
+
+
+	/**
+	 * A parameter passed to a parameterized {@link Completion}.
 	 */
 	public static class Parameter {
 

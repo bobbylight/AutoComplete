@@ -164,10 +164,8 @@ public class FunctionCompletion extends VariableCompletion
 		// this tool tip.
 		int minPos = dot;
 		Position maxPos = null;
-		int defaultEndOffs = -1;
 		try {
 			maxPos = tc.getDocument().createPosition(dot-sb.length()+1);
-			defaultEndOffs = dot-sb.length();
 		} catch (BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 		}
@@ -226,6 +224,14 @@ public class FunctionCompletion extends VariableCompletion
 	 */
 	public int getParamCount() {
 		return params==null ? 0 : params.size();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean getShowParameterToolTip() {
+		return true;
 	}
 
 

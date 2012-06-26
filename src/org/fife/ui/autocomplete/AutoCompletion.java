@@ -203,6 +203,13 @@ public class AutoCompletion {
 	private static final String PARAM_COMPLETE_KEY = "AutoCompletion.FunctionStart";
 
 	/**
+	 * Stores how to render auto-completion-specific highlights in text
+	 * components.
+	 */
+	private static final AutoCompletionStyleContext styleContext =
+			new AutoCompletionStyleContext();
+
+	/**
 	 * Whether debug messages should be printed to stdout as AutoCompletion
 	 * runs.
 	 */
@@ -378,6 +385,17 @@ public class AutoCompletion {
 
 
 	/**
+	 * Returns the style context describing how auto-completion related
+	 * highlights in the editor are rendered.
+	 *
+	 * @return The style context.
+	 */
+	public static AutoCompletionStyleContext getStyleContext() {
+		return styleContext;
+	}
+
+
+	/**
 	 * Returns the text component for which auto-completion is enabled.
 	 *
 	 * @return The text component, or <code>null</code> if this
@@ -432,7 +450,7 @@ public class AutoCompletion {
 	 */
 	private boolean hideParameterCompletionPopups() {
 		if (pcc!=null) {
-			pcc.setVisible(false, false);
+			pcc.deactivate();
 			pcc = null;
 			return true;
 		}
@@ -930,8 +948,8 @@ public class AutoCompletion {
 	 *        {@link CompletionProvider#getParameterListStart()} should be
 	 *        added to the text component.
 	 */
-	private void startParameterizedCompletionAssistance(ParameterizedCompletion pc,
-										boolean addParamListStart) {
+	private void startParameterizedCompletionAssistance(
+				ParameterizedCompletion pc, boolean addParamListStart) {
 
 		// Get rid of the previous tooltip window, if there is one.
 		hideParameterCompletionPopups();
@@ -949,7 +967,7 @@ public class AutoCompletion {
 		}
 
 		pcc = new ParameterizedCompletionContext(parentWindow, this, pc);
-		pcc.setVisible(true, addParamListStart);
+		pcc.activate(addParamListStart);
 
 	}
 
