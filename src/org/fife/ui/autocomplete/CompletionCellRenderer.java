@@ -30,6 +30,7 @@ import javax.swing.text.View;
  *    <li>{@link VariableCompletion}s</li>
  *    <li>{@link MarkupTagCompletion}s</li>
  *    <li>{@link ShorthandCompletion}s</li>
+ *    <li>{@link TemplateCompletion}s</li>
  * </ul>
  *
  * @author Robert Futrell
@@ -55,9 +56,21 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	private boolean showTypes;
 
-private boolean selected;
-private Color realBG;
-private Rectangle paintTextR;
+	/**
+	 * During rendering, whether the item being rendered is selected.
+	 */
+	private boolean selected;
+
+	/**
+	 * During rendering, this is the "real" background color of the item being
+	 * rendered (i.e., what its background color is if it isn't selected).
+	 */
+	private Color realBG;
+
+	/**
+	 * Used in rendering calculations.
+	 */
+	private Rectangle paintTextR;
 
 	/**
 	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
@@ -116,8 +129,8 @@ private Rectangle paintTextR;
 		if (font!=null) {
 			setFont(font); // Overrides super's setFont(list.getFont()).
 		}
-this.selected = selected;
-this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
+		this.selected = selected;
+		this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 
 		if (value instanceof FunctionCompletion) {
 			FunctionCompletion fc = (FunctionCompletion)value;
@@ -126,6 +139,10 @@ this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 		else if (value instanceof VariableCompletion) {
 			VariableCompletion vc = (VariableCompletion)value;
 			prepareForVariableCompletion(list, vc, index, selected, hasFocus);
+		}
+		else if (value instanceof TemplateCompletion) {
+			TemplateCompletion tc = (TemplateCompletion)value;
+			prepareForTemplateCompletion(list, tc, index, selected, hasFocus);
 		}
 		else if (value instanceof MarkupTagCompletion) {
 			MarkupTagCompletion mtc = (MarkupTagCompletion)value;
@@ -304,6 +321,38 @@ this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 
 		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(c.getInputText());
+
+		setText(sb.toString());
+
+	}
+
+
+	/**
+	 * Prepares this renderer to display a template completion.
+	 *
+	 * @param list The list of choices being rendered.
+	 * @param tc The completion to render.
+	 * @param index The index into <code>list</code> being rendered.
+	 * @param selected Whether the item is selected.
+	 * @param hasFocus Whether the item has focus.
+	 */
+	protected void prepareForTemplateCompletion(JList list,
+		TemplateCompletion tc, int index, boolean selected, boolean hasFocus) {
+
+		StringBuffer sb = new StringBuffer(PREFIX);
+		sb.append(tc.getInputText());
+
+		String definition = tc.getDefinitionString();
+		if (definition!=null) {
+			sb.append(" - ");
+			if (!selected) {
+				sb.append("<font color='#808080'>");
+			}
+			sb.append(definition);
+			if (!selected) {
+				sb.append("</font>");
+			}
+		}
 
 		setText(sb.toString());
 
