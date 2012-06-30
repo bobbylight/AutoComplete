@@ -45,6 +45,10 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * user types into it, template mode terminates.  If more than one
  * <code>${cursor}</code> parameter is specified, behavior is undefined.<p>
  * 
+ * Two dollar signs in a row ("<code>$$</code>") will be evaluated as a single
+ * dollar sign.  Otherwise, the template parsing is pretty straightforward and
+ * fault-tolerant.<p>
+ *
  * Leading whitespace is automatically added to lines if the template spans
  * more than one line, and if used with a text component using a
  * <code>PlainDocument</code>, tabs will be converted to spaces if requested.
