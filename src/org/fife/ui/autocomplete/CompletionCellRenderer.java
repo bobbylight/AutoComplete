@@ -15,6 +15,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
@@ -132,24 +133,26 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		this.selected = selected;
 		this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
 
-		if (value instanceof FunctionCompletion) {
+		Completion c = (Completion)value;
+		setIcon(c.getIcon());
+
+		if (c instanceof FunctionCompletion) {
 			FunctionCompletion fc = (FunctionCompletion)value;
 			prepareForFunctionCompletion(list, fc, index, selected, hasFocus);
 		}
-		else if (value instanceof VariableCompletion) {
+		else if (c instanceof VariableCompletion) {
 			VariableCompletion vc = (VariableCompletion)value;
 			prepareForVariableCompletion(list, vc, index, selected, hasFocus);
 		}
-		else if (value instanceof TemplateCompletion) {
+		else if (c instanceof TemplateCompletion) {
 			TemplateCompletion tc = (TemplateCompletion)value;
 			prepareForTemplateCompletion(list, tc, index, selected, hasFocus);
 		}
-		else if (value instanceof MarkupTagCompletion) {
+		else if (c instanceof MarkupTagCompletion) {
 			MarkupTagCompletion mtc = (MarkupTagCompletion)value;
 			prepareForMarkupTagCompletion(list, mtc, index, selected, hasFocus);
 		}
 		else {
-			Completion c = (Completion)value;
 			prepareForOtherCompletion(list, c, index, selected, hasFocus);
 		}
 
@@ -412,6 +415,20 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public void setDisplayFont(Font font) {
 		this.font = font;
+	}
+
+
+	/**
+	 * Sets the icon to display based off of a completion, falling back to a
+	 * default icon if the completion has no icon.
+	 *
+	 * @param completion The completion to check.
+	 * @param defaultIcon The icon to use if <code>completion</code> does not
+	 *        specify an icon.
+	 */
+	protected void setIconWithDefault(Completion completion, Icon defaultIcon) {
+		Icon icon = completion.getIcon();
+		setIcon(icon!=null ? icon : defaultIcon);
 	}
 
 

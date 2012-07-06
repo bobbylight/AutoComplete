@@ -8,6 +8,7 @@
  */
 package org.fife.ui.autocomplete;
 
+import javax.swing.Icon;
 import javax.swing.text.JTextComponent;
 
 
@@ -59,6 +60,14 @@ public interface Completion extends Comparable {
 	 * @return The already-entered portion of this completion.
 	 */
 	public String getAlreadyEntered(JTextComponent comp);
+
+
+	/**
+	 * Returns the icon to use for this completion.
+	 *
+	 * @return The icon, or <code>null</code> for none.
+	 */
+	public Icon getIcon();
 
 
 	/**

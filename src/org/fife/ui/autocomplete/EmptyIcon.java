@@ -15,8 +15,9 @@ import javax.swing.Icon;
 
 
 /**
- * A standard icon that doesn't paint anything.  This can be used to take
- * up an icon's space when no icon is specified.
+ * A standard icon that doesn't paint anything.  This can be used when some
+ * <code>Completion</code>s have icons and others don't, to visually align the
+ * text of all completions.
  *
  * @author Robert Futrell
  * @version 1.0

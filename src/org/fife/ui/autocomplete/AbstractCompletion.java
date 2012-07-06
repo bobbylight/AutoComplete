@@ -8,6 +8,7 @@
  */
 package org.fife.ui.autocomplete;
 
+import javax.swing.Icon;
 import javax.swing.text.JTextComponent;
 
 
@@ -73,6 +74,17 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	public String getAlreadyEntered(JTextComponent comp) {
 		return provider.getAlreadyEnteredText(comp);
+	}
+
+
+	/**
+	 * The default implementation returns <code>null</code>.  Subclasses
+	 * who wish to display an icon can override this method.
+	 *
+	 * @return The icon for this completion.
+	 */
+	public Icon getIcon() {
+		return null;
 	}
 
 
