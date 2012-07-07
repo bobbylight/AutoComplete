@@ -104,6 +104,12 @@ public class AutoCompletion {
 	private ExternalURLHandler externalURLHandler;
 
 	/**
+	 * An optional redirector that converts URL's to some other location before
+	 * being handed over to <code>externalURLHandler</code>.
+	 */
+	private static LinkRedirector linkRedirector;
+
+	/**
 	 * Whether the description window should be displayed along with the
 	 * completion choice window.
 	 */
@@ -266,7 +272,7 @@ public class AutoCompletion {
 	 * Returns whether, if a single auto-complete choice is available, it
 	 * should be automatically inserted, without displaying the popup menu.
 	 *
-	 * @return Whether to autocomplete single choices.
+	 * @return Whether to auto-complete single choices.
 	 * @see #setAutoCompleteSingleChoices(boolean)
 	 */
 	public boolean getAutoCompleteSingleChoices() {
@@ -295,10 +301,10 @@ public class AutoCompletion {
 
 
 	/**
-	 * Returns the default autocomplete "trigger key" for this OS.  For
+	 * Returns the default auto-complete "trigger key" for this OS.  For
 	 * Windows, for example, it is Ctrl+Space.
 	 *
-	 * @return The default autocomplete trigger key.
+	 * @return The default auto-complete trigger key.
 	 */
 	public static KeyStroke getDefaultTriggerKey() {
 		// Default to CTRL, even on Mac, since Ctrl+Space activates Spotlight
@@ -313,6 +319,7 @@ public class AutoCompletion {
 	 *
 	 * @return The handler.
 	 * @see #setExternalURLHandler(ExternalURLHandler)
+	 * @see #getLinkRedirector()
 	 */
 	public ExternalURLHandler getExternalURLHandler() {
 		return externalURLHandler;
@@ -323,6 +330,17 @@ public class AutoCompletion {
 		Document doc = textComponent.getDocument();
 		Element root = doc.getDefaultRootElement();
 		return root.getElementIndex(textComponent.getCaretPosition());
+	}
+
+
+	/**
+	 * Returns the link redirector, if any.
+	 *
+	 * @return The link redirector, or <code>null</code> if none.
+	 * @see #setLinkRedirector(LinkRedirector)
+	 */
+	public static LinkRedirector getLinkRedirector() {
+		return linkRedirector;
 	}
 
 
@@ -420,7 +438,7 @@ public class AutoCompletion {
 
 
 	/**
-	 * Returns the "trigger key" used for autocomplete.
+	 * Returns the "trigger key" used for auto-complete.
 	 *
 	 * @return The trigger key.
 	 * @see #setTriggerKey(KeyStroke)
@@ -845,14 +863,29 @@ public class AutoCompletion {
 	 * description window.  This handler can perform some action, such as
 	 * open the URL in a web browser.  The default implementation will open
 	 * the URL in a browser, but only if running in Java 6.  If you want
-	 * browser support for Java 5 and below, you will have to install your own
-	 * handler to do so.
+	 * browser support for Java 5 and below, or otherwise want to respond to
+	 * hyperlink clicks, you will have to install your own handler to do so.
 	 *
 	 * @param handler The new handler.
 	 * @see #getExternalURLHandler()
 	 */
 	public void setExternalURLHandler(ExternalURLHandler handler) {
 		this.externalURLHandler = handler;
+	}
+
+
+	/**
+	 * Sets the redirector for external URL's found in code completion
+	 * documentation.  When a non-local link in completion popups is clicked,
+	 * this redirector is given the chance to modify the URL fetched and
+	 * displayed.
+	 *
+	 * @param linkRedirector The link redirector, or <code>null</code> for
+	 *        none.
+	 * @see #getLinkRedirector()
+	 */
+	public static void setLinkRedirector(LinkRedirector linkRedirector) {
+		AutoCompletion.linkRedirector = linkRedirector;
 	}
 
 
@@ -1126,11 +1159,8 @@ public class AutoCompletion {
 	/**
 	 * The <code>Action</code> that displays the popup window if
 	 * auto-completion is enabled.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
-	class AutoCompleteAction extends AbstractAction {
+	private class AutoCompleteAction extends AbstractAction {
 
 		public void actionPerformed(ActionEvent e) {
 			if (isAutoCompleteEnabled()) {
@@ -1163,9 +1193,6 @@ public class AutoCompletion {
 	/**
 	 * Action that starts a parameterized completion, e.g. after '(' is
 	 * typed.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private class ParameterizedCompletionStartAction extends AbstractAction {
 
@@ -1200,9 +1227,6 @@ public class AutoCompletion {
 	/**
 	 * Listens for events in the parent window of the text component with
 	 * auto-completion enabled.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private class ParentWindowListener extends ComponentAdapter
 									implements WindowFocusListener {

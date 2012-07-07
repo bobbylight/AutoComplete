@@ -858,9 +858,6 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	/**
 	 * A mapping from a key (an Object) to an Action.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private static class KeyActionPair {
 

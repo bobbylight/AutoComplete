@@ -31,7 +31,9 @@ import javax.swing.event.MouseInputAdapter;
 
 /**
  * A component that allows its parent window to be resizable, similar to the
- * size grip seen on status bars.
+ * size grip seen on status bars.  This is essentially a copy of the class with
+ * the same name in RSyntaxTextArea, but is duplicated to prevent a dependency
+ * on that library.
  *
  * @author Robert Futrell
  * @version 1.0

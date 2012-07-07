@@ -277,50 +277,62 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 
 		HyperlinkEvent.EventType type = e.getEventType();
+		if (!type.equals(HyperlinkEvent.EventType.ACTIVATED)) {
+			return;
+		}
 
-		if (type.equals(HyperlinkEvent.EventType.ACTIVATED)) {
-
-			// Custom hyperlink handler for this completion type
-			ExternalURLHandler handler = ac.getExternalURLHandler();
-			if (handler!=null) {
-				HistoryEntry current = (HistoryEntry)history.
-												get(historyPos);
-				handler.urlClicked(e, current.completion, this);
-				return;
+		// Users can redirect URL's, perhaps to a local copy of documentation.
+		URL url = e.getURL();
+		if (url!=null) {
+			LinkRedirector redirector = AutoCompletion.getLinkRedirector();
+			if (redirector!=null) {
+				URL newUrl = redirector.possiblyRedirect(url);
+				if (newUrl!=null && newUrl!=url) {
+					url = newUrl;
+					e = new HyperlinkEvent(e.getSource(), e.getEventType(),
+							newUrl, e.getDescription(), e.getSourceElement());
+				}
 			}
+		}
 
-			// No custom handler...
-			URL url = e.getURL();
-			if (url!=null) {
-				// Try loading in external browser (Java 6+ only).
-				try {
-					Util.browse(new URI(url.toString()));
-				} catch (/*IO*/URISyntaxException ioe) {
+		// Custom hyperlink handler for this completion type
+		ExternalURLHandler handler = ac.getExternalURLHandler();
+		if (handler!=null) {
+			HistoryEntry current = (HistoryEntry)history.
+											get(historyPos);
+			handler.urlClicked(e, current.completion, this);
+			return;
+		}
+
+		// No custom handler...
+		if (url!=null) {
+			// Try loading in external browser (Java 6+ only).
+			try {
+				Util.browse(new URI(url.toString()));
+			} catch (/*IO*/URISyntaxException ioe) {
+				UIManager.getLookAndFeel().provideErrorFeedback(descArea);
+				ioe.printStackTrace();
+			}
+		}
+		else { // Assume simple function name text, like in c.xml
+			// FIXME: This is really a hack, and we assume we can find the
+			// linked-to item in the same CompletionProvider.
+			AutoCompletePopupWindow parent =
+							(AutoCompletePopupWindow)getParent();
+			CompletionProvider p = parent.getSelection().getProvider();
+			if (p instanceof AbstractCompletionProvider) {
+				String name = e.getDescription();
+				List l = ((AbstractCompletionProvider)p).
+									getCompletionByInputText(name);
+				if (l!=null && !l.isEmpty()) {
+					// Just use the 1st one if there's more than 1
+					Completion c = (Completion)l.get(0);
+					setDescriptionFor(c, true);
+				}
+				else {
 					UIManager.getLookAndFeel().provideErrorFeedback(descArea);
-					ioe.printStackTrace();
 				}
 			}
-			else { // Simple function name text, like in c.xml
-				// FIXME: This is really a hack, and we assume we can find the
-				// linked-to item in the same CompletionProvider.
-				AutoCompletePopupWindow parent =
-								(AutoCompletePopupWindow)getParent();
-				CompletionProvider p = parent.getSelection().getProvider();
-				if (p instanceof AbstractCompletionProvider) {
-					String name = e.getDescription();
-					List l = ((AbstractCompletionProvider)p).
-										getCompletionByInputText(name);
-					if (l!=null && !l.isEmpty()) {
-						// Just use the 1st one if there's more than 1
-						Completion c = (Completion)l.get(0);
-						setDescriptionFor(c, true);
-					}
-					else {
-						UIManager.getLookAndFeel().provideErrorFeedback(descArea);
-					}
-				}
-			}
-
 		}
 
 	}

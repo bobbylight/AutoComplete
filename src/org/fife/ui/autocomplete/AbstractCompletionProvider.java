@@ -225,9 +225,6 @@ public abstract class AbstractCompletionProvider
 	/**
 	 * A comparator that compares the input text of a {@link Completion}
 	 * against a String lexicographically, ignoring case.
-	 *
-	 * @author Robert Futrell
-	 * @version 1.0
 	 */
 	private static class CaseInsensitiveComparator implements Comparator,
 														Serializable {
