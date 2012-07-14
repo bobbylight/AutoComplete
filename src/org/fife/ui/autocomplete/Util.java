@@ -15,6 +15,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.security.AccessControlException;
 
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
@@ -191,7 +192,12 @@ public class Util {
 	 * @see #PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS
 	 */
 	public static boolean getShouldAllowDecoratingMainAutoCompleteWindows() {
-		return Boolean.getBoolean(PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS);
+		try {
+			return Boolean.getBoolean(
+					PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS);
+		} catch (AccessControlException ace) { // We're in an applet.
+			return false;
+		}
 	}
 
 
