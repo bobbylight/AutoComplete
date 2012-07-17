@@ -64,6 +64,10 @@ public class TemplateCompletion extends AbstractCompletion
 	private String inputText;
 
 	private String definitionString;
+	
+	private String shortDescription;
+	
+	private String summary;
 
 	/**
 	 * The template's parameters.
@@ -72,10 +76,12 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	public TemplateCompletion(CompletionProvider provider,
-				String inputText, String definitionString, String template) {
+				String inputText, String definitionString, String template, String shortDescription, String summary) {
 		super(provider);
 		this.inputText = inputText;
 		this.definitionString = definitionString;
+		this.shortDescription = shortDescription;
+		this.summary = summary;
 		pieces = new ArrayList(3);
 		params = new ArrayList(3);
 		parse(template);
@@ -119,8 +125,7 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	public String getSummary() {
-		// TODO Auto-generated method stub
-		return null;
+		return summary;
 	}
 
 
@@ -128,6 +133,10 @@ public class TemplateCompletion extends AbstractCompletion
 		return definitionString;
 	}
 
+	public String getShortDescription() {
+		return shortDescription;
+	}
+	
 
 	/**
 	 * {@inheritDoc}

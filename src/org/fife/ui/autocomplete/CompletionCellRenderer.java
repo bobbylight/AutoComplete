@@ -345,7 +345,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(tc.getInputText());
 
-		String definition = tc.getDefinitionString();
+		String definition = tc.getShortDescription();
 		if (definition!=null) {
 			sb.append(" - ");
 			if (!selected) {
