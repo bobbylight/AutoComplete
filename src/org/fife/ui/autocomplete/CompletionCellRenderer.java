@@ -69,6 +69,11 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private Color realBG;
 
 	/**
+	 * The color to use for function arguments.
+	 */
+	private String paramColor;
+
+	/**
 	 * Used in rendering calculations.
 	 */
 	private Rectangle paintTextR;
@@ -86,6 +91,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	public CompletionCellRenderer() {
 		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
 		setShowTypes(true);
+		paramColor = "#aa0077";
 		paintTextR = new Rectangle();
 	}
 
@@ -250,7 +256,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 			String name = param.getName();
 			if (type!=null) {
 				if (!selected) {
-					sb.append("<font color='#aa0077'>");
+					sb.append("<font color='").append(paramColor).append("'>");
 				}
 				sb.append(type);
 				if (!selected) {
@@ -429,6 +435,18 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void setIconWithDefault(Completion completion, Icon defaultIcon) {
 		Icon icon = completion.getIcon();
 		setIcon(icon!=null ? icon : defaultIcon);
+	}
+
+
+	/**
+	 * Sets the color to use for function arguments.
+	 *
+	 * @param color The color to use.  This is ignored if <code>null</code>.
+	 */
+	public void setParamColor(Color color) {
+		if (color!=null) {
+			paramColor = Util.getHexString(color);
+		}
 	}
 
 

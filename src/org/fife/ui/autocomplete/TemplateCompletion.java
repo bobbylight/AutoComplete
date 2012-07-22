@@ -76,7 +76,14 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	public TemplateCompletion(CompletionProvider provider,
-				String inputText, String definitionString, String template, String shortDescription, String summary) {
+			String inputText, String definitionString, String template) {
+		this(provider, inputText, definitionString, template, null, null);
+	}
+
+
+	public TemplateCompletion(CompletionProvider provider,
+				String inputText, String definitionString, String template,
+				String shortDescription, String summary) {
 		super(provider);
 		this.inputText = inputText;
 		this.definitionString = definitionString;
