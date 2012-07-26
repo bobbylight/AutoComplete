@@ -40,7 +40,7 @@
 		<javac srcdir="${source-dir}" destdir="${class-dir}"
 			classpath="../RSyntaxTextArea/dist/rsyntaxtextarea.jar"
 			deprecation="yes" debug="${debug}" debuglevel="${debuglevel}"
-			source="${java-level}" target="${java-level}"/>
+			source="${java-level}" target="${java-level}" includeantruntime="false"/>
 	</target>
 
 
