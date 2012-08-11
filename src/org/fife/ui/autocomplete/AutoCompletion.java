@@ -988,7 +988,7 @@ public class AutoCompletion {
 		hideParameterCompletionPopups();
 
 		// Don't bother with a tooltip if there are no parameters.
-		if (pc.getParamCount()==0) {
+		if (pc.getParamCount()==0 && !(pc instanceof TemplateCompletion)) {
 			CompletionProvider p = pc.getProvider();
 			char end = p.getParameterListEnd(); // Might be '\0'
 			String text = end=='\0' ? "" : Character.toString(end);

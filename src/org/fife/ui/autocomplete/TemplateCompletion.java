@@ -217,7 +217,15 @@ public class TemplateCompletion extends AbstractCompletion
 			}
 		}
 
+		// Highlight the first parameter.  If no params were specified, move
+		// the caret to the ${cursor} location, if specified
+		if (selStart==minPos && selStart==selEnd && getParamCount()==0) {
+			if (defaultEndOffs>-1) { // ${cursor} specified
+				selStart = selEnd = defaultEndOffs;
+			}
+		}
 		info.setInitialSelection(selStart, selEnd);
+
 		if (defaultEndOffs>-1) {
 			// Keep this location "after" all others when tabbing
 			info.addReplacementLocation(defaultEndOffs, defaultEndOffs);

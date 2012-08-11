@@ -35,6 +35,10 @@ interface TemplatePiece {
 			return text;
 		}
 
+		public String toString() {
+			return "[TemplatePiece.Text: text=" + text + "]";
+		}
+
 	}
 
 
@@ -50,6 +54,10 @@ interface TemplatePiece {
 			return text;
 		}
 
+		public String toString() {
+			return "[TemplatePiece.Param: param=" + text + "]";
+		}
+
 	}
 
 
@@ -63,6 +71,10 @@ interface TemplatePiece {
 
 		public String getText() {
 			return text;
+		}
+
+		public String toString() {
+			return "[TemplatePiece.ParamCopy: param=" + text + "]";
 		}
 
 	}
