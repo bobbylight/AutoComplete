@@ -20,6 +20,7 @@ import javax.swing.text.Position;
 
 import org.fife.ui.autocomplete.TemplatePiece.Param;
 import org.fife.ui.autocomplete.TemplatePiece.ParamCopy;
+import org.fife.ui.autocomplete.TemplatePiece.Text;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 
 
@@ -193,10 +194,16 @@ public class TemplateCompletion extends AbstractCompletion
 		for (int i=0; i<pieces.size(); i++) {
 			TemplatePiece piece = (TemplatePiece)pieces.get(i);
 			String text = getPieceText(i, leadingWS);
-			if (piece instanceof Param && "cursor".equals(text)) {
+			if (piece instanceof Text) {
 				if (replaceTabsWithSpaces) {
-					start = possiblyReplaceTabsWithSpaces(sb, tc, start);
+					start = possiblyReplaceTabsWithSpaces(sb, text, tc, start);
 				}
+				else {
+					sb.append(text);
+					start += text.length();
+				}
+			}
+			else if (piece instanceof Param && "cursor".equals(text)) {
 				defaultEndOffs = start;
 			}
 			else {
@@ -317,30 +324,41 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
-	private int possiblyReplaceTabsWithSpaces(StringBuffer sb, JTextComponent tc,
-											int start) {
+	private int possiblyReplaceTabsWithSpaces(StringBuffer sb, String text,
+											JTextComponent tc, int start) {
 
-		int size = 4;
-		Document doc = tc.getDocument();
-		if (doc != null) {
-			Integer i = (Integer) doc.getProperty(PlainDocument.tabSizeAttribute);
-			if (i != null) {
-				size = i.intValue();
-			}
-		}
-		String tab = "";
-		for (int i=0; i<size; i++) {
-			tab += " ";
-		}
+		int tab = text.indexOf('\t');
+		if (tab>-1) {
 
-		int lastNewline = sb.lastIndexOf("\n");
-		int lineOffs = 0;
-		for (int j=lastNewline+1; j<sb.length(); j++) {
-			if (sb.charAt(j)=='\t') {
-				int count = size - (lineOffs%size);
-				sb.replace(j, j+1, tab.substring(0, count));
-				start += count - 1;
+			int startLen = sb.length();
+
+			int size = 4;
+			Document doc = tc.getDocument();
+			if (doc != null) {
+				Integer i = (Integer) doc.getProperty(PlainDocument.tabSizeAttribute);
+				if (i != null) {
+					size = i.intValue();
+				}
 			}
+			String tabStr = "";
+			for (int i=0; i<size; i++) {
+				tabStr += " ";
+			}
+
+			int lastOffs = 0;
+			do {
+				sb.append(text.substring(lastOffs, tab));
+				sb.append(tabStr);
+				lastOffs = tab + 1;
+			} while ((tab=text.indexOf('\t', lastOffs))>-1);
+			sb.append(text.substring(lastOffs));
+
+			start += sb.length() - startLen;
+
+		}
+		else {
+			sb.append(text);
+			start += text.length();
 		}
 
 		return start;

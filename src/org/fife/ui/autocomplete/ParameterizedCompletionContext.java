@@ -998,7 +998,7 @@ class ParameterizedCompletionContext {
 				return;
 			}
 			int dot = e.getDot();
-			if (dot<minPos || dot>=maxPos.getOffset()) {
+			if (dot<minPos || dot>maxPos.getOffset()) {
 				deactivate();
 				return;
 			}
