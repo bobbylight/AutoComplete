@@ -33,6 +33,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
@@ -767,7 +768,6 @@ class ParameterizedCompletionContext {
 			System.out.println("CompletionContext Uninstalling keybindings");
 		}
 
-
 		JTextComponent tc = ac.getTextComponent();
 		InputMap im = tc.getInputMap();
 		ActionMap am = tc.getActionMap();
@@ -885,10 +885,28 @@ class ParameterizedCompletionContext {
 			}
 
 			// Otherwise, just move to the end.
-			JTextComponent tc = ac.getTextComponent();
-			tc.setCaretPosition(defaultEndOffs.getOffset());
 			deactivate();
+			JTextComponent tc = ac.getTextComponent();
+			int dot = tc.getCaretPosition();
+			if (dot!=defaultEndOffs.getOffset()) {
+				tc.setCaretPosition(defaultEndOffs.getOffset());
+			}
+			else {
+				// oldEnterAction isn't what we're looking for (wrong key)
+				Action a = getDefaultEnterAction(tc);
+				if (a!=null) {
+					a.actionPerformed(e);
+				}
+				else {
+					tc.replaceSelection("\n");
+				}
+			}
 
+		}
+
+		private Action getDefaultEnterAction(JTextComponent tc) {
+			ActionMap am = tc.getActionMap();
+			return am.get(DefaultEditorKit.insertBreakAction);
 		}
 
 	}
