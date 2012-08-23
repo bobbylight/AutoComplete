@@ -30,6 +30,19 @@ robert -at- fifesoft dot com.
   demonstrates a code editor with completion support for the C Standard library,
   and demos the parameter assistance feature.
 
+* Compiling
+
+  If you wish to compile AutoComplete from source, the easiest way to do so
+  is via the included Ant build script.  The default target builds the jar.
+  
+  This project depends on its sister RSyntaxTextArea project.  It is recommended
+  that you check the two projects out side by side.  Then, to build:
+  
+     cd RSyntaxTextArea
+     ant
+     cd ../AutoComplete
+     ant
+
 * License
 
   AutoComplete is licensed under a modified BSD liense.  Please see the
