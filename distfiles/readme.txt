@@ -45,7 +45,7 @@ robert -at- fifesoft dot com.
 
 * License
 
-  AutoComplete is licensed under a modified BSD liense.  Please see the
+  AutoComplete is licensed under a modified BSD license.  Please see the
   included AutoComplete.License.txt file.
 
 * Feedback
