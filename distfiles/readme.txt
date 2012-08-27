@@ -92,3 +92,23 @@ robert -at- fifesoft dot com.
   "osx_sizegrip.png" is a reproduction of the size grip used on native OS X
   windows.  It is distributed under the same modified BSD license as the meat
   of the AutoComplete library.
+
+* Translators
+
+  Arabic:                 Linostar
+  Chinese:                Terrance, peter_barnes, Sunquan, sonyichi, zvest
+  Chinese (Traditional):  kin Por Fok, liou xiao
+  Dutch:                  Roel, Sebastiaan, lovepuppy
+  French:                 PivWan
+  German:                 bikerpete
+  Hungarian:              flatron
+  Indonesian:             azis, Sonny
+  Italian:                Luca, stepagweb
+  Japanese:               izumi, tomoM
+  Korean:                 sbrownii
+  Polish:                 Chris, Maciej Mrug
+  Portuguese (Brazil):    Pat, Marcos Parmeggiani, Leandro
+  Russian:                Nadiya, Vladimir
+  Spanish:                Leonardo, phrodo, daloporhecho
+  Turkish:                Burak
+  
