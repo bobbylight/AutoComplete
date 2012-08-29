@@ -88,8 +88,8 @@ public class AutoCompletionStyleContext {
 	 * @param color The color to use.
 	 * @see #setParameterCopyColor(Color)
 	 */
-	public void setParameterCopyColor(Color parameterCopyColor) {
-		this.parameterCopyColor = parameterCopyColor;
+	public void setParameterCopyColor(Color color) {
+		this.parameterCopyColor = color;
 	}
 
 

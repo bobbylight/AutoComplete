@@ -23,7 +23,7 @@
 
 
 	<!-- Set global properties for this build. -->
-	<property name="version"          value="2.0.3"/>
+	<property name="version"          value="2.0.4"/>
 	<property name="source-dir"       location="src"/>
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>
@@ -78,6 +78,8 @@
 				<include name="distfiles/**"/>
 				<include name="i18n/**"/>
 				<include name="build.xml"/>
+				<include name=".project"/>
+				<include name=".classpath"/>
 			</fileset>
 		</zip>
 	</target>
@@ -90,6 +92,7 @@
 			<packageset dir="${source-dir}" defaultexcludes="yes">
 				<include name="org/**"/>
 			</packageset>
+			<link href="http://javadoc.fifesoft.com/rsyntaxtextarea/"/>
 		</javadoc>
 	</target>
 
