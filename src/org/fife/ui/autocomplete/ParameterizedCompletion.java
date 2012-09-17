@@ -50,8 +50,7 @@ public interface ParameterizedCompletion extends Completion {
 
 
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean addParamStartList,
-			boolean replaceTabsWithSpaces);
+			JTextComponent tc, boolean replaceTabsWithSpaces);
 
 
 	/**

@@ -155,8 +155,7 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean addParamStartList,
-			boolean replaceTabsWithSpaces) {
+			JTextComponent tc, boolean replaceTabsWithSpaces) {
 
 		ParameterizedCompletionInsertionInfo info =
 			new ParameterizedCompletionInsertionInfo();

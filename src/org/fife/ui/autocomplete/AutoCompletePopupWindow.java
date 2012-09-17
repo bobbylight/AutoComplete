@@ -303,7 +303,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @see #getSelection()
 	 */
-	public void insertSelectedCompletion() {
+	private void insertSelectedCompletion() {
 		Completion comp = getSelection();
 		ac.insertCompletion(comp);
 	}

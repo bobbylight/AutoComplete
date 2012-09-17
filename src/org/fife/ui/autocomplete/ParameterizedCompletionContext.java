@@ -189,11 +189,9 @@ class ParameterizedCompletionContext {
 	/**
 	 * Activates parameter completion support.
 	 *
-	 * @param addParamListStart Whether the parameter list start token should
-	 *        be inserted at the caret position before the parameters.
 	 * @see #deactivate()
 	 */
-	public void activate(boolean addParamListStart) {
+	public void activate() {
 
 		if (active) {
 			return;
@@ -222,7 +220,7 @@ class ParameterizedCompletionContext {
 			}
 		}
 
-		listener.install(tc, addParamListStart);
+		listener.install(tc);
 		// First time through, we'll need to create this window.
 		if (paramChoicesWindow==null) {
 			paramChoicesWindow = createParamChoicesWindow();
@@ -252,7 +250,7 @@ class ParameterizedCompletionContext {
 	 * Hides any popup windows and terminates parameterized completion
 	 * assistance.
 	 *
-	 * @see #activate(boolean)
+	 * @see #activate()
 	 */
 	public void deactivate() {
 		if (!active) {
@@ -927,26 +925,21 @@ class ParameterizedCompletionContext {
 			// Are they at or past the end of the parameters?
 			if (dot>=maxPos.getOffset()-2) { // ">=" for overwrite mode
 
-				if (dot==maxPos.getOffset()-1) { // Happens in overwrite mode
-					tc.replaceSelection(Character.toString(end));
-				}
-
-				else { // Typical case.
-					// Try to decide if we're closing a paren that is a part
-					// of the (last) arg being typed.
-					String text = getArgumentText(dot);
-					if (text!=null) {
-						char start = pc.getProvider().getParameterListStart();
-						int startCount = getCount(text, start);
-						int endCount = getCount(text, end);
-						if (startCount>endCount) { // Just closing a paren
-							tc.replaceSelection(Character.toString(end));
-							return;
-						}
+				// Try to decide if we're closing a paren that is a part
+				// of the (last) arg being typed.
+				String text = getArgumentText(dot);
+				if (text!=null) {
+					char start = pc.getProvider().getParameterListStart();
+					int startCount = getCount(text, start);
+					int endCount = getCount(text, end);
+					if (startCount>endCount) { // Just closing a paren
+						tc.replaceSelection(Character.toString(end));
+						return;
 					}
-					//tc.setCaretPosition(maxPos.getOffset());
-					tc.setCaretPosition(tc.getCaretPosition()+1);
 				}
+				//tc.setCaretPosition(maxPos.getOffset());
+				tc.setCaretPosition(Math.min(tc.getCaretPosition()+1,
+						tc.getDocument().getLength()));
 
 				deactivate();
 
@@ -1073,12 +1066,9 @@ class ParameterizedCompletionContext {
 		 * Installs this listener onto a text component.
 		 *
 		 * @param tc The text component to install onto.
-		 * @param addParamStartList Whether or not
-		 *        {@link CompletionProvider#getParameterListStart()} should be
-		 *        added to the text component.
 		 * @see #uninstall()
 		 */
-		public void install(JTextComponent tc, boolean addParamStartList) {
+		public void install(JTextComponent tc) {
 
 			boolean replaceTabs = false;
 			if (tc instanceof RSyntaxTextArea) {
@@ -1094,7 +1084,7 @@ class ParameterizedCompletionContext {
 
 				// Insert the parameter text
 				ParameterizedCompletionInsertionInfo info =
-					pc.getInsertionInfo(tc, addParamStartList, replaceTabs);
+					pc.getInsertionInfo(tc, replaceTabs);
 				tc.replaceSelection(info.getTextToInsert());
 
 				// Add highlights around the parameters.

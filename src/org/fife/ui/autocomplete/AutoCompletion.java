@@ -516,7 +516,21 @@ public class AutoCompletion {
 	 *
 	 * @param c A completion to insert.  This cannot be <code>null</code>.
 	 */
-	protected void insertCompletion(Completion c) {
+	protected final void insertCompletion(Completion c) {
+		insertCompletion(c, false);
+	}
+
+
+	/**
+	 * Inserts a completion.  Any time a code completion event occurs, the
+	 * actual text insertion happens through this method.
+	 *
+	 * @param c A completion to insert.  This cannot be <code>null</code>.
+	 * @param typedParamListStartChar Whether the parameterized completion
+	 *        start character was typed (typically <code>'('</code>).
+	 */
+	protected void insertCompletion(Completion c,
+			boolean typedParamListStartChar) {
 
 		JTextComponent textComp = getTextComponent();
 		String alreadyEntered = c.getAlreadyEntered(textComp);
@@ -536,7 +550,7 @@ public class AutoCompletion {
 		if (isParameterAssistanceEnabled() &&
 				(c instanceof ParameterizedCompletion)) {
 			ParameterizedCompletion pc = (ParameterizedCompletion)c;
-			startParameterizedCompletionAssistance(pc, true);
+			startParameterizedCompletionAssistance(pc, typedParamListStartChar);
 		}
 
 	}
@@ -974,33 +988,39 @@ public class AutoCompletion {
 
 
 	/**
-	 * Displays a "tooltip" detailing the inputs to the function just entered.
+	 * Displays a "tool tip" detailing the inputs to the function just entered.
 	 *
 	 * @param pc The completion.
-	 * @param addParamListStart Whether or not
-	 *        {@link CompletionProvider#getParameterListStart()} should be
-	 *        added to the text component.
+	 * @param typedParamListStartChar Whether the parameterized completion list
+	 *        starting character was typed.
 	 */
 	private void startParameterizedCompletionAssistance(
-				ParameterizedCompletion pc, boolean addParamListStart) {
+				ParameterizedCompletion pc, boolean typedParamListStartChar) {
 
-		// Get rid of the previous tooltip window, if there is one.
+		// Get rid of the previous tool tip window, if there is one.
 		hideParameterCompletionPopups();
 
-		// Don't bother with a tooltip if there are no parameters.
+		// Don't bother with a tool tip if there are no parameters, but if
+		// they typed e.g. the opening '(', make them overtype the ')'.
 		if (pc.getParamCount()==0 && !(pc instanceof TemplateCompletion)) {
 			CompletionProvider p = pc.getProvider();
 			char end = p.getParameterListEnd(); // Might be '\0'
 			String text = end=='\0' ? "" : Character.toString(end);
-			if (addParamListStart) {
-				text = p.getParameterListStart() + text;
+			if (typedParamListStartChar) {
+				String template = "${}" + text + "${cursor}";
+				textComponent.replaceSelection(Character.toString(p.getParameterListStart()));
+				TemplateCompletion tc = new TemplateCompletion(p, null, null,  template);
+				pc = tc;
 			}
-			textComponent.replaceSelection(text);
-			return;
+			else {
+				text = p.getParameterListStart() + text;
+				textComponent.replaceSelection(text);
+				return;
+			}
 		}
 
 		pcc = new ParameterizedCompletionContext(parentWindow, this, pc);
-		pcc.activate(addParamListStart);
+		pcc.activate();
 
 	}
 
@@ -1216,7 +1236,7 @@ public class AutoCompletion {
 			Completion c = popupWindow.getSelection();
 			if (c instanceof ParameterizedCompletion) { // Should always be true
 				// Fixes capitalization of the entered text.
-				insertCompletion(c);
+				insertCompletion(c, true);
 			}
 
 		}

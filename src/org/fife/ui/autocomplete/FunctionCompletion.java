@@ -147,15 +147,15 @@ public class FunctionCompletion extends VariableCompletion
 
 
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean addParamStartList,
-			boolean replaceTabsWithSpaces) {
+			JTextComponent tc, boolean replaceTabsWithSpaces) {
 
 		ParameterizedCompletionInsertionInfo info =
 			new ParameterizedCompletionInsertionInfo();
 
 		StringBuffer sb = new StringBuffer();
-		if (addParamStartList) {
-			sb.append(getProvider().getParameterListStart());
+		char paramListStart = getProvider().getParameterListStart();
+		if (paramListStart!='\0') {
+			sb.append(paramListStart);
 		}
 		int dot = tc.getCaretPosition() + sb.length();
 		int paramCount = getParamCount();
@@ -194,9 +194,7 @@ public class FunctionCompletion extends VariableCompletion
 		}
 		sb.append(getProvider().getParameterListEnd());
 		int endOffs = dot + sb.length();
-		if (addParamStartList) {
-			endOffs -= 1;//getProvider().getParameterListStart().length();
-		}
+		endOffs -= 1;//getProvider().getParameterListStart().length();
 		info.addReplacementLocation(endOffs, endOffs); // offset after function
 		info.setDefaultEndOffs(endOffs);
 		
