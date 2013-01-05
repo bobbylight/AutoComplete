@@ -99,7 +99,7 @@ robert -at- fifesoft dot com.
   Chinese:                Terrance, peter_barnes, Sunquan, sonyichi, zvest
   Chinese (Traditional):  kin Por Fok, liou xiao
   Dutch:                  Roel, Sebastiaan, lovepuppy
-  French:                 PivWan
+  French:                 Pat, PivWan
   German:                 Domenic, bikerpete
   Hungarian:              Zityi, flatron
   Indonesian:             azis, Sonny
