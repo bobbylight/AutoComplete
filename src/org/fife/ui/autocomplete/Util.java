@@ -16,6 +16,8 @@ import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.AccessControlException;
+import javax.swing.JLabel;
+import javax.swing.UIManager;
 
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
@@ -29,6 +31,19 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 public class Util {
 
 	/**
+	 * If a system property is defined with this name and set, ignoring case,
+	 * to <code>true</code>, this library will not attempt to use Substance
+	 * renderers.  Otherwise, if a Substance Look and Feel is installed, we
+	 * will attempt to use Substance cell renderers in all of our dropdowns.<p>
+	 * 
+	 * Note that we do not have a build dependency on Substance, so all access
+	 * to Substance stuff is done via reflection.  We will fall back onto
+	 * default renderers if something goes horribly wrong.
+	 */
+	public static final String PROPERTY_DONT_USE_SUBSTANCE_RENDERERS =
+			"org.fife.ui.autocomplete.DontUseSubstanceRenderers";
+
+	/**
 	 * If this system property is <code>true</code>, then even the "main" two
 	 * auto-complete windows will allow window decorations via
 	 * {@link PopupWindowDecorator}.  If this property is undefined or
@@ -39,6 +54,13 @@ public class Util {
 	public static final String PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS =
 		"org.fife.ui.autocomplete.allowDecoratedAutoCompleteWindows";
 
+	/**
+	 * Used for the color of hyperlinks when a LookAndFeel uses light text
+	 * against a dark background.
+	 */
+	private static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
+
+	private static final boolean useSubstanceRenderers;
 	private static boolean desktopCreationAttempted;
 	private static Object desktop;
 	private static final Object LOCK_DESKTOP_CREATION = new Object();
@@ -158,6 +180,28 @@ public class Util {
 
 
 	/**
+	 * Returns the color to use for hyperlink-style components.  This method
+	 * will return <code>Color.blue</code> unless it appears that the current
+	 * LookAndFeel uses light text on a dark background, in which case a
+	 * brighter alternative is returned.
+	 *
+	 * @return The color to use for hyperlinks.
+	 */
+	static final Color getHyperlinkForeground() {
+
+		// This property is defined by all standard LaFs, even Nimbus (!),
+		// but you never know what crazy LaFs there are...
+		Color fg = UIManager.getColor("Label.foreground");
+		if (fg==null) {
+			fg = new JLabel().getForeground();
+		}
+
+		return isLightForeground(fg) ? LIGHT_HYPERLINK_FG : Color.blue;
+
+	}
+
+
+	/**
 	 * Returns the screen coordinates for the monitor that contains the
 	 * specified point.  This is useful for setups with multiple monitors,
 	 * to ensure that popup windows are positioned properly.
@@ -202,6 +246,32 @@ public class Util {
 
 
 	/**
+	 * Returns whether we should attempt to use Substance cell renderers and
+	 * styles for things such as completion choices, if a Substance Look and
+	 * Feel is installed.  If this is <code>false</code>, we'll use our
+	 * standard rendering for completions, even when Substance is being used.
+	 *
+	 * @return Whether to use Substance renderers if Substance is installed.
+	 */
+	public static boolean getUseSubstanceRenderers() {
+		return useSubstanceRenderers;
+	}
+
+
+	/**
+	 * Returns whether the specified color is "light" to use as a foreground.
+	 * Colors that return <code>true</code> indicate that the current Look and
+	 * Feel probably uses light text colors on a dark background.
+	 *
+	 * @param fg The foreground color.
+	 * @return Whether it is a "light" foreground color.
+	 */
+	public static final boolean isLightForeground(Color fg) {
+		return fg.getRed()>0xa0 && fg.getGreen()>0xa0 && fg.getBlue()>0xa0;
+	}
+
+
+	/**
 	 * Returns whether <code>str</code> starts with <code>start</code>,
 	 * ignoring case.
 	 *
@@ -223,6 +293,19 @@ public class Util {
 			return true;
 		}
 		return false;
+	}
+
+
+	static {
+
+		boolean use = true;
+		try {
+			use = !Boolean.getBoolean(PROPERTY_DONT_USE_SUBSTANCE_RENDERERS);
+		} catch (AccessControlException ace) { // We're in an applet.
+			use = true;
+		}
+		useSubstanceRenderers = use;
+
 	}
 
 

@@ -17,6 +17,7 @@ import java.awt.Rectangle;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JList;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
 
@@ -58,6 +59,11 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private boolean showTypes;
 
 	/**
+	 * The color to use when rendering types in completion text.
+	 */
+	private String typeColor;
+
+	/**
 	 * During rendering, whether the item being rendered is selected.
 	 */
 	private boolean selected;
@@ -79,6 +85,14 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private Rectangle paintTextR;
 
 	/**
+	 * An optional delegate renderer (primarily for Substance).
+	 */
+	private DefaultListCellRenderer delegate;
+
+	private static final String SUBSTANCE_RENDERER_CLASS_NAME =
+			"org.pushingpixels.substance.api.renderers.SubstanceDefaultListCellRenderer";
+
+	/**
 	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
 	 * words.
 	 */
@@ -89,10 +103,63 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * Constructor.
 	 */
 	public CompletionCellRenderer() {
-		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
-		setShowTypes(true);
-		paramColor = "#aa0077";
-		paintTextR = new Rectangle();
+		init();
+	}
+
+
+	/**
+	 * Constructor.  This is primarily a hook for Substance, or any other
+	 * Look and Feel whose renderers look drastically different than standard
+	 * <code>DefaultListCellRenderer</code>s.  Everything except for the text
+	 * rendering will be done by the delegate.  In almost all scenarios, you
+	 * will want to use the no-argument constructor instead of this one.
+	 *
+	 * @param delegate The delegate renderer.
+	 * @see #delegateToSubstanceRenderer()
+	 */
+	public CompletionCellRenderer(DefaultListCellRenderer delegate) {
+		setDelegateRenderer(delegate);
+		init();
+	}
+
+
+	/**
+	 * Returns a decent "parameter" color based on the current default
+	 * foreground color.
+	 *
+	 * @return The parameter color to use.
+	 */
+	private String createParamColor() {
+		return Util.isLightForeground(getForeground()) ? 
+				Util.getHexString(Util.getHyperlinkForeground()): "#aa0077";
+	}
+
+
+	/**
+	 * Returns a decent "type" color based on the current default foreground
+	 * color.
+	 *
+	 * @return The type color to use.
+	 */
+	private String createTypeColor() {
+		return "#808080";
+	}
+
+
+	/**
+	 * Attempts to delegate rendering to a Substance cell renderer.  This
+	 * should only be called if Substance is known to be on the classpath.
+	 *
+	 * @throws Exception If Substance is not on the classpath, or some other
+	 *         error occurs creating the Substance cell renderer.
+	 * @see Util#getUseSubstanceRenderers()
+	 * @see #setDelegateRenderer(DefaultListCellRenderer)
+	 */
+	public void delegateToSubstanceRenderer() throws Exception {
+		Class clazz = Class.forName(SUBSTANCE_RENDERER_CLASS_NAME);
+		DefaultListCellRenderer delegate =
+				(DefaultListCellRenderer)clazz.newInstance();
+		setDelegateRenderer(delegate);
 	}
 
 
@@ -105,6 +172,17 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public static Color getAlternateBackground() {
 		return altBG;
+	}
+
+
+	/**
+	 * Returns the delegate renderer, or <code>null</code> if there is none.
+	 *
+	 * @return The delegate renderer.
+	 * @see #setDelegateRenderer(DefaultListCellRenderer)
+	 */
+	public DefaultListCellRenderer getDelegateRenderer() {
+		return delegate;
 	}
 
 
@@ -137,7 +215,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 			setFont(font); // Overrides super's setFont(list.getFont()).
 		}
 		this.selected = selected;
-		this.realBG = altBG!=null && (index&1)==0 ? altBG : list.getBackground();
+		this.realBG = altBG!=null && (index&1)==1 ? altBG : list.getBackground();
 
 		Completion c = (Completion)value;
 		setIcon(c.getIcon());
@@ -162,7 +240,17 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 			prepareForOtherCompletion(list, c, index, selected, hasFocus);
 		}
 
-		if (!selected && (index&1)==0 && altBG!=null) {
+		// A delegate renderer might do its own alternate row striping
+		// (Substance does).
+		if (delegate!=null) {
+			delegate.getListCellRendererComponent(list, getText(), index,
+					selected, hasFocus);
+			delegate.setFont(getFont());
+			delegate.setIcon(getIcon());
+			return delegate;
+		}
+
+		if (!selected && (index&1)==1 && altBG!=null) {
 			setBackground(altBG);
 		}
 
@@ -180,6 +268,15 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public boolean getShowTypes() {
 		return showTypes;
+	}
+
+
+	private void init() {
+		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
+		setShowTypes(true);
+		typeColor = createTypeColor();
+		paramColor = createParamColor();
+		paintTextR = new Rectangle();
 	}
 
 
@@ -282,7 +379,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		if (getShowTypes() && fc.getType()!=null) {
 			sb.append(" : ");
 			if (!selected) {
-				sb.append("<font color='#808080'>");
+				sb.append("<font color='").append(typeColor).append("'>");
 			}
 			sb.append(fc.getType());
 			if (!selected) {
@@ -355,7 +452,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		if (definition!=null) {
 			sb.append(" - ");
 			if (!selected) {
-				sb.append("<font color='#808080'>");
+				sb.append("<font color='").append(typeColor).append("'>");
 			}
 			sb.append(definition);
 			if (!selected) {
@@ -386,7 +483,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		if (getShowTypes() && vc.getType()!=null) {
 			sb.append(" : ");
 			if (!selected) {
-				sb.append("<font color='#808080'>");
+				sb.append("<font color='").append(typeColor).append("'>");
 			}
 			sb.append(vc.getType());
 			if (!selected) {
@@ -409,6 +506,22 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public static void setAlternateBackground(Color altBG) {
 		CompletionCellRenderer.altBG = altBG;
+	}
+
+
+	/**
+	 * Sets the delegate renderer.  Most users will never use this method; it
+	 * is primarily a hook for Substance and other Look and Feels whose
+	 * renderers look drastically different from the standard
+	 * <code>DefaultListCellRenderer</code>.
+	 * 
+	 * @param delegate The new delegate renderer.  If this is <code>null</code>,
+	 *        the default rendering of this component is used.
+	 * @see #getDelegateRenderer()
+	 * @see #delegateToSubstanceRenderer()
+	 */
+	public void setDelegateRenderer(DefaultListCellRenderer delegate) {
+		this.delegate = delegate;
 	}
 
 
@@ -442,6 +555,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * Sets the color to use for function arguments.
 	 *
 	 * @param color The color to use.  This is ignored if <code>null</code>.
+	 * @see #setTypeColor(Color)
 	 */
 	public void setParamColor(Color color) {
 		if (color!=null) {
@@ -459,6 +573,35 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public void setShowTypes(boolean show) {
 		this.showTypes = show;
+	}
+
+
+	/**
+	 * Sets the color to use for function/field types.  Note that if
+	 * {@link #getShowTypes()} returns <code>false</code>, this property
+	 * effectively does nothing.
+	 *
+	 * @param color The color to use for types.  This is ignored if
+	 *        <code>null</code>.
+	 * @see #setShowTypes(boolean)
+	 * @see #setParamColor(Color)
+	 */
+	public void setTypeColor(Color color) {
+		if (color!=null) {
+			typeColor = Util.getHexString(color);
+		}
+	}
+
+
+	/**
+	 * Overridden to update our delegate, if necessary.
+	 */
+	public void updateUI() {
+		super.updateUI();
+		if (delegate!=null) {
+			SwingUtilities.updateComponentTreeUI(delegate);
+		}
+		paramColor = createParamColor();
 	}
 
 

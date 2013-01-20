@@ -123,6 +123,12 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 */
 	private static final int VERTICAL_SPACE			= 1;
 
+	/**
+	 * The class name of the Substance List UI.
+	 */
+	private static final String SUBSTANCE_LIST_UI =
+			"org.pushingpixels.substance.internal.ui.SubstanceListUI";
+
 
 	/**
 	 * Constructor.
@@ -130,19 +136,14 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @param parent The parent window (hosting the text component).
 	 * @param ac The auto-completion instance.
 	 */
-	public AutoCompletePopupWindow(Window parent, AutoCompletion ac) {
+	public AutoCompletePopupWindow(Window parent, final AutoCompletion ac) {
 
 		super(parent);
 		ComponentOrientation o = ac.getTextComponentOrientation();
 
 		this.ac = ac;
 		model = new CompletionListModel();
-		list = new JList(model) {
-			public void setUI(ListUI ui) {
-				// Keep our special UI, no matter what
-				super.setUI(new FastListUI());
-			}
-		};
+		list = new PopupList(model);
 
 		list.setCellRenderer(new DelegatingCellRenderer());
 		list.addListSelectionListener(this);
@@ -915,6 +916,40 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			if (isVisible()) {
 				selectPageUpItem();
 			}
+		}
+
+	}
+
+
+	/**
+	 * The actual list of completion choices in this popup window.
+	 */
+	private class PopupList extends JList {
+
+		public PopupList(CompletionListModel model) {
+			super(model);
+		}
+
+		public void setUI(ListUI ui) {
+			if (Util.getUseSubstanceRenderers() &&
+					SUBSTANCE_LIST_UI.equals(ui.getClass().getName())) {
+				// Substance requires its special ListUI be installed for
+				// its renderers to actually render (!), but long completion
+				// lists (e.g. PHPCompletionProvider in RSTALanguageSupport)
+				// will simply populate too slowly on initial display (when
+				// calculating preferred size of all items), so in this case
+				// we give a prototype cell value.
+				CompletionProvider p = ac.getCompletionProvider();
+				BasicCompletion bc = new BasicCompletion(p, "Hello world");
+				setPrototypeCellValue(bc);
+			}
+			else {
+				// Our custom UI that is faster for long HTML completion
+				// lists.
+				ui = new FastListUI();
+				setPrototypeCellValue(null);
+			}
+			super.setUI(ui);
 		}
 
 	}

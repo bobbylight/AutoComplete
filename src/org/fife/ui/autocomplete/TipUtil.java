@@ -159,6 +159,14 @@ class TipUtil {
 				"body { font-family: " + font.getFamily() +
 						"; font-size: " + font.getSize() + "pt" +
 						"; color: " + Util.getHexString(fg) + "; }");
+
+		// Always add link foreground rule.  Unfortunately these CSS rules
+		// stack each time the LaF is changed (how can we overwrite them
+		// without clearing out the important "standard" ones?).
+		Color linkFG = Util.getHyperlinkForeground();
+		doc.getStyleSheet().addRule(
+				"a { color: " + Util.getHexString(linkFG) + "; }");
+
 		URL url = TipUtil.class.getResource("bullet_black.png");
 		if (url!=null) {
 			doc.getStyleSheet().addRule(
