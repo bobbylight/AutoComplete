@@ -21,7 +21,7 @@ import javax.swing.text.JTextComponent;
  *
  * This implementation assumes the input text and replacement text are the
  * same value.  It also returns the input text from its {@link #toString()}
- * method (which is what <tt>DefaultListCellRenderer</tt> uses to render
+ * method (which is what <code>DefaultListCellRenderer</code> uses to render
  * objects).  Subclasses that wish to override any of this behavior can simply
  * override the corresponding method(s) needed to do so.
  *

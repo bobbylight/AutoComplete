@@ -16,6 +16,7 @@ import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.AccessControlException;
+import java.util.regex.Pattern;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
@@ -59,6 +60,8 @@ public class Util {
 	 * against a dark background.
 	 */
 	private static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
+
+	private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]*>");
 
 	private static final boolean useSubstanceRenderers;
 	private static boolean desktopCreationAttempted;
@@ -293,6 +296,22 @@ public class Util {
 			return true;
 		}
 		return false;
+	}
+
+
+	/**
+	 * Strips any HTML from a string.  The string must start with
+	 * "<code>&lt;html&gt;</code>" for markup tags to be stripped.
+	 *
+	 * @param text The string.
+	 * @return The string, with any HTML stripped.
+	 */
+	public static String stripHtml(String text) {
+		if (text==null || !text.startsWith("<html>")) {
+			return text;
+		}
+		// TODO: Micro-optimize me, might be called in renderers and loops
+		return TAG_PATTERN.matcher(text).replaceAll("");
 	}
 
 
