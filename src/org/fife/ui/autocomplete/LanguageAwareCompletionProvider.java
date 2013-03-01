@@ -286,6 +286,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 			case Token.PREPROCESSOR:
 			case Token.DATA_TYPE:
 			case Token.FUNCTION:
+			case Token.OPERATOR:
 				return getDefaultCompletionProvider();
 		}
 
