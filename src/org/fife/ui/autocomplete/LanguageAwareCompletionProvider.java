@@ -249,6 +249,13 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 				type = temp.type;
 			}
 
+			// TokenMakers can use types < 0 for "internal types."  This
+			// gives them a chance to map their internal types back to "real"
+			// types to get completion providers.
+			else if (type<0) {
+				type = doc.getClosestStandardTokenTypeForInternalType(type);
+			}
+
 			switch (type) {
 				case Token.ERROR_STRING_DOUBLE:
 					return getStringCompletionProvider();

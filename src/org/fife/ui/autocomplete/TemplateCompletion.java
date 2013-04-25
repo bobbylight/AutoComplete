@@ -174,7 +174,6 @@ public class TemplateCompletion extends AbstractCompletion
 			ble.printStackTrace(); // Never happens
 		}
 		info.setCaretRange(minPos, maxPos);
-		int firstParamLen = 0;
 		int selStart = dot; // Default value
 		int selEnd = selStart;
 
@@ -210,10 +209,9 @@ public class TemplateCompletion extends AbstractCompletion
 				sb.append(text);
 				if (piece instanceof Param) {
 					info.addReplacementLocation(start, end);
-					if (firstParamLen==0) {
-						firstParamLen = text.length();
+					if (selStart==dot) {
 						selStart = start;
-						selEnd = selStart + firstParamLen;
+						selEnd = selStart + text.length();
 					}
 				}
 				else if (piece instanceof ParamCopy) {

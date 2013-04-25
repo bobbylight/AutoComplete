@@ -428,6 +428,20 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		StringBuffer sb = new StringBuffer(PREFIX);
 		sb.append(c.getInputText());
 
+		if (c instanceof BasicCompletion) {
+			String definition = ((BasicCompletion)c).getShortDescription();
+			if (definition!=null) {
+				sb.append(" - ");
+				if (!selected) {
+					sb.append("<font color='").append(typeColor).append("'>");
+				}
+				sb.append(definition);
+				if (!selected) {
+					sb.append("</font>");
+				}
+			}
+		}
+
 		setText(sb.toString());
 
 	}
