@@ -246,7 +246,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 				if (temp==null) {
 					return getDefaultCompletionProvider();
 				}
-				type = temp.type;
+				type = temp.getType();
 			}
 
 			// TokenMakers can use types < 0 for "internal types."  This
@@ -271,13 +271,13 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 		}
 
 		// FIXME: This isn't always a safe assumption.
-		if (dot==curToken.offset) { // At the very beginning of a new token
+		if (dot==curToken.getOffset()) { // At the very beginning of a new token
 			// Need to check previous token for its type before deciding.
 			// Previous token may also be on previous line!
 			return getDefaultCompletionProvider();
 		}
 
-		switch (curToken.type) {
+		switch (curToken.getType()) {
 			case Token.LITERAL_STRING_DOUBLE_QUOTE:
 			case Token.ERROR_STRING_DOUBLE:
 				return getStringCompletionProvider();
