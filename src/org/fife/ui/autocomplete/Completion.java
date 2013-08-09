@@ -36,17 +36,17 @@ import javax.swing.text.JTextComponent;
  * @version 1.0
  * @see AbstractCompletion
  */
-public interface Completion extends Comparable {
+public interface Completion extends Comparable<Completion> {
 
 
 	/**
 	 * Compares this completion to another one lexicographically, ignoring
 	 * case.
 	 *
-	 * @param o Another completion instance.
+	 * @param other Another completion instance.
 	 * @return How this completion compares to the other one.
 	 */
-	public int compareTo(Object o);
+	public int compareTo(Completion other);
 
 
 	/**

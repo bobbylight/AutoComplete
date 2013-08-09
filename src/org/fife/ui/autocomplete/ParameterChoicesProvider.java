@@ -33,7 +33,7 @@ public interface ParameterChoicesProvider {
 	 * @return The list of parameters.  This may be <code>null</code> for
 	 *         "no parameters," but might also be an empty list.
 	 */
-	public List getParameterChoices(JTextComponent tc,
+	public List<Completion> getParameterChoices(JTextComponent tc,
 								ParameterizedCompletion.Parameter param);
 
 

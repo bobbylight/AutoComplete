@@ -30,7 +30,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	/**
 	 * Attributes of the tag.
 	 */
-	private List attrs;
+	private List<Parameter> attrs;
 
 
 	/**
@@ -88,7 +88,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 * @see #getAttribute(int)
 	 * @see #getAttributeCount()
 	 */
-	public List getAttributes() {
+	public List<Parameter> getAttributes() {
 		return attrs;
 	}
 
@@ -101,7 +101,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 * @see #getAttributeCount()
 	 */
 	public Parameter getAttribute(int index) {
-		return (Parameter)attrs.get(index);
+		return attrs.get(index);
 	}
 
 
@@ -231,9 +231,9 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 * @see #getAttribute(int)
 	 * @see #getAttributeCount()
 	 */
-	public void setAttributes(List attrs) {
+	public void setAttributes(List<Parameter> attrs) {
 		// Deep copy so parsing can re-use its array.
-		this.attrs = new ArrayList(attrs);
+		this.attrs = new ArrayList<Parameter>(attrs);
 	}
 
 

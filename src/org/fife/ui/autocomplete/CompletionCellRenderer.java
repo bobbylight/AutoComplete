@@ -156,7 +156,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #setDelegateRenderer(DefaultListCellRenderer)
 	 */
 	public void delegateToSubstanceRenderer() throws Exception {
-		Class clazz = Class.forName(SUBSTANCE_RENDERER_CLASS_NAME);
+		Class<?> clazz = Class.forName(SUBSTANCE_RENDERER_CLASS_NAME);
 		DefaultListCellRenderer delegate =
 				(DefaultListCellRenderer)clazz.newInstance();
 		setDelegateRenderer(delegate);

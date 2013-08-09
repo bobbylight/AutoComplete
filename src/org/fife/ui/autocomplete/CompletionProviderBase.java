@@ -81,7 +81,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 * Comparator used to sort completions by their relevance before sorting
 	 * them lexicographically.
 	 */
-	private static final Comparator sortByRelevanceComparator =
+	private static final Comparator<Completion> sortByRelevanceComparator =
 								new SortByRelevanceComparator();
 
 
@@ -97,9 +97,9 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getCompletions(JTextComponent comp) {
+	public List<Completion> getCompletions(JTextComponent comp) {
 
-		List completions = getCompletionsImpl(comp);
+		List<Completion> completions = getCompletionsImpl(comp);
 		if (parent!=null) {
 			completions.addAll(parent.getCompletions(comp));
 			Collections.sort(completions);
@@ -124,7 +124,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 * @return The list of possible completions, or an empty list if there
 	 *         are none.
 	 */
-	protected abstract List getCompletionsImpl(JTextComponent comp);
+	protected abstract List<Completion> getCompletionsImpl(JTextComponent comp);
 
 
 	/**

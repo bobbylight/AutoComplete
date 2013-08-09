@@ -32,12 +32,12 @@ public abstract class AbstractCompletionProvider
 	 * The completions this provider is aware of.  Subclasses should ensure
 	 * that this list is sorted alphabetically (case-insensitively).
 	 */
-	protected List completions;
+	protected List<Completion> completions;
 
 	/**
 	 * Compares a {@link Completion} against a String.
 	 */
-	protected Comparator comparator;
+	protected CaseInsensitiveComparator comparator;
 
 
 	/**
@@ -78,10 +78,9 @@ public abstract class AbstractCompletionProvider
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
 	 */
-	public void addCompletions(List completions) {
+	public void addCompletions(List<Completion> completions) {
 		//this.completions.addAll(completions);
-		for (int i=0; i<completions.size(); i++) {
-			Completion c = (Completion)completions.get(i);
+		for (Completion c : completions) {
 			checkProviderAndAdd(c);
 		}
 		Collections.sort(this.completions);
@@ -132,7 +131,8 @@ public abstract class AbstractCompletionProvider
 	 * @return A list of {@link Completion}s, or <code>null</code> if there
 	 *         are no matching <tt>Completion</tt>s.
 	 */
-	public List getCompletionByInputText(String inputText) {
+	@SuppressWarnings("unchecked")
+	public List<Completion> getCompletionByInputText(String inputText) {
 
 		// Find any entry that matches this input text (there may be > 1).
 		int end = Collections.binarySearch(completions, inputText, comparator);
@@ -158,9 +158,10 @@ public abstract class AbstractCompletionProvider
 	/**
 	 * {@inheritDoc}
 	 */
-	protected List getCompletionsImpl(JTextComponent comp) {
+	@SuppressWarnings("unchecked")
+	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
 
-		List retVal = new ArrayList();
+		List<Completion> retVal = new ArrayList<Completion>();
 		String text = getAlreadyEnteredText(comp);
 
 		if (text!=null) {
@@ -183,7 +184,7 @@ public abstract class AbstractCompletionProvider
 			}
 
 			while (index<completions.size()) {
-				Completion c = (Completion)completions.get(index);
+				Completion c = completions.get(index);
 				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
 					retVal.add(c);
 					index++;
@@ -226,6 +227,7 @@ public abstract class AbstractCompletionProvider
 	 * A comparator that compares the input text of a {@link Completion}
 	 * against a String lexicographically, ignoring case.
 	 */
+	@SuppressWarnings("rawtypes")
 	private static class CaseInsensitiveComparator implements Comparator,
 														Serializable {
 

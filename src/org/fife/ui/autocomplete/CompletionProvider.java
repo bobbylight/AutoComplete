@@ -60,7 +60,7 @@ public interface CompletionProvider {
 	 * @return The list of {@link Completion}s.  If no completions are
 	 *         available, this may be <code>null</code>.
 	 */
-	public List getCompletions(JTextComponent comp);
+	public List<Completion> getCompletions(JTextComponent comp);
 
 
 	/**
@@ -72,7 +72,7 @@ public interface CompletionProvider {
 	 * @param p The position, usually from a <tt>MouseEvent</tt>.
 	 * @return The completions, or an empty list if there are none.
 	 */
-	public List getCompletionsAt(JTextComponent comp, Point p);
+	public List<Completion> getCompletionsAt(JTextComponent comp, Point p);
 
 
 	/**
@@ -106,7 +106,7 @@ public interface CompletionProvider {
 	 * @return The list of {@link ParameterizedCompletion}s.  If no completions
 	 *         are available, this may be <code>null</code>.
 	 */
-	public List getParameterizedCompletions(JTextComponent tc);
+	public List<ParameterizedCompletion> getParameterizedCompletions(JTextComponent tc);
 
 
 	/**

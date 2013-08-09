@@ -31,8 +31,8 @@ class ParameterizedCompletionInsertionInfo {
 	private int selStart;
 	private int selEnd;
 	private String textToInsert;
-	private List replacementLocations;
-	private List replacementCopies;
+	private List<DocumentRange> replacementLocations;
+	private List<ReplacementCopy> replacementCopies;
 
 
 	public ParameterizedCompletionInsertionInfo() {
@@ -42,7 +42,7 @@ class ParameterizedCompletionInsertionInfo {
 
 	public void addReplacementCopy(String id, int start, int end) {
 		if (replacementCopies==null) {
-			replacementCopies = new ArrayList(1);
+			replacementCopies = new ArrayList<ReplacementCopy>(1);
 		}
 		replacementCopies.add(new ReplacementCopy(id, start, end));
 	}
@@ -59,7 +59,7 @@ class ParameterizedCompletionInsertionInfo {
 	 */
 	public void addReplacementLocation(int start, int end) {
 		if (replacementLocations==null) {
-			replacementLocations = new ArrayList(1);
+			replacementLocations = new ArrayList<DocumentRange>(1);
 		}
 		replacementLocations.add(new DocumentRange(start, end));
 	}
@@ -110,7 +110,7 @@ class ParameterizedCompletionInsertionInfo {
 
 
 	public ReplacementCopy getReplacementCopy(int index) {
-		return (ReplacementCopy)replacementCopies.get(index);
+		return replacementCopies.get(index);
 	}
 
 
@@ -123,7 +123,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getReplacementCount()
 	 */
 	public DocumentRange getReplacementLocation(int index) {
-		return (DocumentRange)replacementLocations.get(index);
+		return replacementLocations.get(index);
 	}
 
 

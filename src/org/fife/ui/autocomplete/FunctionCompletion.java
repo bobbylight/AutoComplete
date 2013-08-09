@@ -10,7 +10,6 @@ package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
@@ -28,7 +27,7 @@ public class FunctionCompletion extends VariableCompletion
 	/**
 	 * Parameters to the function.
 	 */
-	private List params;
+	private List<Parameter> params;
 
 	/**
 	 * A description of the return value of this function.
@@ -210,7 +209,7 @@ public class FunctionCompletion extends VariableCompletion
 	 * {@inheritDoc}
 	 */
 	public Parameter getParam(int index) {
-		return (Parameter)params.get(index);
+		return params.get(index);
 	}
 
 
@@ -297,10 +296,10 @@ public class FunctionCompletion extends VariableCompletion
 	 * @see #getParam(int)
 	 * @see #getParamCount()
 	 */
-	public void setParams(List params) {
+	public void setParams(List<Parameter> params) {
 		if (params!=null) {
 			// Deep copy so parsing can re-use its array.
-			this.params = new ArrayList(params);
+			this.params = new ArrayList<Parameter>(params);
 		}
 	}
 

@@ -32,7 +32,7 @@ public class CompletionXMLParser extends DefaultHandler {
 	/**
 	 * The completions found after parsing the XML.
 	 */
-	private List completions;
+	private List<Completion> completions;
 
 	/**
 	 * The provider we're getting completions for.
@@ -54,7 +54,7 @@ public class CompletionXMLParser extends DefaultHandler {
 	private String paramName;
 	private String paramType;
 	private StringBuffer paramDesc;
-	private List params;
+	private List<ParameterizedCompletion.Parameter> params;
 	private String definedIn;
 	private boolean doingKeywords;
 	private boolean inKeyword;
@@ -112,8 +112,8 @@ public class CompletionXMLParser extends DefaultHandler {
 			// May also be null, but that's okay.
 			completionCL = DEFAULT_COMPLETION_CLASS_LOADER;
 		}
-		completions = new ArrayList();
-		params = new ArrayList(1);
+		completions = new ArrayList<Completion>();
+		params = new ArrayList<ParameterizedCompletion.Parameter>(1);
 		desc = new StringBuffer();
 		paramDesc = new StringBuffer();
 		returnValDesc = new StringBuffer();
@@ -143,7 +143,7 @@ public class CompletionXMLParser extends DefaultHandler {
 		FunctionCompletion fc = null;
 		if (funcCompletionType!=null) {
 			try {
-				Class clazz = null;
+				Class<?> clazz = null;
 				if (completionCL!=null) {
 					clazz = Class.forName(funcCompletionType, true,
 											completionCL);
@@ -151,11 +151,10 @@ public class CompletionXMLParser extends DefaultHandler {
 				else {
 					clazz = Class.forName(funcCompletionType);
 				}
-				Class[] paramTypes = { CompletionProvider.class,
-										String.class, String.class };
-				Constructor c = clazz.getDeclaredConstructor(paramTypes);
-				fc = (FunctionCompletion)c.newInstance(
-					new Object[] { provider, name, returnType });
+				Constructor<?> c = clazz.getDeclaredConstructor(
+						CompletionProvider.class, String.class, String.class);
+				fc = (FunctionCompletion)c.newInstance(provider, name,
+						returnType);
 			} catch (RuntimeException re) { // FindBugs
 				throw re;
 			} catch (Exception e) {
@@ -299,7 +298,7 @@ public class CompletionXMLParser extends DefaultHandler {
 	 *
 	 * @return The completions.
 	 */
-	public List getCompletions() {
+	public List<Completion> getCompletions() {
 		return completions;
 	}
 

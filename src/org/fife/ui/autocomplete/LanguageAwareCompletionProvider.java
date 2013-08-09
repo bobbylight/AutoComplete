@@ -12,6 +12,7 @@ package org.fife.ui.autocomplete;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.text.JTextComponent;
 
@@ -135,7 +136,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getCompletionsAt(JTextComponent tc, Point p) {
+	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 		return defaultProvider==null ? null :
 				defaultProvider.getCompletionsAt(tc, p);
 	}
@@ -148,13 +149,15 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @return The list of possible completions, or an empty list if there
 	 *         are none.
 	 */
-	protected List getCompletionsImpl(JTextComponent comp) {
+	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
 		if (!(comp instanceof RSyntaxTextArea)) {
-			return new ArrayList(0);
+			return new ArrayList<Completion>(0);
 		}
 		CompletionProvider provider = getProviderFor(comp);
-		return provider!=null ? provider.getCompletions(comp) :
-					new ArrayList(0);
+		if (provider!=null) {
+			return provider.getCompletions(comp);
+		}
+		return Collections.emptyList();
 	}
 
 
@@ -184,7 +187,8 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getParameterizedCompletions(JTextComponent tc) {
+	public List<ParameterizedCompletion> getParameterizedCompletions(
+			JTextComponent tc) {
 		// Parameterized completions can only come from the "code" completion
 		// provider.  We do not do function/method completions while editing
 		// strings or comments.
@@ -403,10 +407,10 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 
 		String tip = null;
 
-		List completions = getCompletionsAt(textArea, e.getPoint());
+		List<Completion> completions = getCompletionsAt(textArea, e.getPoint());
 		if (completions!=null && completions.size()>0) {
 			// Only ever 1 match for us in C...
-			Completion c = (Completion)completions.get(0);
+			Completion c = completions.get(0);
 			tip = c.getToolTipText();
 		}
 

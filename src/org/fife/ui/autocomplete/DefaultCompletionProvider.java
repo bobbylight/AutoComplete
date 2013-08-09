@@ -52,7 +52,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * wiggles the mouse while a tool tip is displayed, this method gets
 	 * repeatedly called.  It can be costly so we try to speed it up a tad).
 	 */
-	private List lastParameterizedCompletionsAt;
+	private List<Completion> lastParameterizedCompletionsAt;
 
 	/**
 	 * Constructor.  The returned provider will not be aware of any completions.
@@ -120,7 +120,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getCompletionsAt(JTextComponent tc, Point p) {
+	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 
 		int offset = tc.viewToModel(p);
 		if (offset<0 || offset>=tc.getDocument().getLength()) {
@@ -163,7 +163,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 			}
 
 			// Get a list of all Completions matching the text.
-			List list = getCompletionByInputText(text);
+			List<Completion> list = getCompletionByInputText(text);
 			lastCompletionsAtText = text;
 			return lastParameterizedCompletionsAt = list;
 
@@ -180,9 +180,10 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List getParameterizedCompletions(JTextComponent tc) {
+	public List<ParameterizedCompletion> getParameterizedCompletions(
+			JTextComponent tc) {
 
-		List list = null;
+		List<ParameterizedCompletion> list = null;
 
 		// If this provider doesn't support parameterized completions,
 		// bail out now.
@@ -222,15 +223,15 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 			// Get a list of all Completions matching the text, but then
 			// narrow it down to just the ParameterizedCompletions.
-			List l = getCompletionByInputText(text);
+			List<Completion> l = getCompletionByInputText(text);
 			if (l!=null && !l.isEmpty()) {
 				for (int i=0; i<l.size(); i++) {
 					Object o = l.get(i);
 					if (o instanceof ParameterizedCompletion) {
 						if (list==null) {
-							list = new ArrayList(1);
+							list = new ArrayList<ParameterizedCompletion>(1);
 						}
-						list.add(o);
+						list.add((ParameterizedCompletion)o);
 					}
 				}
 			}
@@ -248,7 +249,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * Initializes this completion provider.
 	 */
 	protected void init() {
-		completions = new ArrayList();
+		completions = new ArrayList<Completion>();
 		seg = new Segment();
 	}
 
@@ -319,7 +320,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		try {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(bin, handler);
-			List completions =  handler.getCompletions();
+			List<Completion> completions =  handler.getCompletions();
 			addCompletions(completions);
 			char startChar = handler.getParamStartChar();
 			if (startChar!=0) {

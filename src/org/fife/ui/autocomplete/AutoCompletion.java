@@ -699,7 +699,8 @@ public class AutoCompletion {
 			}
 		}
 
-		final List completions = provider.getCompletions(textComponent);
+		final List<Completion> completions = provider.
+										getCompletions(textComponent);
 		int count = completions.size();
 
 		if (count>1 || (count==1 && (isPopupVisible() || textLen==0)) ||
@@ -748,7 +749,7 @@ public class AutoCompletion {
 		else if (count==1) { // !isPopupVisible && autoCompleteSingleChoices
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					insertCompletion((Completion)completions.get(0));
+					insertCompletion(completions.get(0));
 				}
 			});
 		}

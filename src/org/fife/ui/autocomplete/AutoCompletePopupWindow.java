@@ -571,7 +571,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @param completions The completions to display.
 	 */
-	public void setCompletions(List completions) {
+	public void setCompletions(List<Completion> completions) {
 		model.setContents(completions);
 		selectFirstItem();
 	}

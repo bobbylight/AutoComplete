@@ -60,7 +60,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 public class TemplateCompletion extends AbstractCompletion
 								implements ParameterizedCompletion {
 
-	private List pieces;
+	private List<TemplatePiece> pieces;
 
 	private String inputText;
 
@@ -73,7 +73,7 @@ public class TemplateCompletion extends AbstractCompletion
 	/**
 	 * The template's parameters.
 	 */
-	private List params;
+	private List<Parameter> params;
 
 
 	public TemplateCompletion(CompletionProvider provider,
@@ -90,8 +90,8 @@ public class TemplateCompletion extends AbstractCompletion
 		this.definitionString = definitionString;
 		this.shortDescription = shortDescription;
 		this.summary = summary;
-		pieces = new ArrayList(3);
-		params = new ArrayList(3);
+		pieces = new ArrayList<TemplatePiece>(3);
+		params = new ArrayList<Parameter>(3);
 		parse(template);
 	}
 
@@ -112,7 +112,7 @@ public class TemplateCompletion extends AbstractCompletion
 
 
 	private String getPieceText(int index, String leadingWS) {
-		TemplatePiece piece = (TemplatePiece)pieces.get(index);
+		TemplatePiece piece = pieces.get(index);
 		String text = piece.getText();
 		if (text.indexOf('\n')>-1) {
 			text = text.replaceAll("\n", "\n" + leadingWS);
@@ -190,7 +190,7 @@ public class TemplateCompletion extends AbstractCompletion
 		// performance and simplicity of undo/redo).
 		int start = dot;
 		for (int i=0; i<pieces.size(); i++) {
-			TemplatePiece piece = (TemplatePiece)pieces.get(i);
+			TemplatePiece piece = pieces.get(i);
 			String text = getPieceText(i, leadingWS);
 			if (piece instanceof Text) {
 				if (replaceTabsWithSpaces) {
@@ -246,7 +246,7 @@ public class TemplateCompletion extends AbstractCompletion
 	 * {@inheritDoc}
 	 */
 	public Parameter getParam(int index) {
-		return (Parameter)params.get(index);
+		return params.get(index);
 	}
 
 

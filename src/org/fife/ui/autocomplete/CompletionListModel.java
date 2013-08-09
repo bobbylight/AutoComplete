@@ -10,6 +10,8 @@ package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 import javax.swing.AbstractListModel;
 
 
@@ -26,14 +28,14 @@ class CompletionListModel extends AbstractListModel {
 	/**
 	 * Container for items in this model.
 	 */
-	private ArrayList delegate;
+	private List<Completion> delegate;
 
 
 	/**
 	 * Constructor.
 	 */
 	public CompletionListModel() {
-		delegate = new ArrayList();
+		delegate = new ArrayList<Completion>();
 	}
 
 
@@ -73,7 +75,7 @@ class CompletionListModel extends AbstractListModel {
 	 *
 	 * @param contents The new contents of this model.
 	 */
-	public void setContents(Collection contents) {
+	public void setContents(Collection<Completion> contents) {
 		clear();
 		if (contents.size()>0) {
 			delegate.addAll(contents);

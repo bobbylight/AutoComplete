@@ -118,15 +118,14 @@ public class Util {
 				desktopCreationAttempted = true;
 
 				try {
-					Class desktopClazz = Class.forName("java.awt.Desktop");
+					Class<?> desktopClazz = Class.forName("java.awt.Desktop");
 					Method m = desktopClazz.
-						getDeclaredMethod("isDesktopSupported", null);
+						getDeclaredMethod("isDesktopSupported");
 
-					boolean supported = ((Boolean)m.invoke(null, null)).
-												booleanValue();
+					boolean supported= ((Boolean)m.invoke(null)).booleanValue();
 					if (supported) {
-						m = desktopClazz.getDeclaredMethod("getDesktop", null);
-						desktop = m.invoke(null, null);
+						m = desktopClazz.getDeclaredMethod("getDesktop");
+						desktop = m.invoke(null);
 					}
 
 				} catch (RuntimeException re) {

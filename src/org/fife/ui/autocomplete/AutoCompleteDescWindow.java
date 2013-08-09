@@ -92,7 +92,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * History of descriptions displayed.
 	 */
-	private List history;
+	private List<HistoryEntry> history;
 
 	/**
 	 * The current position in {@link #history}.
@@ -194,7 +194,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			}
 		}
 
-		history = new ArrayList(1); // Usually small
+		history = new ArrayList<HistoryEntry>(1); // Usually small
 		historyPos = -1;
 
 		timerAction = new TimerAction();
@@ -298,8 +298,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		// Custom hyperlink handler for this completion type
 		ExternalURLHandler handler = ac.getExternalURLHandler();
 		if (handler!=null) {
-			HistoryEntry current = (HistoryEntry)history.
-											get(historyPos);
+			HistoryEntry current = history.get(historyPos);
 			handler.urlClicked(e, current.completion, this);
 			return;
 		}
@@ -322,11 +321,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			CompletionProvider p = parent.getSelection().getProvider();
 			if (p instanceof AbstractCompletionProvider) {
 				String name = e.getDescription();
-				List l = ((AbstractCompletionProvider)p).
+				List<Completion> l = ((AbstractCompletionProvider)p).
 									getCompletionByInputText(name);
 				if (l!=null && !l.isEmpty()) {
 					// Just use the 1st one if there's more than 1
-					Completion c = (Completion)l.get(0);
+					Completion c = l.get(0);
 					setDescriptionFor(c, true);
 				}
 				else {
@@ -538,8 +537,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 
 		public void actionPerformed(ActionEvent e) {
 			if (historyPos>0) {
-				HistoryEntry pair = (HistoryEntry)history.
-													get(--historyPos);
+				HistoryEntry pair = history.get(--historyPos);
 				descArea.setText(pair.summary);
 				if (pair.anchor!=null) {
 					//System.out.println("Scrolling to: " + pair.anchor);
@@ -570,8 +568,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 
 		public void actionPerformed(ActionEvent e) {
 			if (history!=null && historyPos<history.size()-1) {
-				HistoryEntry pair = (HistoryEntry)history.
-											get(++historyPos);
+				HistoryEntry pair = history.get(++historyPos);
 				descArea.setText(pair.summary);
 				if (pair.anchor!=null) {
 					//System.out.println("Scrolling to: " + pair.anchor);

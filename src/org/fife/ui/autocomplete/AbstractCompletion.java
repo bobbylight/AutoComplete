@@ -57,12 +57,11 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int compareTo(Object o) {
-		if (o==this) {
+	public int compareTo(Completion c2) {
+		if (c2==this) {
 			return 0;
 		}
-		else if (o instanceof Completion) {
-			Completion c2 = (Completion)o;
+		else if (c2!=null) {
 			return toString().compareToIgnoreCase(c2.toString());
 		}
 		return -1;
