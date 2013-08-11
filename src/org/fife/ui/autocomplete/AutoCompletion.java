@@ -1140,6 +1140,7 @@ public class AutoCompletion {
 			 // Ignore
 		}
 
+		@Override
 		public void focusLost(FocusEvent e) {
 			timer.stop();
 			//hideChildWindows(); Other listener will do this
@@ -1257,14 +1258,17 @@ public class AutoCompletion {
 			w.addWindowFocusListener(this);
 		}
 
+		@Override
 		public void componentHidden(ComponentEvent e) {
 			hideChildWindows();
 		}
 
+		@Override
 		public void componentMoved(ComponentEvent e) {
 			hideChildWindows();
 		}
 
+		@Override
 		public void componentResized(ComponentEvent e) {
 			hideChildWindows();
 		}
@@ -1299,6 +1303,7 @@ public class AutoCompletion {
 		 * Hide the auto-completion windows when the text component loses
 		 * focus.
 		 */
+		@Override
 		public void focusLost(FocusEvent e) {
 			hideChildWindows();
 		}

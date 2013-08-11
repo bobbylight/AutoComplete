@@ -151,6 +151,7 @@ public interface ParameterizedCompletion extends Completion {
 			this.desc = desc;
 		}
 
+		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			if (getType()!=null) {

@@ -105,6 +105,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @throws UnsupportedOperationException Always.
 	 * @see #setParameterizedCompletionParams(char, String, char)
 	 */
+	@Override
 	public void clearParameterizedCompletionParams() {
 		throw new UnsupportedOperationException();
 	}
@@ -149,6 +150,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @return The list of possible completions, or an empty list if there
 	 *         are none.
 	 */
+	@Override
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
 		if (!(comp instanceof RSyntaxTextArea)) {
 			return new ArrayList<Completion>(0);
@@ -201,6 +203,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public char getParameterListEnd() {
 		return defaultProvider.getParameterListEnd();
 	}
@@ -209,6 +212,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getParameterListSeparator() {
 		return defaultProvider.getParameterListSeparator();
 	}
@@ -217,6 +221,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public char getParameterListStart() {
 		return defaultProvider.getParameterListStart();
 	}
@@ -320,6 +325,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isAutoActivateOkay(JTextComponent tc) {
 		CompletionProvider provider = getProviderFor(tc);
 		return provider!=null ? provider.isAutoActivateOkay(tc) : false;
@@ -372,6 +378,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @throws UnsupportedOperationException Always.
 	 * @see #clearParameterizedCompletionParams()
 	 */
+	@Override
 	public void setParameterizedCompletionParams(char listStart,
 										String separator, char listEnd) {
 		throw new UnsupportedOperationException();

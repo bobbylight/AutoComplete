@@ -667,6 +667,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @param visible Whether this window should be visible.
 	 */
+	@Override
 	public void setVisible(boolean visible) {
 
 		if (visible!=isVisible()) {
@@ -727,7 +728,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @see #installKeyBindings()
 	 */
-	public void uninstallKeyBindings() {
+	private void uninstallKeyBindings() {
 
 		if (AutoCompletion.getDebug()) {
 			System.out.println("PopupWindow: Removing keybindings");
@@ -930,6 +931,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			super(model);
 		}
 
+		@Override
 		public void setUI(ListUI ui) {
 			if (Util.getUseSubstanceRenderers() &&
 					SUBSTANCE_LIST_UI.equals(ui.getClass().getName())) {

@@ -132,6 +132,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 *
 	 * @return A string representation of this completion.
 	 */
+	@Override
 	public String toString() {
 		if (shortDesc==null) {
 			return getInputText();

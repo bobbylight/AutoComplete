@@ -95,6 +95,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			list.setCellRenderer(ac.getParamChoicesRenderer());
 		}
 		list.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount()==2) {
 					context.insertSelectedChoice();
@@ -290,6 +291,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *
 	 * @param visible Whether this window should be visible.
 	 */
+	@Override
 	public void setVisible(boolean visible) {
 		if (visible!=isVisible()) {
 			// i.e. if no possibilities matched what's been typed

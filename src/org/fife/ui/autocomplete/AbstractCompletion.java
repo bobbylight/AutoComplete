@@ -144,6 +144,7 @@ public abstract class AbstractCompletion implements Completion {
 	 *
 	 * @return A string representation of this completion.
 	 */
+	@Override
 	public String toString() {
 		return getInputText();
 	}

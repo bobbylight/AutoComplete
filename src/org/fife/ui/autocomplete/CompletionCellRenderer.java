@@ -207,6 +207,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param selected Whether the item is selected.
 	 * @param hasFocus Whether the item has focus.
 	 */
+	@Override
 	public Component getListCellRendererComponent(JList list, Object value,
 						int index, boolean selected, boolean hasFocus) {
 
@@ -280,6 +281,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	}
 
 
+	@Override
 	protected void paintComponent(Graphics g) {
 
 		//super.paintComponent(g);
@@ -610,6 +612,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	/**
 	 * Overridden to update our delegate, if necessary.
 	 */
+	@Override
 	public void updateUI() {
 		super.updateUI();
 		if (delegate!=null) {

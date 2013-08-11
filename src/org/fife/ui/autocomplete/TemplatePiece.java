@@ -35,6 +35,7 @@ interface TemplatePiece {
 			return text;
 		}
 
+		@Override
 		public String toString() {
 			return "[TemplatePiece.Text: text=" + text + "]";
 		}
@@ -54,6 +55,7 @@ interface TemplatePiece {
 			return text;
 		}
 
+		@Override
 		public String toString() {
 			return "[TemplatePiece.Param: param=" + text + "]";
 		}
@@ -73,6 +75,7 @@ interface TemplatePiece {
 			return text;
 		}
 
+		@Override
 		public String toString() {
 			return "[TemplatePiece.ParamCopy: param=" + text + "]";
 		}

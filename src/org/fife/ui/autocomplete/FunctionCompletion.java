@@ -48,6 +48,7 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
+	@Override
 	protected void addDefinitionString(StringBuilder sb) {
 		sb.append("<html><b>");
 		sb.append(getDefinitionString());
@@ -99,6 +100,7 @@ public class FunctionCompletion extends VariableCompletion
 	 * 
 	 * @return The definition string.
 	 */
+	@Override
 	public String getDefinitionString() {
 
 		StringBuilder sb = new StringBuilder();
@@ -264,6 +266,7 @@ public class FunctionCompletion extends VariableCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getSummary() {
 		StringBuilder sb = new StringBuilder();
 		addDefinitionString(sb);
@@ -279,6 +282,7 @@ public class FunctionCompletion extends VariableCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getToolTipText() {
 		String text = getSummary();
 		if (text==null) {

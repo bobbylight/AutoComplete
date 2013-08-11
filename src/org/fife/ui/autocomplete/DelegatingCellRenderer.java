@@ -48,6 +48,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Component getListCellRendererComponent(JList list, Object value,
 						int index, boolean selected, boolean hasFocus) {
 		Completion c = (Completion)value;
@@ -81,6 +82,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void updateUI() {
 		super.updateUI();
 		if ((fallback instanceof JComponent) && fallback!=this) {

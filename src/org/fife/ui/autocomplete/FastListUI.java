@@ -100,6 +100,7 @@ class FastListUI extends BasicListUI {
 	 * define them.  Since FastListUI extends BasicListUI, we need these values
 	 * to be defined.
 	 */
+	@Override
 	protected void installDefaults() {
 
 		super.installDefaults();
@@ -119,6 +120,7 @@ class FastListUI extends BasicListUI {
 	/**
 	 * Overridden to work around a Nimbus issue.
 	 */
+	@Override
 	protected void uninstallDefaults() {
 
 		super.uninstallDefaults();
@@ -140,6 +142,7 @@ class FastListUI extends BasicListUI {
 	 * too long, to improve performance for lists with huge amounts of
 	 * completions.
 	 */
+	@Override
 	protected void updateLayoutState() {
 
 		ListModel model = list.getModel();

@@ -97,6 +97,7 @@ public class VariableCompletion extends BasicCompletion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getSummary() {
 		StringBuilder sb = new StringBuilder();
 		addDefinitionString(sb);
@@ -122,6 +123,7 @@ public class VariableCompletion extends BasicCompletion {
 	 * @return The tool tip text for this completion, or <code>null</code> if
 	 *         none.
 	 */
+	@Override
 	public String getToolTipText() {
 		return getDefinitionString();
 	}
@@ -185,6 +187,7 @@ public class VariableCompletion extends BasicCompletion {
 	 *
 	 * @return A string representation of this completion.
 	 */
+	@Override
 	public String toString() {
 		return getName();
 	}

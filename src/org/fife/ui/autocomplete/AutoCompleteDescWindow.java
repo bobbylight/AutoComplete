@@ -168,9 +168,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 
 		bottomPanel = new JPanel(new BorderLayout());
 		b = new AbstractBorder() {
+			@Override
 			public Insets getBorderInsets(Component c) { 
 				return new Insets(1, 0, 0, 0);
 			}
+			@Override
 			public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
 				g.setColor(UIManager.getColor("controlDkShadow"));
 				g.drawLine(x,y, x+w-1,y);
@@ -434,6 +436,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * {@inheritDoc} 
 	 */
+	@Override
 	public void setVisible(boolean visible) {
 		if (!visible) {
 			clearHistory();
@@ -489,6 +492,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		 *
 		 * @return A string representation of this history entry.
 		 */
+		@Override
 		public String toString() {
 			return completion.getInputText();
 		}

@@ -63,6 +63,7 @@ class OutlineHighlightPainter extends
 	 * @return The color.
 	 * @see #setColor(Color)
 	 */
+	@Override
 	public Color getColor() {
 		return color;
 	}
@@ -71,6 +72,7 @@ class OutlineHighlightPainter extends
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Shape paintLayer(Graphics g, int p0, int p1, Shape viewBounds,
 								JTextComponent c, View view) {
 

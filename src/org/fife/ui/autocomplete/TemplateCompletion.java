@@ -106,6 +106,7 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
+	@Override
 	public String getInputText() {
 		return inputText;
 	}
@@ -363,6 +364,7 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
+	@Override
 	public String toString() {
 		return getDefinitionString();
 	}
