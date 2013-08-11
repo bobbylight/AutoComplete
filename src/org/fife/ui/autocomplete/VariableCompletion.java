@@ -51,14 +51,14 @@ public class VariableCompletion extends BasicCompletion {
 	}
 
 
-	protected void addDefinitionString(StringBuffer sb) {
+	protected void addDefinitionString(StringBuilder sb) {
 		sb.append("<html><b>").append(getDefinitionString()).append("</b>");
 	}
 
 
 	public String getDefinitionString() {
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		// Add the return type if applicable (C macros like NULL have no type).
 		if (type!=null) {
@@ -98,7 +98,7 @@ public class VariableCompletion extends BasicCompletion {
 	 * {@inheritDoc}
 	 */
 	public String getSummary() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		addDefinitionString(sb);
 		possiblyAddDescription(sb);
 		possiblyAddDefinedIn(sb);
@@ -143,7 +143,7 @@ public class VariableCompletion extends BasicCompletion {
 	 *
 	 * @param sb The buffer to append to.
 	 */
-	protected void possiblyAddDefinedIn(StringBuffer sb) {
+	protected void possiblyAddDefinedIn(StringBuilder sb) {
 		if (definedIn!=null) {
 			sb.append("<hr>Defined in:"); // TODO: Localize me
 			sb.append(" <em>").append(definedIn).append("</em>");
@@ -158,7 +158,7 @@ public class VariableCompletion extends BasicCompletion {
 	 * @param sb The buffer to append to.
 	 * @return Whether there was a description to add.
 	 */
-	protected boolean possiblyAddDescription(StringBuffer sb) {
+	protected boolean possiblyAddDescription(StringBuilder sb) {
 		if (getShortDescription()!=null) {
 			sb.append("<hr><br>");
 			sb.append(getShortDescription());

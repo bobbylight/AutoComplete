@@ -338,7 +338,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForFunctionCompletion(JList list,
 		FunctionCompletion fc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer(PREFIX);
+		StringBuilder sb = new StringBuilder(PREFIX);
 		sb.append(fc.getName());
 
 		char paramListStart = fc.getProvider().getParameterListStart();
@@ -404,7 +404,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForMarkupTagCompletion(JList list,
 		MarkupTagCompletion mc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer(PREFIX);
+		StringBuilder sb = new StringBuilder(PREFIX);
 		sb.append(mc.getName());
 
 		setText(sb.toString());
@@ -425,7 +425,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForOtherCompletion(JList list,
 		Completion c, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer(PREFIX);
+		StringBuilder sb = new StringBuilder(PREFIX);
 		sb.append(c.getInputText());
 
 		if (c instanceof BasicCompletion) {
@@ -459,7 +459,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForTemplateCompletion(JList list,
 		TemplateCompletion tc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer(PREFIX);
+		StringBuilder sb = new StringBuilder(PREFIX);
 		sb.append(tc.getInputText());
 
 		String definition = tc.getShortDescription();
@@ -491,7 +491,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	protected void prepareForVariableCompletion(JList list,
 		VariableCompletion vc, int index, boolean selected, boolean hasFocus) {
 
-		StringBuffer sb = new StringBuffer(PREFIX);
+		StringBuilder sb = new StringBuilder(PREFIX);
 		sb.append(vc.getName());
 
 		if (getShowTypes() && vc.getType()!=null) {

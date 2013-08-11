@@ -50,7 +50,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 *
 	 * @param sb The buffer to append to.
 	 */
-	protected void addAttributes(StringBuffer sb) {
+	protected void addAttributes(StringBuilder sb) {
 
 		// TODO: Localize me.
 
@@ -76,7 +76,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	}
 
 
-	protected void addDefinitionString(StringBuffer sb) {
+	protected void addDefinitionString(StringBuilder sb) {
 		sb.append("<html><b>").append(name).append("</b>");
 	}
 
@@ -162,7 +162,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 * {@inheritDoc}
 	 */
 	public String getSummary() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		addDefinitionString(sb);
 		possiblyAddDescription(sb);
 		addAttributes(sb);
@@ -177,7 +177,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 *
 	 * @param sb The buffer to append to.
 	 */
-	protected void possiblyAddDefinedIn(StringBuffer sb) {
+	protected void possiblyAddDefinedIn(StringBuilder sb) {
 		if (definedIn!=null) {
 			sb.append("<hr>Defined in:"); // TODO: Localize me
 			sb.append(" <em>").append(definedIn).append("</em>");
@@ -191,7 +191,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 *
 	 * @param sb The buffer to append to.
 	 */
-	protected void possiblyAddDescription(StringBuffer sb) {
+	protected void possiblyAddDescription(StringBuilder sb) {
 		if (desc!=null) {
 			sb.append("<hr><br>");
 			sb.append(desc);
@@ -231,7 +231,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 * @see #getAttribute(int)
 	 * @see #getAttributeCount()
 	 */
-	public void setAttributes(List<Parameter> attrs) {
+	public void setAttributes(List<? extends Parameter> attrs) {
 		// Deep copy so parsing can re-use its array.
 		this.attrs = new ArrayList<Parameter>(attrs);
 	}

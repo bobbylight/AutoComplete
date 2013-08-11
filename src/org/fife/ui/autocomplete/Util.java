@@ -159,7 +159,7 @@ public class Util {
 		// Don't assume 0xff alpha
 		//return "#" + Integer.toHexString(c.getRGB()&0xffffff).substring(2);
 
-		StringBuffer sb = new StringBuffer("#");
+		StringBuilder sb = new StringBuilder("#");
 		int r = c.getRed();
 		if (r<16) {
 			sb.append('0');

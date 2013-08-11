@@ -49,11 +49,11 @@ public class CompletionXMLParser extends DefaultHandler {
 	private String name;
 	private String type;
 	private String returnType;
-	private StringBuffer returnValDesc;
-	private StringBuffer desc;
+	private StringBuilder returnValDesc;
+	private StringBuilder desc;
 	private String paramName;
 	private String paramType;
-	private StringBuffer paramDesc;
+	private StringBuilder paramDesc;
 	private List<ParameterizedCompletion.Parameter> params;
 	private String definedIn;
 	private boolean doingKeywords;
@@ -114,9 +114,9 @@ public class CompletionXMLParser extends DefaultHandler {
 		}
 		completions = new ArrayList<Completion>();
 		params = new ArrayList<ParameterizedCompletion.Parameter>(1);
-		desc = new StringBuffer();
-		paramDesc = new StringBuffer();
-		returnValDesc = new StringBuffer();
+		desc = new StringBuilder();
+		paramDesc = new StringBuilder();
+		returnValDesc = new StringBuilder();
 		paramStartChar = paramEndChar = 0;
 		paramSeparator = null;
 	}

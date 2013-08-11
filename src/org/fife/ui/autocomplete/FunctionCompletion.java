@@ -48,7 +48,7 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
-	protected void addDefinitionString(StringBuffer sb) {
+	protected void addDefinitionString(StringBuilder sb) {
 		sb.append("<html><b>");
 		sb.append(getDefinitionString());
 		sb.append("</b>");
@@ -60,7 +60,7 @@ public class FunctionCompletion extends VariableCompletion
 	 *
 	 * @param sb The buffer to append to.
 	 */
-	protected void addParameters(StringBuffer sb) {
+	protected void addParameters(StringBuilder sb) {
 
 		// TODO: Localize me
 
@@ -101,7 +101,7 @@ public class FunctionCompletion extends VariableCompletion
 	 */
 	public String getDefinitionString() {
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		// Add the return type if applicable (C macros like NULL have no type).
 		String type = getType();
@@ -151,7 +151,7 @@ public class FunctionCompletion extends VariableCompletion
 		ParameterizedCompletionInsertionInfo info =
 			new ParameterizedCompletionInsertionInfo();
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		char paramListStart = getProvider().getParameterListStart();
 		if (paramListStart!='\0') {
 			sb.append(paramListStart);
@@ -265,7 +265,7 @@ public class FunctionCompletion extends VariableCompletion
 	 * {@inheritDoc}
 	 */
 	public String getSummary() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		addDefinitionString(sb);
 		if (!possiblyAddDescription(sb)) {
 			sb.append("<br><br><br>");

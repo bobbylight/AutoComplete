@@ -160,7 +160,7 @@ public class TemplateCompletion extends AbstractCompletion
 		ParameterizedCompletionInsertionInfo info =
 			new ParameterizedCompletionInsertionInfo();
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		int dot = tc.getCaretPosition();
 
 		// Get the range in which the caret can move before we hide
@@ -321,7 +321,7 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
-	private int possiblyReplaceTabsWithSpaces(StringBuffer sb, String text,
+	private int possiblyReplaceTabsWithSpaces(StringBuilder sb, String text,
 											JTextComponent tc, int start) {
 
 		int tab = text.indexOf('\t');

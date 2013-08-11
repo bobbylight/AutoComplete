@@ -30,7 +30,7 @@
 	<property name="doc-dir"          location="javadoc"/>
 	<property name="debug"            value="true"/>
 	<property name="debuglevel"       value="lines,vars,source"/>
-	<property name="java-level"       value="1.4"/>
+	<property name="java-level"       value="1.5"/>
 
 
 	<!-- Compiles the classes.  -->

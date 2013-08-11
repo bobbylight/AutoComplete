@@ -228,7 +228,7 @@ public abstract class AbstractCompletionProvider
 	 * against a String lexicographically, ignoring case.
 	 */
 	@SuppressWarnings("rawtypes")
-	private static class CaseInsensitiveComparator implements Comparator,
+	protected static class CaseInsensitiveComparator implements Comparator,
 														Serializable {
 
 		public int compare(Object o1, Object o2) {
