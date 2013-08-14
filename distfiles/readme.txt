@@ -57,10 +57,9 @@ robert -at- fifesoft dot com.
          Has a forum for AutoComplete and related projects, where you can
          ask questions and get feedback quickly.
 
-    * https://sourceforge.net/projects/rsyntaxtextarea/
-         RSyntaxTextArea and AutoComplete's home on SourceForge.  Don't use
-         the forums here (use the first link above), but you can use the
-         "Tracker" section here to post bug reports and feature requests.
+    * https://github.com/bobbylight/AutoComplete
+         Here you can submit bug reports or enhancement requests, peruse the
+         Wiki, etc.
 
 * Other Links
 
