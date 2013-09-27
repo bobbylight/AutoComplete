@@ -660,11 +660,11 @@ public class AutoCompletion {
 
 
 	/**
-	 * Returns whether the popup window is visible.
+	 * Returns whether the completion popup window is visible.
 	 *
-	 * @return Whether the popup window is visible.
+	 * @return Whether the completion popup window is visible.
 	 */
-	private boolean isPopupVisible() {
+	public boolean isPopupVisible() {
 		return popupWindow!=null && popupWindow.isVisible();
 	}
 
