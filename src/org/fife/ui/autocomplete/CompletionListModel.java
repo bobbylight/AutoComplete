@@ -77,9 +77,10 @@ class CompletionListModel extends AbstractListModel {
 	 */
 	public void setContents(Collection<Completion> contents) {
 		clear();
-		if (contents.size()>0) {
+		int count = contents.size();
+		if (count>0) {
 			delegate.addAll(contents);
-			fireIntervalAdded(this, 0, contents.size());
+			fireIntervalAdded(this, 0, count-1); // endpoints included (!)
 		}
 	}
 

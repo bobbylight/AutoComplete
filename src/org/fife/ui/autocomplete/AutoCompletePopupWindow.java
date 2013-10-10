@@ -946,8 +946,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 				setPrototypeCellValue(bc);
 			}
 			else {
-				// Our custom UI that is faster for long HTML completion
-				// lists.
+				// Our custom UI that is faster for long HTML completion lists.
 				ui = new FastListUI();
 				setPrototypeCellValue(null);
 			}
