@@ -249,7 +249,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * Initializes this completion provider.
 	 */
 	protected void init() {
-		completions = new ArrayList<Completion>();
 		seg = new Segment();
 	}
 

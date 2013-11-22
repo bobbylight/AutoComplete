@@ -46,6 +46,7 @@ public abstract class AbstractCompletionProvider
 	public AbstractCompletionProvider() {
 		comparator = new CaseInsensitiveComparator();
 		clearParameterizedCompletionParams();
+		completions = new ArrayList<Completion>();
 	}
 
 
