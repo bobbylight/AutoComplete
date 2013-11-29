@@ -11,7 +11,6 @@ package org.fife.ui.autocomplete;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.text.JTextComponent;
@@ -152,12 +151,11 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 */
 	@Override
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
-		if (!(comp instanceof RSyntaxTextArea)) {
-			return new ArrayList<Completion>(0);
-		}
-		CompletionProvider provider = getProviderFor(comp);
-		if (provider!=null) {
-			return provider.getCompletions(comp);
+		if (comp instanceof RSyntaxTextArea) {
+			CompletionProvider provider = getProviderFor(comp);
+			if (provider!=null) {
+				return provider.getCompletions(comp);
+			}
 		}
 		return Collections.emptyList();
 	}

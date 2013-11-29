@@ -110,7 +110,7 @@ public class ShorthandCompletion extends BasicCompletion {
 	 * @see #getReplacementText()
 	 */
 	protected String getSummaryBody() {
-		return "<tt>" + getReplacementText();
+		return "<code>" + getReplacementText();
 	}
 
 
