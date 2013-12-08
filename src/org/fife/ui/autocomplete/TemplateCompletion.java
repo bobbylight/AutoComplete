@@ -364,6 +364,17 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
+	/**
+	 * Sets the short description of this template completion.
+	 *
+	 * @param shortDesc The new short description.
+	 * @see #getShortDescription()
+	 */
+	public void setShortDescription(String shortDesc) {
+		this.shortDescription = shortDesc;
+	}
+
+
 	@Override
 	public String toString() {
 		return getDefinitionString();

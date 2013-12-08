@@ -36,6 +36,11 @@ public abstract class AbstractCompletion implements Completion {
 	private CompletionProvider provider;
 
 	/**
+	 * The icon to use for this completion.
+	 */
+	private Icon icon;
+
+	/**
 	 * The relevance of this completion.  Completion instances with higher
 	 * "relevance" values are inserted higher into the list of possible
 	 * completions than those with lower values.  Completion instances with
@@ -49,8 +54,20 @@ public abstract class AbstractCompletion implements Completion {
 	 *
 	 * @param provider The provider that created this completion.
 	 */
-	public AbstractCompletion(CompletionProvider provider) {
+	protected AbstractCompletion(CompletionProvider provider) {
 		this.provider = provider;
+	}
+
+
+	/**
+	 * Constructor.
+	 *
+	 * @param provider The provider that created this completion.
+	 * @param icon The icon for this completion.
+	 */
+	protected AbstractCompletion(CompletionProvider provider, Icon icon) {
+		this(provider);
+		setIcon(icon);
 	}
 
 
@@ -77,13 +94,10 @@ public abstract class AbstractCompletion implements Completion {
 
 
 	/**
-	 * The default implementation returns <code>null</code>.  Subclasses
-	 * who wish to display an icon can override this method.
-	 *
-	 * @return The icon for this completion.
+	 * {@inheritDoc}
 	 */
 	public Icon getIcon() {
-		return null;
+		return icon;
 	}
 
 
@@ -124,6 +138,17 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	public String getToolTipText() {
 		return null;
+	}
+
+
+	/**
+	 * Sets the icon to use for this completion.
+	 *
+	 * @param icon The icon to use.
+	 * @see #getIcon()
+	 */
+	public void setIcon(Icon icon) {
+		this.icon = icon;
 	}
 
 
