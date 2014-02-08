@@ -194,6 +194,16 @@ public class AutoCompletion {
 	private LookAndFeelChangeListener lafListener;
 
 	/**
+	 * Listens for events from the popup window.
+	 */
+	private PopupWindowListener popupWindowListener;
+
+	/**
+	 * All listeners registered on this component.
+	 */
+	private EventListenerList listeners;
+
+	/**
 	 * Whether or not the popup should be hidden when user types a space (or any
 	 * character that resets the completion list to "all completions"). Defaults
 	 * to true.
@@ -252,7 +262,20 @@ public class AutoCompletion {
 		textComponentListener = new TextComponentListener();
 		autoActivationListener = new AutoActivationListener();
 		lafListener = new LookAndFeelChangeListener();
+		popupWindowListener = new PopupWindowListener();
+		listeners = new EventListenerList();
 
+	}
+
+
+	/**
+	 * Adds a listener interested in popup window events from this instance.
+	 *
+	 * @param l The listener to add.
+	 * @see #removeAutoCompletionListener(AutoCompletionListener)
+	 */
+	public void addAutoCompletionListener(AutoCompletionListener l) {
+		listeners.add(AutoCompletionListener.class, l);
 	}
 
 
@@ -262,6 +285,31 @@ public class AutoCompletion {
 	 */
 	public void doCompletion() {
 		refreshPopupWindow();
+	}
+
+
+	/**
+	 * Fires an {@link AutoCompletionEvent} of the specified type.
+	 *
+	 * @param type The type of event to fire.
+	 */
+	protected void fireAutoCompletionEvent(AutoCompletionEvent.Type type) {
+
+		// Guaranteed to return a non-null array
+		Object[] listeners = this.listeners.getListenerList();
+		AutoCompletionEvent e = null;
+
+		// Process the listeners last to first, notifying those that are
+		// interested in this event
+		for (int i=listeners.length-2; i>=0; i-=2) {
+			if (listeners[i] == AutoCompletionListener.class) {
+				if (e==null) {
+					e = new AutoCompletionEvent(this, type);
+				}
+				((AutoCompletionListener)listeners[i+1]).autoCompleteUpdate(e);
+			}
+		}
+
 	}
 
 
@@ -493,7 +541,7 @@ public class AutoCompletion {
 	protected boolean hidePopupWindow() {
 		if (popupWindow != null) {
 			if (popupWindow.isVisible()) {
-				popupWindow.setVisible(false);
+				setPopupVisible(false);
 				return true;
 			}
 		}
@@ -567,8 +615,8 @@ public class AutoCompletion {
 
 	/**
 	 * Installs this auto-completion on a text component. If this
-	 * {@link AutoCompletion} is already installed on another text component, it
-	 * is uninstalled first.
+	 * {@link AutoCompletion} is already installed on another text component,
+	 * it is uninstalled first.
 	 * 
 	 * @param c The text component.
 	 * @see #uninstall()
@@ -751,6 +799,7 @@ public class AutoCompletion {
 
 			if (popupWindow == null) {
 				popupWindow = new AutoCompletePopupWindow(parentWindow, this);
+				popupWindowListener.install(popupWindow);
 				// Completion is usually done for code, which is always done
 				// LTR, so make completion stuff RTL only if text component is
 				// also RTL.
@@ -784,7 +833,7 @@ public class AutoCompletion {
 				r.x = p.x;
 				r.y = p.y;
 				popupWindow.setLocationRelativeTo(r);
-				popupWindow.setVisible(true);
+				setPopupVisible(true);
 			}
 
 		}
@@ -804,6 +853,17 @@ public class AutoCompletion {
 
 		return getLineOfCaret();
 
+	}
+
+
+	/**
+	 * Removes a listener interested in popup window events from this instance.
+	 *
+	 * @param l The listener to remove.
+	 * @see #addAutoCompletionListener(AutoCompletionListener)
+	 */
+	public void removeAutoCompletionListener(AutoCompletionListener l) {
+		listeners.remove(AutoCompletionListener.class, l);
 	}
 
 
@@ -1021,6 +1081,20 @@ public class AutoCompletion {
 
 
 	/**
+	 * Toggles the visibility of the auto-completion popup window.  This fires
+	 * an {@link AutoCompletionEvent} of the appropriate type.
+	 *
+	 * @param visible Whether the window should be made visible or hidden.
+	 * @see #isPopupVisible()
+	 */
+	protected void setPopupVisible(boolean visible) {
+		if (visible!=popupWindow.isVisible()) {
+			popupWindow.setVisible(visible);
+		}
+	}
+
+
+	/**
 	 * Sets whether the "description window" should be shown beside the
 	 * completion window.
 	 * 
@@ -1133,6 +1207,7 @@ public class AutoCompletion {
 			UIManager.removePropertyChangeListener(lafListener);
 
 			textComponent = null;
+			popupWindowListener.uninstall(popupWindow);
 			popupWindow = null;
 
 		}
@@ -1180,27 +1255,22 @@ public class AutoCompletion {
 			DocumentListener, CaretListener, ActionListener {
 
 		private Timer timer;
-
 		private boolean justInserted;
-
 
 		public AutoActivationListener() {
 			timer = new Timer(200, this);
 			timer.setRepeats(false);
 		}
 
-
 		public void actionPerformed(ActionEvent e) {
 			doCompletion();
 		}
-
 
 		public void addTo(JTextComponent tc) {
 			tc.addFocusListener(this);
 			tc.getDocument().addDocumentListener(this);
 			tc.addCaretListener(this);
 		}
-
 
 		public void caretUpdate(CaretEvent e) {
 			if (justInserted) {
@@ -1211,18 +1281,15 @@ public class AutoCompletion {
 			}
 		}
 
-
 		public void changedUpdate(DocumentEvent e) {
 			// Ignore
 		}
-
 
 		@Override
 		public void focusLost(FocusEvent e) {
 			timer.stop();
 			// hideChildWindows(); Other listener will do this
 		}
-
 
 		public void insertUpdate(DocumentEvent e) {
 			justInserted = false;
@@ -1241,7 +1308,6 @@ public class AutoCompletion {
 			}
 		}
 
-
 		public void removeFrom(JTextComponent tc) {
 			tc.removeFocusListener(this);
 			tc.getDocument().removeDocumentListener(this);
@@ -1249,7 +1315,6 @@ public class AutoCompletion {
 			timer.stop();
 			justInserted = false;
 		}
-
 
 		public void removeUpdate(DocumentEvent e) {
 			timer.stop();
@@ -1301,7 +1366,6 @@ public class AutoCompletion {
 			this.start = Character.toString(ch);
 		}
 
-
 		public void actionPerformed(ActionEvent e) {
 
 			// Prevents keystrokes from messing up
@@ -1335,40 +1399,63 @@ public class AutoCompletion {
 			w.addWindowFocusListener(this);
 		}
 
-
 		@Override
 		public void componentHidden(ComponentEvent e) {
 			hideChildWindows();
 		}
-
 
 		@Override
 		public void componentMoved(ComponentEvent e) {
 			hideChildWindows();
 		}
 
-
 		@Override
 		public void componentResized(ComponentEvent e) {
 			hideChildWindows();
 		}
-
 
 		public void removeFrom(Window w) {
 			w.removeComponentListener(this);
 			w.removeWindowFocusListener(this);
 		}
 
-
 		public void windowGainedFocus(WindowEvent e) {
 		}
-
 
 		public void windowLostFocus(WindowEvent e) {
 			hideChildWindows();
 		}
 
 	}
+
+
+	/**
+	 * Listens for events from the popup window.
+	 */
+	private class PopupWindowListener extends ComponentAdapter {
+
+		@Override
+		public void componentHidden(ComponentEvent e) {
+			fireAutoCompletionEvent(AutoCompletionEvent.Type.POPUP_HIDDEN);
+		}
+
+		@Override
+		public void componentShown(ComponentEvent e) {
+			fireAutoCompletionEvent(AutoCompletionEvent.Type.POPUP_SHOWN);
+		}
+
+		public void install(AutoCompletePopupWindow popupWindow) {
+			popupWindow.addComponentListener(this);
+		}
+
+		public void uninstall(AutoCompletePopupWindow popupWindow) {
+			if (popupWindow!=null) {
+				popupWindow.removeComponentListener(this);
+			}
+		}
+
+	}
+
 
 	/**
 	 * Listens for events from the text component we're installed on.
@@ -1381,7 +1468,6 @@ public class AutoCompletion {
 			tc.addHierarchyListener(this);
 		}
 
-
 		/**
 		 * Hide the auto-completion windows when the text component loses focus.
 		 */
@@ -1389,7 +1475,6 @@ public class AutoCompletion {
 		public void focusLost(FocusEvent e) {
 			hideChildWindows();
 		}
-
 
 		/**
 		 * Called when the component hierarchy for our text component changes.
@@ -1415,7 +1500,6 @@ public class AutoCompletion {
 			}
 
 		}
-
 
 		public void removeFrom(JTextComponent tc) {
 			tc.removeFocusListener(this);
