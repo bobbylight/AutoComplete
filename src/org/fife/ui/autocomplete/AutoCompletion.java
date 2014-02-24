@@ -679,10 +679,13 @@ public class AutoCompletion {
 
 
 	/**
-	 * Hook for Subclasses providing their own implementation of an
-	 * AutoCompleteAction
+	 * Creates and returns the action to call when the user presses the
+	 * auto-completion trigger key (e.g. ctrl+space).  This is a hook for
+	 * subclasses that want to provide their own behavior in this scenario.
+	 * The default implementation returns an {@link AutoCompleteAction}.
 	 * 
-	 * @return
+	 * @return The action to use.
+	 * @see AutoCompleteAction
 	 */
 	protected Action createAutoCompleteAction() {
 		return new AutoCompleteAction();
