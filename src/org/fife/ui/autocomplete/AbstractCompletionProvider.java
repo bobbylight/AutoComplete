@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.swing.text.JTextComponent;
 
 
@@ -234,10 +235,11 @@ public abstract class AbstractCompletionProvider
 														Serializable {
 
 		public int compare(Object o1, Object o2) {
-			Completion c = (Completion)o1;
-			// o2.toString() needed to help compile with 1.5+.
-			return String.CASE_INSENSITIVE_ORDER.compare(
-									c.getInputText(), o2.toString());
+			String s1 = o1 instanceof String ? (String)o1 :
+							((Completion)o1).getInputText();
+			String s2 = o2 instanceof String ? (String)o2 :
+							((Completion)o2).getInputText();
+			return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
 		}
 
 	}
