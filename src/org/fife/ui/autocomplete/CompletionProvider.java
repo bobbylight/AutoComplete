@@ -58,7 +58,7 @@ public interface CompletionProvider {
 	 *
 	 * @param comp The text component.
 	 * @return The list of {@link Completion}s.  If no completions are
-	 *         available, this may be <code>null</code>.
+	 *         available, this method should return an empty list.
 	 */
 	public List<Completion> getCompletions(JTextComponent comp);
 

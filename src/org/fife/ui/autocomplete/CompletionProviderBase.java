@@ -101,8 +101,11 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 
 		List<Completion> completions = getCompletionsImpl(comp);
 		if (parent!=null) {
-			completions.addAll(parent.getCompletions(comp));
-			Collections.sort(completions);
+			List<Completion> parentCompletions = parent.getCompletions(comp);
+			if (parentCompletions!=null) {
+				completions.addAll(parentCompletions);
+				Collections.sort(completions);
+			}
 		}
 
 		// NOTE: We can't sort by relevance prior to this; we need to have
