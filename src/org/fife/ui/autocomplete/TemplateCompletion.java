@@ -293,7 +293,7 @@ public class TemplateCompletion extends AbstractCompletion
 				case '$': // "$$" => escaped single dollar sign
 					addTemplatePiece(new TemplatePiece.Text(
 							template.substring(lastOffs, offs+1)));
-					lastOffs = offs += 2;
+					lastOffs = offs + 2;
 					break;
 				case '{': // "${...}" => variable
 					int closingCurly = template.indexOf('}', offs+2);
@@ -307,7 +307,7 @@ public class TemplateCompletion extends AbstractCompletion
 						else {
 							addTemplatePiece(new TemplatePiece.Param(varName));
 						}
-						lastOffs = offs = closingCurly + 1;
+						lastOffs = closingCurly + 1;
 					}
 					break;
 			}
