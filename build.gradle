@@ -58,6 +58,9 @@ task buildSourceForgeZips << {
 buildSourceForgeZips.dependsOn clean, jar, distZip, srcDistZip
 
 // Stuff to generate and upload Maven artifacts
+javadoc {
+	classpath += files("${projectDir.absolutePath}/../RSyntaxTextArea/build/classes/main")
+}
 task javadocJar (type: Jar, dependsOn: javadoc) {
 	manifest { from sharedManifest }
 	classifier = 'javadoc'
