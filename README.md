@@ -6,7 +6,7 @@ AutoComplete is available under a [modified BSD license](https://github.com/bobb
 
 # Example Usage
 
-The examle below shows how to add code completion for simple keywords to RSyntaxTextArea.
+The example below shows how to add code completion for simple keywords to RSyntaxTextArea.
 
 ```java
 import java.awt.*;

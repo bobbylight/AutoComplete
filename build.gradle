@@ -4,13 +4,29 @@ dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
+// Regenerate local gradlew
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.0'
+}
+
 compileJava {
 	sourceCompatibility javaVersion
 	targetCompatibility javaVersion
 	classpath += files("${projectDir.absolutePath}/../RSyntaxTextArea/build/classes/main")
 	options.debug = true
 	options.debugOptions.debugLevel = 'source,vars,lines'
-	options.compilerArgs << "-Xlint:deprecation"
+	// Most folks will compile with the latest JDK available, but official builds
+	// use a Java 5 JDK.  Add this property to gradle.properties for boot classpath
+	if (project.hasProperty('java5CompileBootClasspath')) {
+		if (new File(java5CompileBootClasspath).isFile()) {
+			println "Bootstrap classpath when compiling Java: ${java5CompileBootClasspath}"
+			options.bootClasspath = java5CompileBootClasspath
+		}
+		else {
+			println "Warning: Specified java5CompileBootClasspath does not exist: ${java5CompileBootClasspath}"
+		}
+	}
+	options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
 }
 
 ext.sharedManifest = manifest {
