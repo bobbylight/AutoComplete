@@ -158,6 +158,16 @@ uploadArchives {
 						}
 					}
 					
+					// Manually add runtime dependencies since we don't have
+					// a multi-project build set up properly
+					dependencies {
+						dependency {
+							groupId 'com.fifesoft'
+							artifactId 'rsyntaxtextarea'
+							version project.version
+						}
+					}
+					
 					// Says to enforce 1.5 compatibility when building
 					// Doesn't work as of Gradle 2.0 due to a Groovy bug; see
 					// http://jira.codehaus.org/browse/GROOVY-7023
