@@ -143,7 +143,7 @@ uploadArchives {
 						url 'https://github.com/bobbylight/AutoComplete'
 						connection 'scm:git:git://github.com/bobbylight/AutoComplete'
 						developerConnection 'scm:git:git@github.com:bobbylight/AutoComplete'
-						tag '2.5.1'
+						tag '2.5.4'
 					}
 					
 					developers {
