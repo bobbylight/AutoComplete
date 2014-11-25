@@ -120,7 +120,7 @@ uploadArchives {
 					artifactId 'autocomplete'
 					packaging 'jar'
 					
-					name 'AutoComplete'
+					name 'autocomplete'
 					description 'AutoComplete is a library allowing you to add IDE-like auto-completion ' +
 					   '(aka "code completion" or "Intellisense") to any Swing JTextComponent. Special integration ' +
 					   'is added for RSyntaxTextArea, since this feature is commonly needed when editing source code. ' +
