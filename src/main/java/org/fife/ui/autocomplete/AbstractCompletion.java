@@ -79,7 +79,7 @@ public abstract class AbstractCompletion implements Completion {
 			return 0;
 		}
 		else if (c2!=null) {
-			return toString().compareToIgnoreCase(c2.toString());
+			return getInputText().compareToIgnoreCase(c2.getInputText());
 		}
 		return -1;
 	}
