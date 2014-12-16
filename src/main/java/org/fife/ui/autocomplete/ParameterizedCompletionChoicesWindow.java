@@ -171,7 +171,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 		for (int i=0; i<paramCount; i++) {
 			ParameterizedCompletion.Parameter param = pc.getParam(i);
-			List<Completion> choices = pcp.getParameterChoices(tc, param);
+			List<Completion> choices = pcp.getParameterChoices(tc, pc, param);
 			choicesListList.add(choices);
 		}
 
