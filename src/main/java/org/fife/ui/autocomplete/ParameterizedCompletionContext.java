@@ -18,7 +18,9 @@ import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -58,7 +60,7 @@ import org.fife.ui.rtextarea.ChangeableHighlightPainter;
  * @author Robert Futrell
  * @version 1.0
  */
-class ParameterizedCompletionContext {
+public class ParameterizedCompletionContext {
 
 	/**
 	 * The parent window.
@@ -98,6 +100,8 @@ class ParameterizedCompletionContext {
 	 * The tags for the highlights around parameters.
 	 */
 	private List<Object> tags;
+	
+	private List<String> parameterValues;
 
 	private List<ParamCopyInfo> paramCopyInfos;
 
@@ -246,15 +250,15 @@ class ParameterizedCompletionContext {
 
 
 	/**
-	 * Hides any popup windows and terminates parameterized completion
-	 * assistance.
-	 *
+	 * Hides any popup windows and terminates parameterized completion assistance.
 	 * @see #activate()
 	 */
 	public void deactivate() {
 		if (!active) {
 			return;
 		}
+		updateParamValues();
+		
 		active = false;
 		listener.uninstall();
 		if (tip!=null) {
@@ -263,10 +267,39 @@ class ParameterizedCompletionContext {
 		if (paramChoicesWindow!=null) {
 			paramChoicesWindow.setVisible(false);
 		}
+		
+		ac.onParameterizedCompletionFinish(this);
+		
 	}
 
 
-	/**
+	private void updateParamValues() {
+	    
+        if(active){
+            ParameterizedCompletion completion = getParameterizedCompletion();
+            
+            JTextComponent texarea = ac.getTextComponent();
+            
+            List<Highlight> highlights = getParameterHighlights();
+            
+            List<String> values = new LinkedList<String>();
+            
+            for (int i = 0; i < completion.getParamCount(); i++) {
+                Highlight h = highlights.get(i);
+                int start = h.getStartOffset()+1; // "+1" is a workaround for Java Highlight issues.
+                try {
+                    values.add(texarea.getText(start, h.getEndOffset() - start));
+                } catch (BadLocationException e) {
+                    values.add("");
+                }
+            }   
+            
+            parameterValues = values;
+        }
+        
+    }
+
+    /**
 	 * Returns the text inserted for the parameter containing the specified
 	 * offset.
 	 *
@@ -419,6 +452,14 @@ class ParameterizedCompletionContext {
 		}
 		return paramHighlights;
 	}
+	
+	/**
+	 * Get current parameter values.
+	 * @return
+	 */
+	public List<String> getParameterValues() {
+	    return parameterValues;
+	}
 
 
 	/**
@@ -437,7 +478,7 @@ class ParameterizedCompletionContext {
 					 // "+1" is a workaround for Java Highlight issues.
 					tc.setSelectionStart(h.getStartOffset()+1);
 					tc.setSelectionEnd(h.getEndOffset());
-					tc.replaceSelection(choice);
+					ac.onParameterizedCompletionSelect(this, getCurrentParameterIndex(), choice);
 					moveToNextParam();
 				}
 				else {
@@ -448,7 +489,18 @@ class ParameterizedCompletionContext {
 		}
 		return false;
 	}
+	
+	public JTextComponent getTextComponent(){
+	    return ac.getTextComponent();
+	}
+	
+	public ParameterizedCompletion getParameterizedCompletion() {
+        return pc;
+    }
 
+	public AutoCompletion getAutoCompletion() {
+        return ac;
+    }
 
 	/**
 	 * Installs key bindings on the text component that facilitate the user
