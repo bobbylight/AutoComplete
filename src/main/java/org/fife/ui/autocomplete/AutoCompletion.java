@@ -10,10 +10,11 @@ package org.fife.ui.autocomplete;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
+
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
@@ -295,24 +296,30 @@ public class AutoCompletion {
 	 */
 	protected void fireAutoCompletionEvent(AutoCompletionEvent.Type type) {
 
-		// Guaranteed to return a non-null array
-		Object[] listeners = this.listeners.getListenerList();
-		AutoCompletionEvent e = null;
-
-		// Process the listeners last to first, notifying those that are
-		// interested in this event
-		for (int i=listeners.length-2; i>=0; i-=2) {
-			if (listeners[i] == AutoCompletionListener.class) {
-				if (e==null) {
-					e = new AutoCompletionEvent(this, type);
-				}
-				((AutoCompletionListener)listeners[i+1]).autoCompleteUpdate(e);
-			}
-		}
+	    fireAutoCompletionEvent(new AutoCompletionEvent(this, type));
 
 	}
 
 
+	/**
+     * Fires an {@link AutoCompletionEvent}.
+     * @param event
+     */
+    protected void fireAutoCompletionEvent(AutoCompletionEvent event) {
+
+        // Guaranteed to return a non-null array
+        Object[] listeners = this.listeners.getListenerList();
+
+        // Process the listeners last to first, notifying those that are
+        // interested in this event
+        for (int i=listeners.length-2; i>=0; i-=2) {
+            if (listeners[i] == AutoCompletionListener.class) {
+                ((AutoCompletionListener)listeners[i+1]).autoCompleteUpdate(event);
+            }
+        }
+
+    }
+    
 	/**
 	 * Returns the delay between when the user types a character and when the
 	 * code completion popup should automatically appear (if applicable).
@@ -611,6 +618,28 @@ public class AutoCompletion {
 		}
 
 	}
+	
+    /**
+     * Method called when the {@link ParameterizedCompletionContext} is active and the assistance ends.<br/>
+     * You can use {@link ParameterizedCompletionContext#getParameterValues()}, to get the values of the parameters entered by the user.
+     * @param context
+     */
+    protected void onParameterizedCompletionFinish( ParameterizedCompletionContext context ){
+        fireAutoCompletionEvent(new ParameterizedCompletionEvent(context, AutoCompletionEvent.Type.PARAMETER_COMPLETION_FINISH));
+    }
+
+    /**
+     * Method called when the {@link ParameterChoicesProvider} is active and the user selects the parameter in the list of available values.<br/>
+     * The default implementation simply replaces the text of the current selection with the 'choice'.
+     * @param context
+     */
+    protected void onParameterizedCompletionSelect( ParameterizedCompletionContext context , int paramIndex , String choice ){
+        textComponent.replaceSelection(choice);
+        ParameterizedCompletionEvent event = new ParameterizedCompletionEvent(context, AutoCompletionEvent.Type.PARAMETER_COMPLETION_SELECT);
+        event.setParamIndex(paramIndex);
+        event.setChoice(choice);
+        fireAutoCompletionEvent(event);
+    }
 
 
 	/**
@@ -1141,7 +1170,7 @@ public class AutoCompletion {
 	 * @param typedParamListStartChar Whether the parameterized completion list
 	 *        starting character was typed.
 	 */
-	private void startParameterizedCompletionAssistance(
+	public void startParameterizedCompletionAssistance(
 			ParameterizedCompletion pc, boolean typedParamListStartChar) {
 
 		// Get rid of the previous tool tip window, if there is one.

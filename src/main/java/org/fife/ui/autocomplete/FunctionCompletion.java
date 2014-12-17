@@ -10,6 +10,7 @@ package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
@@ -317,6 +318,5 @@ public class FunctionCompletion extends VariableCompletion
 	public void setReturnValueDescription(String desc) {
 		this.returnValDesc = desc;
 	}
-
 
 }

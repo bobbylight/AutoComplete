@@ -64,7 +64,13 @@ public class AutoCompletionEvent extends EventObject {
 	 */
 	public static enum Type {
 		POPUP_SHOWN,
-		POPUP_HIDDEN
+		POPUP_HIDDEN,
+		/** Type of {@link ParameterizedCompletionEvent} 
+		 * @see {@link AutoCompletion#onParameterizedCompletionFinish(ParameterizedCompletionContext)}*/
+		PARAMETER_COMPLETION_FINISH,
+		/** Type of {@link ParameterizedCompletionEvent} 
+		 * @see {@link AutoCompletion#onParameterizedCompletionSelect(ParameterizedCompletionContext, int, String)*/
+		PARAMETER_COMPLETION_SELECT
 	}
 
 
