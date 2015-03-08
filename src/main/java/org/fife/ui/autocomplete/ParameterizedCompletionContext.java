@@ -479,7 +479,11 @@ public class ParameterizedCompletionContext {
 					tc.setSelectionStart(h.getStartOffset()+1);
 					tc.setSelectionEnd(h.getEndOffset());
 					ac.onParameterizedCompletionSelect(this, getCurrentParameterIndex(), choice);
-					moveToNextParam();
+					if(tags.size() > 1){
+					  moveToNextParam();
+					}else{
+					  deactivate();
+					}
 				}
 				else {
 					UIManager.getLookAndFeel().provideErrorFeedback(tc);
