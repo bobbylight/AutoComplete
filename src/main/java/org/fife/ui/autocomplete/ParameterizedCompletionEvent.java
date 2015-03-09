@@ -40,18 +40,18 @@ public class ParameterizedCompletionEvent extends AutoCompletionEvent{
     }
     
     /**
-     * Get the index of the parameter being edited. <br/>
+     * Get the index of the parameter being edited.
      * This only works for the event: {@link AutoCompletionEvent.Type#PARAMETER_COMPLETION_SELECT}
-     * @return
+     * @return param index.
      */
     public int getParamIndex() {
         return paramIndex;
     }
     
     /**
-     * Gets the element that was selected in the parameter autocomplete list. <br/>
+     * Gets the element that was selected in the parameter autocomplete list. 
      * This only works for the event: {@link AutoCompletionEvent.Type#PARAMETER_COMPLETION_SELECT}
-     * @return
+     * @return selected choice
      */
     public String getChoice() {
         return choice;
