@@ -724,6 +724,8 @@ public class AutoCompletion {
 	 * changes. If set to false, caller has to ensure refresh of the popup
 	 * content.
 	 *
+	 * @return Whether the popup should be hidden when the completion provider
+	 *         changes.
 	 * @see #setHideOnCompletionProviderChange(boolean)
 	 */
 	protected boolean isHideOnCompletionProviderChange() {
@@ -735,6 +737,8 @@ public class AutoCompletion {
 	 * Whether or not the popup should be hidden when user types a space (or
 	 * any character that resets the completion list to "all completions").
 	 * 
+	 * @return Whether the popup should be hidden when the completion list is
+	 * reset to show all completions.
 	 * @see #setHideOnNoText(boolean)
 	 */
 	protected boolean isHideOnNoText() {
@@ -1003,6 +1007,8 @@ public class AutoCompletion {
 	 * CompletionProvider changes. If set to false, caller has to ensure refresh
 	 * of the popup content.
 	 *
+	 * @param hideOnCompletionProviderChange Whether the popup should be hidden
+	 *        when the completion provider changes.
 	 * @see #isHideOnCompletionProviderChange()
 	 */
 	protected void setHideOnCompletionProviderChange(
@@ -1015,6 +1021,8 @@ public class AutoCompletion {
 	 * Sets whether or not the popup should be hidden when user types a space
 	 * (or any character that resets the completion list to "all completions").
 	 *
+	 * @param hideOnNoText Whether the popup sh ould be hidden when the
+	 *        completion list is reset to show all completions.
 	 * @see #isHideOnNoText()
 	 */
 	protected void setHideOnNoText(boolean hideOnNoText) {

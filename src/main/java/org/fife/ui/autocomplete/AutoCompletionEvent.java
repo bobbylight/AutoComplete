@@ -28,7 +28,7 @@ public class AutoCompletionEvent extends EventObject {
 	/**
 	 * Constructor.
 	 *
-	 * @param source The <coded>AutoCompletion</code> instance that fired
+	 * @param source The <code>AutoCompletion</code> instance that fired
 	 *        this event.
 	 * @param type The event type.
 	 */
