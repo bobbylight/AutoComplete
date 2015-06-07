@@ -2,7 +2,7 @@ AutoComplete is a code completion library for Swing JTextComponents, with enhanc
 
 Features include a completion choices list that updates as the user types, a "documentation" companion window for displaying documentation about the currently selected completion choice, and parameter assistance (e.g. tabbing through function/method parameters, with tool tip assistance for each argument and a possible list of valid variable completions for each).
 
-AutoComplete is available under a [modified BSD license](https://github.com/bobbylight/AutoComplete/blob/master/distfiles/AutoComplete.License.txt).  For more information, visit [http://fifesoft.com/autocomplete](http://fifesoft.com/autocomplete).
+AutoComplete is available under a [modified BSD license](https://github.com/bobbylight/AutoComplete/blob/master/src/main/dist/AutoComplete.License.txt).  For more information, visit [http://fifesoft.com/autocomplete](http://fifesoft.com/autocomplete).
 
 # Example Usage
 
