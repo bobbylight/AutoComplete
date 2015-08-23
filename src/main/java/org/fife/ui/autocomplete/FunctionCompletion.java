@@ -34,6 +34,11 @@ public class FunctionCompletion extends VariableCompletion
 	 */
 	private String returnValDesc;
 
+	/**
+	 * Used to improve performance of sorting FunctionCompletions.
+	 */
+	private String compareString;
+
 
 	/**
 	 * Constructor.
@@ -89,6 +94,74 @@ public class FunctionCompletion extends VariableCompletion
 			sb.append(returnValDesc);
 			sb.append("</td></tr></table></center><br><br>");
 		}
+
+	}
+
+
+	/**
+	 * Overridden to compare methods by their comparison strings.
+	 *
+	 * @param c2 A <code>Completion</code> to compare to.
+	 * @return The sort order.
+	 */
+	@Override
+	public int compareTo(Completion c2) {
+
+		int rc = -1;
+
+		if (c2==this) {
+			rc = 0;
+		}
+
+		else if (c2 instanceof FunctionCompletion) {
+			rc = getCompareString().compareTo(
+					((FunctionCompletion)c2).getCompareString());
+		}
+
+		else {
+			rc = super.compareTo(c2);
+		}
+
+		return rc;
+
+	}
+
+
+	/**
+	 * Returns a string used to compare this method completion to another.
+	 *
+	 * @return The comparison string.
+	 */
+	private String getCompareString() {
+
+		/*
+		 * This string compares the following parts of methods in this order,
+		 * to optimize sort order in completion lists.
+		 *
+		 * 1. First, by name
+		 * 2. Next, by number of parameters.
+		 * 3. Finally, by parameter type.
+		 */
+
+		if (compareString==null) {
+			StringBuilder sb = new StringBuilder(getName());
+			// NOTE: This will fail if a method has > 99 parameters (!)
+			int paramCount = getParamCount();
+			if (paramCount<10) {
+				sb.append('0');
+			}
+			sb.append(paramCount);
+			for (int i=0; i<paramCount; i++) {
+				String type = getParam(i).getType();
+				sb.append(type);
+				if (i<paramCount-1) { 
+					sb.append(',');
+				}
+			}
+			compareString = sb.toString();
+		}
+
+		return compareString;
 
 	}
 
