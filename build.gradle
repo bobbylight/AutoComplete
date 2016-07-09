@@ -1,5 +1,7 @@
 ['java', 'distribution', 'maven', 'signing'].each { apply plugin: it }
 
+assert org.gradle.api.JavaVersion.current().isJava6Compatible()
+
 group = 'com.fifesoft'
 archivesBaseName = 'autocomplete'
 
@@ -9,7 +11,7 @@ dependencies {
 
 // Regenerate local gradlew
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.0'
+	gradleVersion = '2.14'
 }
 
 compileJava {
@@ -20,13 +22,13 @@ compileJava {
 	options.debugOptions.debugLevel = 'source,vars,lines'
 	// Most folks will compile with the latest JDK available, but official builds
 	// use a Java 5 JDK.  Add this property to gradle.properties for boot classpath
-	if (project.hasProperty('java5CompileBootClasspath')) {
-		if (new File(java5CompileBootClasspath).isFile()) {
-			println "Bootstrap classpath when compiling Java: ${java5CompileBootClasspath}"
-			options.bootClasspath = java5CompileBootClasspath
+	if (project.hasProperty('java6CompileBootClasspath')) {
+		if (new File(java6CompileBootClasspath).isFile()) {
+			println "Bootstrap classpath when compiling Java: ${java6CompileBootClasspath}"
+			options.bootClasspath = java6CompileBootClasspath
 		}
 		else {
-			println "Warning: Specified java5CompileBootClasspath does not exist: ${java5CompileBootClasspath}"
+			println "Warning: Specified java6CompileBootClasspath does not exist: ${java6CompileBootClasspath}"
 		}
 	}
 	options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
@@ -107,7 +109,7 @@ uploadArchives {
 	repositories {
 		mavenDeployer {
 			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-			if (project.hasProperty('upload') && Boolean.parseBoolean(upload)) { // gradlew -Pupload=true
+			if (project.hasProperty('upload') && Boolean.parseBoolean(upload)) { // gradlew uploadArchives -Pupload=true
 				repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
 					authentication(userName: ossrhUsername, password: ossrhPassword)
 				}
@@ -175,6 +177,18 @@ uploadArchives {
 						}
 					}
 					
+					// Ugh, have to do this for the "build" section
+					// http://stackoverflow.com/questions/27975786/trouble-injecting-the-build-block-while-exporting-a-maven-pom-xml-file-from-grad
+					withXml {
+						def pluginNode = asNode().appendNode('build').appendNode('plugins').appendNode('plugin')
+						pluginNode.appendNode('artifactId', 'maven-compiler-plugin')
+						pluginNode.appendNode('version', '3.5.1')
+						def executionNode = pluginNode.appendNode('executions').appendNode('execution')
+						executionNode.appendNode('id', 'default-compile')
+						executionNode.appendNode('configuration').appendNode('source', '1.6').
+						      parent().appendNode('target', '1.6')
+					}
+					
 					// Manually add runtime dependencies since we don't have
 					// a multi-project build set up properly
 					dependencies {
@@ -183,39 +197,6 @@ uploadArchives {
 							artifactId 'rsyntaxtextarea'
 							version project.version
 						}
-					}
-					
-					// Says to enforce 1.5 compatibility when building
-					// Doesn't work as of Gradle 2.0 due to a Groovy bug; see
-					// http://jira.codehaus.org/browse/GROOVY-7023
-					// For now, append it via XML directly
-					/*
-					build {
-						plugins {
-							plugin {
-								artifactId 'maven-compiler-plugin'
-								version '2.3.2'
-								executions {
-									execution {
-										id 'default-compile'
-										configuration {
-											source '1.5'
-											target '1.5'
-										}
-									}
-								}
-							}
-						}
-					}
-					*/
-					withXml {
-						def pluginNode = asNode().appendNode('build').appendNode('plugins').appendNode('plugin')
-						pluginNode.appendNode('artifactId', 'maven-compiler-plugin')
-						pluginNode.appendNode('version', '2.3.2')
-						def executionNode = pluginNode.appendNode('executions').appendNode('execution')
-						executionNode.appendNode('id', 'default-compile')
-						executionNode.appendNode('configuration').appendNode('source', '1.5').
-						      parent().appendNode('target', '1.5')
 					}
 				}
 			}
