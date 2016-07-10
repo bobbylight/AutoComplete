@@ -88,6 +88,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void clearParameterizedCompletionParams() {
 		paramListEnd = paramListStart = 0;
 		paramListSeparator = null;
@@ -97,6 +98,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Completion> getCompletions(JTextComponent comp) {
 
 		List<Completion> completions = getCompletionsImpl(comp);
@@ -133,6 +135,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ListCellRenderer getListCellRenderer() {
 		return listCellRenderer;
 	}
@@ -141,6 +144,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ParameterChoicesProvider getParameterChoicesProvider() {
 		return paramChoicesProvider;
 	}
@@ -149,6 +153,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public char getParameterListEnd() {
 		return paramListEnd;
 	}
@@ -157,6 +162,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getParameterListSeparator() {
 		return paramListSeparator;
 	}
@@ -165,6 +171,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public char getParameterListStart() {
 		return paramListStart;
 	}
@@ -173,6 +180,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public CompletionProvider getParent() {
 		return parent;
 	}
@@ -181,6 +189,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isAutoActivateOkay(JTextComponent tc) {
 		Document doc = tc.getDocument();
 		char ch = 0;
@@ -228,6 +237,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setListCellRenderer(ListCellRenderer r) {
 		listCellRenderer = r;
 	}
@@ -236,6 +246,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setParameterizedCompletionParams(char listStart,
 										String separator, char listEnd) {
 		if (listStart<0x20 || listStart==0x7F) {
@@ -256,6 +267,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setParent(CompletionProvider parent) {
 		this.parent = parent;
 	}

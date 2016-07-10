@@ -113,6 +113,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAlreadyEnteredText(JTextComponent comp) {
 		if (!(comp instanceof RSyntaxTextArea)) {
 			return EMPTY_STRING;
@@ -136,6 +137,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 		return defaultProvider==null ? null :
 				defaultProvider.getCompletionsAt(tc, p);
@@ -187,6 +189,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<ParameterizedCompletion> getParameterizedCompletions(
 			JTextComponent tc) {
 		// Parameterized completions can only come from the "code" completion
@@ -408,6 +411,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @param e The mouse event.
 	 * @return The tool tip text, or <code>null</code> if none.
 	 */
+	@Override
 	public String getToolTipText(RTextArea textArea, MouseEvent e) {
 
 		String tip = null;

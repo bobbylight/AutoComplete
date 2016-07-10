@@ -74,6 +74,7 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int compareTo(Completion c2) {
 		if (c2==this) {
 			return 0;
@@ -88,6 +89,7 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAlreadyEntered(JTextComponent comp) {
 		return provider.getAlreadyEnteredText(comp);
 	}
@@ -96,6 +98,7 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Icon getIcon() {
 		return icon;
 	}
@@ -109,6 +112,7 @@ public abstract class AbstractCompletion implements Completion {
 	 * @return The text the user has to (start) typing for this completion.
 	 * @see #getReplacementText()
 	 */
+	@Override
 	public String getInputText() {
 		return getReplacementText();
 	}
@@ -117,6 +121,7 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public CompletionProvider getProvider() {
 		return provider;
 	}
@@ -125,6 +130,7 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getRelevance() {
 		return relevance;
 	}
@@ -136,6 +142,7 @@ public abstract class AbstractCompletion implements Completion {
 	 *
 	 * @return The tool tip text.
 	 */
+	@Override
 	public String getToolTipText() {
 		return null;
 	}

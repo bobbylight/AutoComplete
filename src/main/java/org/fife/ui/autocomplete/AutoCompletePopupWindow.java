@@ -188,6 +188,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	}
 
 
+	@Override
 	public void caretUpdate(CaretEvent e) {
 		if (isVisible()) { // Should always be true
 			int line = ac.getLineOfCaret();
@@ -368,6 +369,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	}
 
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getClickCount()==2) {
 			insertSelectedCompletion();
@@ -375,18 +377,22 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	}
 
 
+	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
 
+	@Override
 	public void mouseExited(MouseEvent e) {
 	}
 
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 	}
 
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 	}
 
@@ -791,6 +797,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @param e The event.
 	 */
+	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) {
 			Object value = list.getSelectedValue();
@@ -804,6 +811,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class CopyAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			boolean doNormalCopy = false;
 			if (descWindow!=null && descWindow.isVisible()) {
@@ -819,6 +827,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class DownAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				selectNextItem();
@@ -830,6 +839,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class EndAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				selectLastItem();
@@ -841,6 +851,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class EnterAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				insertSelectedCompletion();
@@ -852,6 +863,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class EscapeAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				setVisible(false);
@@ -863,6 +875,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class HomeAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				selectFirstItem();
@@ -893,6 +906,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class LeftAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				JTextComponent comp = ac.getTextComponent();
@@ -916,6 +930,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class PageDownAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				selectPageDownItem();
@@ -927,6 +942,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class PageUpAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				selectPageUpItem();
@@ -972,6 +988,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class RightAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				JTextComponent comp = ac.getTextComponent();
@@ -995,6 +1012,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	class UpAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isVisible()) {
 				selectPreviousItem();

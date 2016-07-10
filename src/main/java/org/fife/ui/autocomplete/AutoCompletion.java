@@ -848,6 +848,7 @@ public class AutoCompletion {
 		else if (count == 1) { // !isPopupVisible && autoCompleteSingleChoices
 			SwingUtilities.invokeLater(new Runnable() {
 
+				@Override
 				public void run() {
 					insertCompletion(completions.get(0));
 				}
@@ -1273,6 +1274,7 @@ public class AutoCompletion {
 			timer.setRepeats(false);
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			doCompletion();
 		}
@@ -1283,6 +1285,7 @@ public class AutoCompletion {
 			tc.addCaretListener(this);
 		}
 
+		@Override
 		public void caretUpdate(CaretEvent e) {
 			if (justInserted) {
 				justInserted = false;
@@ -1292,6 +1295,7 @@ public class AutoCompletion {
 			}
 		}
 
+		@Override
 		public void changedUpdate(DocumentEvent e) {
 			// Ignore
 		}
@@ -1302,6 +1306,7 @@ public class AutoCompletion {
 			// hideChildWindows(); Other listener will do this
 		}
 
+		@Override
 		public void insertUpdate(DocumentEvent e) {
 			justInserted = false;
 			if (isAutoCompleteEnabled() && isAutoActivationEnabled()
@@ -1327,6 +1332,7 @@ public class AutoCompletion {
 			justInserted = false;
 		}
 
+		@Override
 		public void removeUpdate(DocumentEvent e) {
 			timer.stop();
 		}
@@ -1339,6 +1345,7 @@ public class AutoCompletion {
 	 */
 	protected class AutoCompleteAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isAutoCompleteEnabled()) {
 				refreshPopupWindow();
@@ -1356,6 +1363,7 @@ public class AutoCompletion {
 	 */
 	private class LookAndFeelChangeListener implements PropertyChangeListener {
 
+		@Override
 		public void propertyChange(PropertyChangeEvent e) {
 			String name = e.getPropertyName();
 			if ("lookAndFeel".equals(name)) {
@@ -1377,6 +1385,7 @@ public class AutoCompletion {
 			this.start = Character.toString(ch);
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 
 			// Prevents keystrokes from messing up
@@ -1430,9 +1439,11 @@ public class AutoCompletion {
 			w.removeWindowFocusListener(this);
 		}
 
+		@Override
 		public void windowGainedFocus(WindowEvent e) {
 		}
 
+		@Override
 		public void windowLostFocus(WindowEvent e) {
 			hideChildWindows();
 		}
@@ -1494,6 +1505,7 @@ public class AutoCompletion {
 		 * 
 		 * @param e The event.
 		 */
+		@Override
 		public void hierarchyChanged(HierarchyEvent e) {
 
 			// NOTE: e many be null as we call this method at other times.

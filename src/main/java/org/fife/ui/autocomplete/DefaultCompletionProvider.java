@@ -87,6 +87,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 *
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getAlreadyEnteredText(JTextComponent comp) {
 		
 		Document doc = comp.getDocument();
@@ -120,6 +121,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 
 		int offset = tc.viewToModel(p);
@@ -180,6 +182,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<ParameterizedCompletion> getParameterizedCompletions(
 			JTextComponent tc) {
 

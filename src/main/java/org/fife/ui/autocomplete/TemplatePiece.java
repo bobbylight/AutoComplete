@@ -31,6 +31,7 @@ interface TemplatePiece {
 			this.text = text;
 		}
 
+		@Override
 		public String getText() {
 			return text;
 		}
@@ -51,6 +52,7 @@ interface TemplatePiece {
 			this.text = text;
 		}
 
+		@Override
 		public String getText() {
 			return text;
 		}
@@ -71,6 +73,7 @@ interface TemplatePiece {
 			this.text = text;
 		}
 
+		@Override
 		public String getText() {
 			return text;
 		}

@@ -46,6 +46,7 @@ public interface Completion extends Comparable<Completion> {
 	 * @param other Another completion instance.
 	 * @return How this completion compares to the other one.
 	 */
+	@Override
 	public int compareTo(Completion other);
 
 

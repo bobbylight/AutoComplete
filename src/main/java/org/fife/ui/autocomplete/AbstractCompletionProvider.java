@@ -234,6 +234,7 @@ public abstract class AbstractCompletionProvider
 	public static class CaseInsensitiveComparator implements Comparator,
 														Serializable {
 
+		@Override
 		public int compare(Object o1, Object o2) {
 			String s1 = o1 instanceof String ? (String)o1 :
 							((Completion)o1).getInputText();

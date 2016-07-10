@@ -867,6 +867,7 @@ class ParameterizedCompletionContext {
 	 */
 	private class GotoEndAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 
 			// If the param choices window is visible and something is chosen,
@@ -911,6 +912,7 @@ class ParameterizedCompletionContext {
 	 */
 	private class ClosingAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 
 			JTextComponent tc = ac.getTextComponent();
@@ -967,6 +969,7 @@ class ParameterizedCompletionContext {
 	 */
 	private class HideAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			// On first escape press, if the param choices window is visible,
 			// just remove it, but keep ability to tab through params.  If
@@ -998,6 +1001,7 @@ class ParameterizedCompletionContext {
 		 *
 		 * @param e The event.
 		 */
+		@Override
 		public void caretUpdate(CaretEvent e) {
 			if (maxPos==null) { // Sanity check
 				deactivate();
@@ -1015,6 +1019,7 @@ class ParameterizedCompletionContext {
 		}
 
 
+		@Override
 		public void changedUpdate(DocumentEvent e) {
 		}
 
@@ -1024,6 +1029,7 @@ class ParameterizedCompletionContext {
 		 *
 		 * @param e The event.
 		 */
+		@Override
 		public void focusGained(FocusEvent e) {
 			// Do nothing
 		}
@@ -1034,6 +1040,7 @@ class ParameterizedCompletionContext {
 		 *
 		 * @param e The event.
 		 */
+		@Override
 		public void focusLost(FocusEvent e) {
 			deactivate();
 		}
@@ -1043,6 +1050,7 @@ class ParameterizedCompletionContext {
 			if (!ignoringDocumentEvents) {
 				ignoringDocumentEvents = true;
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						possiblyUpdateParamCopies(e.getDocument());
 						ignoringDocumentEvents = false;
@@ -1052,6 +1060,7 @@ class ParameterizedCompletionContext {
 		}
 
 
+		@Override
 		public void insertUpdate(DocumentEvent e) {
 			handleDocumentEvent(e);
 		}
@@ -1136,6 +1145,7 @@ class ParameterizedCompletionContext {
 		}
 
 
+		@Override
 		public void removeUpdate(DocumentEvent e) {
 			handleDocumentEvent(e);
 		}
@@ -1181,6 +1191,7 @@ class ParameterizedCompletionContext {
 			this.oldAction = oldAction;
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
 				paramChoicesWindow.incSelection(amount);
@@ -1201,6 +1212,7 @@ class ParameterizedCompletionContext {
 	 */
 	private class NextParamAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			moveToNextParam();
 		}
@@ -1226,6 +1238,7 @@ class ParameterizedCompletionContext {
 	 */
 	private class PrevParamAction extends AbstractAction {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			moveToPreviousParam();
 		}

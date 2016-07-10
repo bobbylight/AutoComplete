@@ -276,6 +276,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 *
 	 * @param e The event.
 	 */
+	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 
 		HyperlinkEvent.EventType type = e.getEventType();
@@ -414,6 +415,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		descArea.setText(desc);
 		if (anchor!=null) {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					descArea.scrollToReference(anchor);
 				}
@@ -452,6 +454,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * @param anchor The anchor in the HTML to jump to, or <code>null</code>
 	 *        if none.
 	 */
+	@Override
 	public void showSummaryFor(Completion completion, String anchor) {
 		setDescriptionFor(completion, anchor, true);
 	}
@@ -512,6 +515,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		/**
 		 * Called when the timer is fired.
 		 */
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			setDisplayedDesc(completion, anchor, addToHistory);
 		}
@@ -539,6 +543,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			putValue(Action.SMALL_ICON, icon);
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (historyPos>0) {
 				HistoryEntry pair = history.get(--historyPos);
@@ -570,6 +575,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			putValue(Action.SMALL_ICON, icon);
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (history!=null && historyPos<history.size()-1) {
 				HistoryEntry pair = history.get(++historyPos);

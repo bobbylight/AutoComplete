@@ -32,16 +32,19 @@ public class EmptyIcon implements Icon, Serializable {
 	}
 
 
+	@Override
 	public int getIconHeight() {
 		return size;
 	}
 
 
+	@Override
 	public int getIconWidth() {
 		return size;
 	}
 
 
+	@Override
 	public void paintIcon(Component c, Graphics g, int x, int y) {
 	}
 

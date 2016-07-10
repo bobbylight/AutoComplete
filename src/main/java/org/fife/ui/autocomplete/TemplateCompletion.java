@@ -128,16 +128,19 @@ public class TemplateCompletion extends AbstractCompletion
 	 *
 	 * @return <code>null</code> always.
 	 */
+	@Override
 	public String getReplacementText() {
 		return null;
 	}
 
 
+	@Override
 	public String getSummary() {
 		return summary;
 	}
 
 
+	@Override
 	public String getDefinitionString() {
 		return definitionString;
 	}
@@ -150,11 +153,13 @@ public class TemplateCompletion extends AbstractCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean getShowParameterToolTip() {
 		return false;
 	}
 
 
+	@Override
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
 			JTextComponent tc, boolean replaceTabsWithSpaces) {
 
@@ -246,6 +251,7 @@ public class TemplateCompletion extends AbstractCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Parameter getParam(int index) {
 		return params.get(index);
 	}
@@ -254,6 +260,7 @@ public class TemplateCompletion extends AbstractCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int getParamCount() {
 		return params==null ? 0 : params.size();
 	}

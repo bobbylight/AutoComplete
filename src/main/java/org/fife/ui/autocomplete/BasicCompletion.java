@@ -75,6 +75,7 @@ public class BasicCompletion extends AbstractCompletion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getReplacementText() {
 		return replacementText;
 	}
@@ -95,6 +96,7 @@ public class BasicCompletion extends AbstractCompletion {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getSummary() {
 		return summary;
 	}

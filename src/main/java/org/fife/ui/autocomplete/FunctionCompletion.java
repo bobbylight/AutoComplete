@@ -220,6 +220,7 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
+	@Override
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(
 			JTextComponent tc, boolean replaceTabsWithSpaces) {
 
@@ -283,6 +284,7 @@ public class FunctionCompletion extends VariableCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Parameter getParam(int index) {
 		return params.get(index);
 	}
@@ -294,6 +296,7 @@ public class FunctionCompletion extends VariableCompletion
 	 * @return The number of parameters to this function.
 	 * @see #getParam(int)
 	 */
+	@Override
 	public int getParamCount() {
 		return params==null ? 0 : params.size();
 	}
@@ -302,6 +305,7 @@ public class FunctionCompletion extends VariableCompletion
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean getShowParameterToolTip() {
 		return true;
 	}
