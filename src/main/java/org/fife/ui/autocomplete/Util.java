@@ -2,7 +2,7 @@
  * 12/21/2008
  *
  * Util.java - Utility methods for the autocompletion package.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.AccessControlException;
 import java.util.regex.Pattern;
+
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
@@ -36,7 +37,7 @@ public class Util {
 	 * to <code>true</code>, this library will not attempt to use Substance
 	 * renderers.  Otherwise, if a Substance Look and Feel is installed, we
 	 * will attempt to use Substance cell renderers in all of our dropdowns.<p>
-	 * 
+	 *
 	 * Note that we do not have a build dependency on Substance, so all access
 	 * to Substance stuff is done via reflection.  We will fall back onto
 	 * default renderers if something goes horribly wrong.
@@ -274,25 +275,17 @@ public class Util {
 
 
 	/**
-	 * Returns whether <code>str</code> starts with <code>start</code>,
-	 * ignoring case.
+	 * Returns whether a string starts with a specified prefix, ignoring case.
+	 * This method does not support characters outside of the BMP.
 	 *
-	 * @param str The string to check.
-	 * @param start The prefix to check for.
-	 * @return Whether <code>str</code> starts with <code>start</code>,
-	 *         ignoring case.
+	 * @param str The string to check.  This cannot be {@code null}.
+	 * @param prefix The prefix to check for.  This cannot be {@code null}.
+	 * @return Whether {@code str} starts with {@code prefix}, ignoring case.
 	 */
-	public static boolean startsWithIgnoreCase(String str, String start) {
-		int startLen = start.length();
-		if (str.length()>=startLen) {
-			for (int i=0; i<startLen; i++) {
-				char c1 = str.charAt(i);
-				char c2 = start.charAt(i);
-				if (Character.toLowerCase(c1)!=Character.toLowerCase(c2)) {
-					return false;
-				}
-			}
-			return true;
+	public static boolean startsWithIgnoreCase(String str, String prefix) {
+		int prefixLength = prefix.length();
+		if (str.length() >= prefixLength) {
+			return str.regionMatches(true, 0, prefix, 0, prefixLength);
 		}
 		return false;
 	}
