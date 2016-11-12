@@ -1,12 +1,8 @@
 /*
  * 05/11/2012
  *
- * Copyright (C) 2012 Robert Futrell
- * robert_futrell at users.sourceforge.net
- * http://fifesoft.com/rsyntaxtextarea
- *
  * This library is distributed under a modified BSD license.  See the included
- * RSTALanguageSupport.License.txt file for details.
+ * AutoComplete.License.txt file for details.
  */
 package org.fife.ui.autocomplete;
 

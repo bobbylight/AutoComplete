@@ -4,7 +4,7 @@
  * FunctionCompletion.java - A completion representing a function.
  * 
  * This library is distributed under a modified BSD license.  See the included
- * RSyntaxTextArea.License.txt file for details.
+ * AutoComplete.License.txt file for details.
  */
 package org.fife.ui.autocomplete;
 

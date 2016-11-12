@@ -1,18 +1,16 @@
 /*
  * 12/02/2013
  *
- * Copyright (C) 2013 Robert Futrell
- * robert_futrell at users.sourceforge.net
- * http://fifesoft.com/rsyntaxtextarea
- *
  * This library is distributed under a modified BSD license.  See the included
- * RSTALanguageSupport.License.txt file for details.
+ * AutoComplete.License.txt file for details.
  */
 package org.fife.ui.autocomplete;
 
-import java.util.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.Action;
 
 
 /**
@@ -20,7 +18,7 @@ import javax.swing.*;
  * of <code>CompletionProvider</code>s via the trigger key.  This allows the
  * application to logically "group together" completions of similar kinds;
  * for example, Java code completions vs. template completions.<p>
- * 
+ *
  * Usage:
  * <pre>
  * XPathDynamicCompletionProvider dynamicProvider = new XPathDynamicCompletionProvider();
@@ -31,7 +29,7 @@ import javax.swing.*;
  * ...
  * ac.install(textArea);
  * </pre>
- * 
+ *
  * @author mschlegel
  */
 public class RoundRobinAutoCompletion extends AutoCompletion {
@@ -79,7 +77,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	/**
 	 * Moves to the next Provider internally. Needs refresh of the popup window
 	 * to display the changes.
-	 * 
+	 *
 	 * @return true if the next provider was the default one (thus returned to
 	 *         the default view). May be used in case you like to hide the
 	 *         popup in this case.
