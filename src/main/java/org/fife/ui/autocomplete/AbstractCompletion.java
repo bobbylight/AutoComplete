@@ -2,7 +2,7 @@
  * 12/21/2008
  *
  * AbstractCompletion.java - Base class for possible completions.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -26,160 +26,166 @@ import javax.swing.text.JTextComponent;
  * override the corresponding method(s) needed to do so.
  *
  * @author Robert Futrell
+ * @author Thomas Wang
  * @version 1.0
  */
 public abstract class AbstractCompletion implements Completion {
 
-	/**
-	 * The provider that created this completion;
-	 */
-	private CompletionProvider provider;
+    /**
+     * The provider that created this completion;
+     */
+    private CompletionProvider provider;
 
-	/**
-	 * The icon to use for this completion.
-	 */
-	private Icon icon;
+    /**
+     * The icon to use for this completion.
+     */
+    private Icon icon;
 
-	/**
-	 * The relevance of this completion.  Completion instances with higher
-	 * "relevance" values are inserted higher into the list of possible
-	 * completions than those with lower values.  Completion instances with
-	 * equal relevance values are sorted alphabetically.
-	 */
-	private int relevance;
-
-
-	/**
-	 * Constructor.
-	 *
-	 * @param provider The provider that created this completion.
-	 */
-	protected AbstractCompletion(CompletionProvider provider) {
-		this.provider = provider;
-	}
+    /**
+     * The relevance of this completion.  Completion instances with higher
+     * "relevance" values are inserted higher into the list of possible
+     * completions than those with lower values.  Completion instances with
+     * equal relevance values are sorted alphabetically.
+     */
+    private int relevance;
 
 
-	/**
-	 * Constructor.
-	 *
-	 * @param provider The provider that created this completion.
-	 * @param icon The icon for this completion.
-	 */
-	protected AbstractCompletion(CompletionProvider provider, Icon icon) {
-		this(provider);
-		setIcon(icon);
-	}
+    /**
+     * Constructor.
+     *
+     * @param provider The provider that created this completion.
+     */
+    protected AbstractCompletion(CompletionProvider provider) {
+        this.provider = provider;
+    }
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int compareTo(Completion c2) {
-		if (c2==this) {
-			return 0;
-		}
-		else if (c2!=null) {
-			return toString().compareToIgnoreCase(c2.toString());
-		}
-		return -1;
-	}
+    /**
+     * Constructor.
+     *
+     * @param provider The provider that created this completion.
+     * @param icon The icon for this completion.
+     */
+    protected AbstractCompletion(CompletionProvider provider, Icon icon) {
+        this(provider);
+        setIcon(icon);
+    }
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getAlreadyEntered(JTextComponent comp) {
-		return provider.getAlreadyEnteredText(comp);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int compareTo(Completion c2) {
+        if (c2==this) {
+            return 0;
+        }
+        else if (c2!=null) {
+            final String s1 = this.toString();
+            final String s2 = c2.toString();
+            // This method provides Tie-breaker logic when
+            // s1 and s2 are case-insensitively equivalent.
+            return Util.cmpUniqueIgnoreCase(s1, s2);
+        }
+        // CHECKME : do we support null Completion comparison?
+        return -1;
+    }
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Icon getIcon() {
-		return icon;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAlreadyEntered(JTextComponent comp) {
+        return provider.getAlreadyEnteredText(comp);
+    }
 
 
-	/**
-	 * Returns the text the user has to (start) typing for this completion
-	 * to be offered.  The default implementation simply returns
-	 * {@link #getReplacementText()}.
-	 *
-	 * @return The text the user has to (start) typing for this completion.
-	 * @see #getReplacementText()
-	 */
-	@Override
-	public String getInputText() {
-		return getReplacementText();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Icon getIcon() {
+        return icon;
+    }
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CompletionProvider getProvider() {
-		return provider;
-	}
+    /**
+     * Returns the text the user has to (start) typing for this completion
+     * to be offered.  The default implementation simply returns
+     * {@link #getReplacementText()}.
+     *
+     * @return The text the user has to (start) typing for this completion.
+     * @see #getReplacementText()
+     */
+    @Override
+    public String getInputText() {
+        return getReplacementText();
+    }
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getRelevance() {
-		return relevance;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionProvider getProvider() {
+        return provider;
+    }
 
 
-	/**
-	 * The default implementation returns <code>null</code>.  Subclasses
-	 * can override this method.
-	 *
-	 * @return The tool tip text.
-	 */
-	@Override
-	public String getToolTipText() {
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getRelevance() {
+        return relevance;
+    }
 
 
-	/**
-	 * Sets the icon to use for this completion.
-	 *
-	 * @param icon The icon to use.
-	 * @see #getIcon()
-	 */
-	public void setIcon(Icon icon) {
-		this.icon = icon;
-	}
+    /**
+     * The default implementation returns <code>null</code>.  Subclasses
+     * can override this method.
+     *
+     * @return The tool tip text.
+     */
+    @Override
+    public String getToolTipText() {
+        return null;
+    }
 
 
-	/**
-	 * Sets the relevance of this completion.
-	 *
-	 * @param relevance The new relevance of this completion.
-	 * @see #getRelevance()
-	 */
-	public void setRelevance(int relevance) {
-		this.relevance = relevance;
-	}
+    /**
+     * Sets the icon to use for this completion.
+     *
+     * @param icon The icon to use.
+     * @see #getIcon()
+     */
+    public void setIcon(Icon icon) {
+        this.icon = icon;
+    }
 
 
-	/**
-	 * Returns a string representation of this completion.  The default
-	 * implementation returns {@link #getInputText()}.
-	 *
-	 * @return A string representation of this completion.
-	 */
-	@Override
-	public String toString() {
-		return getInputText();
-	}
+    /**
+     * Sets the relevance of this completion.
+     *
+     * @param relevance The new relevance of this completion.
+     * @see #getRelevance()
+     */
+    public void setRelevance(int relevance) {
+        this.relevance = relevance;
+    }
+
+
+    /**
+     * Returns a string representation of this completion.  The default
+     * implementation returns {@link #getInputText()}.
+     *
+     * @return A string representation of this completion.
+     */
+    @Override
+    public String toString() {
+        return getInputText();
+    }
 
 
 }

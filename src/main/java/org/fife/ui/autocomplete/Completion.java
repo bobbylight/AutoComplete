@@ -2,7 +2,7 @@
  * 12/21/2008
  *
  * Completion.java - Represents a single completion choice.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -16,7 +16,7 @@ import javax.swing.text.JTextComponent;
  * Represents a completion choice.  A {@link CompletionProvider} returns lists
  * of objects implementing this interface.  A <tt>Completion</tt> contains the
  * following information:
- * 
+ *
  * <ul>
  *   <li>The text the user must (begin to) input for this to be a completion
  *       choice.
@@ -33,6 +33,7 @@ import javax.swing.text.JTextComponent;
  * </ul>
  *
  * @author Robert Futrell
+ * @author Thomas Wang
  * @version 1.0
  * @see AbstractCompletion
  */
@@ -40,11 +41,19 @@ public interface Completion extends Comparable<Completion> {
 
 
 	/**
-	 * Compares this completion to another one lexicographically, ignoring
-	 * case.
-	 *
+	 * Compares this completion object to the other completion object using
+     * the natural ordering.
+     *
+     * Completion matching requires the natural comparison
+     * representation to contain the inputText attribute as a prefix.
+     *
+     * The inputText prefix comparison should be performed with case insensitive
+     * logic.  Using a case sensitive ordering as a tie-breaker will make
+     * the Completion deletion operation more accurate.
+     *
 	 * @param other Another completion instance.
 	 * @return How this completion compares to the other one.
+     * @see <code>Util.cmpUniqueIgnoreCase()</code>
 	 */
 	@Override
 	public int compareTo(Completion other);

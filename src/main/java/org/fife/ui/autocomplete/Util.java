@@ -291,6 +291,72 @@ public class Util {
 	}
 
 
+    /**
+     * Compare two strings in case-sensitive character comparison.
+     *
+     * This method does not support characters outside of the BMP.
+     *
+     * This method does not take into consideration the current locale.
+     *
+     * @param text1 the first string
+     * @param text2 the second string
+     * @return less than 0, 0, or greater than 0
+     */
+    public static int cmpString(String text1, String text2)
+    {
+        final int result = text1.compareTo(text2);
+        return result;
+    }
+
+
+    /**
+     * Compare two strings in case-insensitive character comparison.
+     *
+     * This method does not support characters outside of the BMP.
+     *
+     * This method does not take into consideration the current locale.
+     *
+     * @param text1 the first string
+     * @param text2 the second string
+     * @return less than 0, 0, or greater than 0
+     */
+    public static int cmpIgnoreCase(String text1, String text2) {
+        final int result = text1.compareToIgnoreCase(text2);
+        return result;
+    }
+
+
+    /**
+     * Compare two strings in case insensitive way if the comparison does not
+     * result in equality.  Otherwise case sensitive comparison is performed.
+     * This is to preserve unique sorting order of all string pairs, such
+     * as between "us" and "US".
+     *
+     * A common usage is to pick this method as the comparator of a TreeMap object.
+     *
+     * This method does not support characters outside of the BMP.
+     *
+     * This method does not take into consideration the current locale.
+     *
+     * @param text1 the first string
+     * @param text2 the second string
+     * @return less than 0, 0, or greater than 0
+     */
+    public static int cmpUniqueIgnoreCase(String text1, String text2) {
+        final int r1 = Util.cmpIgnoreCase(text1, text2);
+        // Return the case insensitive order if they are not equal.
+        // "CAT" > "BAT"
+        // "BAT" < "CAT"
+        // "US" is equal to "us" case insensitively, but we need to
+        // prevent an ordering that allowed "us, US" to inter-mix
+        // with "US, us".
+        if (r1 != 0) {
+            return r1;
+        }
+        return Util.cmpString(text1, text2);
+    }
+
+
 	/**
 	 * Strips any HTML from a string.  The string must start with
 	 * "<code>&lt;html&gt;</code>" for markup tags to be stripped.
