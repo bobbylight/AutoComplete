@@ -215,7 +215,6 @@ public abstract class AbstractCompletionProvider
 	 */
 	public void addCompletion(Completion c) {
 		checkProviderAndAdd(c);
-		// Collections.sort(completions);
 	}
 
 
@@ -234,7 +233,6 @@ public abstract class AbstractCompletionProvider
 		for (Completion c : completions) {
 			checkProviderAndAdd(c);
 		}
-		// Collections.sort(this.completions);
 	}
 
 
@@ -249,7 +247,6 @@ public abstract class AbstractCompletionProvider
 		for (int i=0; i<count; i++) {
 			completions.add(new BasicCompletion(this, words[i]));
 		}
-		// Collections.sort(completions);
 	}
 
 
@@ -258,7 +255,7 @@ public abstract class AbstractCompletionProvider
 			throw new IllegalArgumentException("Invalid CompletionProvider");
 		}
 		final ArrayList<Completion> box = myCompletionBox;
-		// Perform binary search to search
+		// Perform binary search
 		int ptr = Collections.binarySearch(box, c);
 		if (ptr >= 0) {
 			// CHECKME: duplicates are allowed
@@ -314,7 +311,9 @@ public abstract class AbstractCompletionProvider
 				break; // range exceeded
 			}
 		}
-		// Perform forward searc at the target.
+		// Reverse the order of results taken during backward traversal.
+		Collections.reverse(retVal);
+		// Perform forward search at the target.
 		for (int indx = ptr; indx < box.size(); ++indx) {
 			final Completion c = box.get(indx);
 			if (Util.cmpIgnoreCase(c.getInputText(), inputText) == 0) {
@@ -341,7 +340,7 @@ public abstract class AbstractCompletionProvider
 			int ptr = Collections.binarySearch(
 				box, new DummyCompletionWrapper(text), myNonRawComparator);
 			if (ptr < 0) { // No exact match
-				ptr = (-ptr) - 1;
+				ptr = (-ptr) - 1; // insertion point calculation
 			}
 			else
 			{
@@ -356,7 +355,9 @@ public abstract class AbstractCompletionProvider
 					}
 				}
 			}
-			// Perform forward searc at the target.
+			// Reverse the order of results taken during backward traversal.
+			Collections.reverse(retVal);
+			// Perform forward search at the target.
 			for (int indx = ptr; indx < box.size(); ++indx) {
 				final Completion c = box.get(indx);
 				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
