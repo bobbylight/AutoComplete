@@ -42,18 +42,18 @@ public interface Completion extends Comparable<Completion> {
 
 	/**
 	 * Compares this completion object to the other completion object using
-     * the natural ordering.
-     *
-     * Completion matching requires the natural comparison
-     * representation to contain the inputText attribute as a prefix.
-     *
-     * The inputText prefix comparison should be performed with case insensitive
-     * logic.  Using a case sensitive ordering as a tie-breaker will make
-     * the Completion deletion operation more accurate.
-     *
+	 * the natural ordering.
+	 *
+	 * Completion matching requires the natural comparison
+	 * representation to contain the inputText attribute as a prefix.
+	 *
+	 * The inputText prefix comparison should be performed with case insensitive
+	 * logic.  Using a case sensitive ordering as a tie-breaker will make
+	 * the Completion deletion operation more accurate.
+	 *
 	 * @param other Another completion instance.
 	 * @return How this completion compares to the other one.
-     * @see <code>Util.cmpUniqueIgnoreCase()</code>
+	 * @see <code>Util.cmpUniqueIgnoreCase()</code>
 	 */
 	@Override
 	public int compareTo(Completion other);
