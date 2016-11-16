@@ -2,7 +2,7 @@
  * 12/22/2008
  *
  * FunctionCompletion.java - A completion representing a function.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -108,20 +108,21 @@ public class FunctionCompletion extends VariableCompletion
 	public int compareTo(Completion c2) {
 
 		int rc = -1;
-
 		if (c2==this) {
 			rc = 0;
 		}
-
 		else if (c2 instanceof FunctionCompletion) {
-			rc = getCompareString().compareTo(
-					((FunctionCompletion)c2).getCompareString());
+			final FunctionCompletion second = (FunctionCompletion) c2;
+			// Compare name (inputText) as the prefix
+			rc = Util.cmpUniqueIgnoreCase(getName(), second.getName());
+			if (rc == 0) {
+				// the tie-breaker
+				rc = getCompareString().compareTo(second.getCompareString());
+			}
 		}
-
 		else {
 			rc = super.compareTo(c2);
 		}
-
 		return rc;
 
 	}
@@ -154,7 +155,7 @@ public class FunctionCompletion extends VariableCompletion
 			for (int i=0; i<paramCount; i++) {
 				String type = getParam(i).getType();
 				sb.append(type);
-				if (i<paramCount-1) { 
+				if (i<paramCount-1) {
 					sb.append(',');
 				}
 			}
@@ -170,7 +171,7 @@ public class FunctionCompletion extends VariableCompletion
 	 * Returns the "definition string" for this function completion.  For
 	 * example, for the C "<code>printf</code>" function, this would return
 	 * "<code>int printf(const char *, ...)</code>".
-	 * 
+	 *
 	 * @return The definition string.
 	 */
 	@Override
@@ -272,7 +273,7 @@ public class FunctionCompletion extends VariableCompletion
 		endOffs -= 1;//getProvider().getParameterListStart().length();
 		info.addReplacementLocation(endOffs, endOffs); // offset after function
 		info.setDefaultEndOffs(endOffs);
-		
+
 		int selectionEnd = paramCount>0 ? (dot+firstParamLen) : dot;
 		info.setInitialSelection(dot, selectionEnd);
 		info.setTextToInsert(sb.toString());

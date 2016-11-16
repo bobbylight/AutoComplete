@@ -355,9 +355,9 @@ public abstract class AbstractCompletionProvider
 						break; // range exceeded
 					}
 				}
+				// Reverse the order of results taken during backward traversal.
+				Collections.reverse(retVal);
 			}
-			// Reverse the order of results taken during backward traversal.
-			Collections.reverse(retVal);
 			// Perform forward search at the target.
 			for (int indx = ptr; indx < box.size(); ++indx) {
 				final Completion c = box.get(indx);

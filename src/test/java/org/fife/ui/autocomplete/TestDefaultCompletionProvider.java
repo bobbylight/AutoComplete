@@ -65,7 +65,7 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 			new DefaultCompletionProvider();
 		final ArrayList<Completion> box1 = new ArrayList<Completion>();
 		final Completion c1 = new BasicCompletion(provider1, "BAAA");
-		final Completion c2 = new BasicCompletion(provider1, "beta");
+		final Completion c2 = new VariableCompletion(provider1, "beta", "int");
 		final Completion c3 = new ShorthandCompletion(provider1, "BETA", "BETA");
 		box1.add(c1);
 		box1.add(c2);
@@ -140,6 +140,19 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		// c1 through c5 match
 		List<Completion> allList = provider1.getCompletions(new JTextArea());
 		Assert.assertEquals(5, allList.size());
+	}
+
+	@Test
+	public void testCompletionOrdering1()
+	{
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+		final Completion c1 = new FunctionCompletion(provider, "add", "int");
+		final Completion c2 = new VariableCompletion(provider, "indx", "int");
+		final Completion c3 = new FunctionCompletion(provider, "Sub", "int");
+		Assert.assertTrue(c1.compareTo(c2) < 0);
+		Assert.assertTrue(c2.compareTo(c3) < 0);
+		// (c1 < c2) and (c2 < c3), then it is implied that (c1 < c3) !
+		Assert.assertTrue(c1.compareTo(c3) < 0);
 	}
 
 	@Test
