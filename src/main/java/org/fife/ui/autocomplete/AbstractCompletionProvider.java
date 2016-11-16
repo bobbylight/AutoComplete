@@ -93,7 +93,7 @@ public abstract class AbstractCompletionProvider
 
 		/**
 		 * Returns the portion of this completion that has already been entered
-		 * into the text component.  The match is case-insensitive.<p>
+		 * into the text component.	 The match is case-insensitive.<p>
 		 *
 		 * This is a convenience method for:
 		 * <code>getProvider().getAlreadyEnteredText(comp)</code>.
@@ -122,7 +122,7 @@ public abstract class AbstractCompletionProvider
 		 * to "<code>System.out.println(</code>").
 		 *
 		 * @return The text the user has to (start) typing for this completion to
-		 *         be offered.
+		 *		   be offered.
 		 * @see #getReplacementText()
 		 */
 		public String getInputText() {
@@ -139,15 +139,15 @@ public abstract class AbstractCompletionProvider
 		}
 
 		/**
-		 * Returns the "relevance" of this completion.  This is used when sorting
-		 * completions by their relevance.  It is an abstract concept that may
+		 * Returns the "relevance" of this completion.	This is used when sorting
+		 * completions by their relevance.	It is an abstract concept that may
 		 * mean different things to different languages, and may depend on the
 		 * context of the completion.<p>
 		 *
-		 * By default, all completions have a relevance of <code>0</code>.  The
+		 * By default, all completions have a relevance of <code>0</code>.	The
 		 * higher the value returned by this method, the higher up in the list
 		 * this completion will be; the lower the value returned, the lower it will
-		 * be.  <code>Completion</code>s with equal relevance values will be
+		 * be.	<code>Completion</code>s with equal relevance values will be
 		 * sorted alphabetically.
 		 *
 		 * @return The relevance of this completion.
@@ -172,9 +172,9 @@ public abstract class AbstractCompletionProvider
 		 * Returns the description of this auto-complete choice.  This can be
 		 * used in a popup "description window."
 		 *
-		 * @return This item's description.  This should be HTML.  It may be
-		 *         <code>null</code> if there is no description for this
-		 *         completion.
+		 * @return This item's description.	 This should be HTML.  It may be
+		 *		   <code>null</code> if there is no description for this
+		 *		   completion.
 		 */
 		public String getSummary() {
 			return null;
@@ -187,14 +187,14 @@ public abstract class AbstractCompletionProvider
 		 * Note that for this functionality to be enabled, a
 		 * <tt>JTextComponent</tt> must be registered with the
 		 * <tt>ToolTipManager</tt>, and the text component must know to search
-		 * for this value.  In the case of an
+		 * for this value.	In the case of an
 		 * <a href="http://fifesoft.com/rsyntaxtextarea">RSyntaxTextArea</a>, this
 		 * can be done with a <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> that
 		 * calls into
 		 * {@link CompletionProvider#getCompletionsAt(JTextComponent, java.awt.Point)}.
 		 *
 		 * @return The tool tip text for this completion, or <code>null</code> if
-		 *         none.
+		 *		   none.
 		 */
 		public String getToolTipText() {
 			return null;
@@ -208,7 +208,7 @@ public abstract class AbstractCompletionProvider
 	 *
 	 * @param c The completion to add.
 	 * @throws IllegalArgumentException If the completion's provider isn't
-	 *         this <tt>CompletionProvider</tt>.
+	 *		   this <tt>CompletionProvider</tt>.
 	 * @see #addCompletions(List)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
@@ -222,9 +222,9 @@ public abstract class AbstractCompletionProvider
 	 * Adds {@link Completion}s to this provider.
 	 *
 	 * @param completions The completions to add.  This cannot be
-	 *        <code>null</code>.
+	 *		  <code>null</code>.
 	 * @throws IllegalArgumentException If a completion's provider isn't
-	 *         this <tt>CompletionProvider</tt>.
+	 *		   this <tt>CompletionProvider</tt>.
 	 * @see #addCompletion(Completion)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
@@ -265,13 +265,13 @@ public abstract class AbstractCompletionProvider
 		{
 			// Find the insertion point.
 			ptr = (-ptr) - 1;
-		    box.add(ptr, c);
+			box.add(ptr, c);
 		}
 	}
 
 
 	/**
-	 * Removes all completions from this provider.  This does not affect
+	 * Removes all completions from this provider.	This does not affect
 	 * the parent <tt>CompletionProvider</tt>, if there is one.
 	 *
 	 * @see #addCompletion(Completion)
@@ -290,7 +290,7 @@ public abstract class AbstractCompletionProvider
 	 *
 	 * @param inputText The input text to search for.
 	 * @return A list of {@link Completion}s, or <code>null</code> if there
-	 *         are no matching <tt>Completion</tt>s.
+	 *		   are no matching <tt>Completion</tt>s.
 	 */
 	public List<Completion> getCompletionByInputText(String inputText) {
 		final ArrayList<Completion> box = myCompletionBox;
@@ -323,7 +323,7 @@ public abstract class AbstractCompletionProvider
 				break; // range exceeded
 			}
 		}
-        // Binary search indicated we have at least 1 match.
+		// Binary search indicated we have at least 1 match.
 		return retVal;
 	}
 
@@ -374,12 +374,12 @@ public abstract class AbstractCompletionProvider
 
 
 	/**
-	 * Removes the specified completion from this provider.  This method
+	 * Removes the specified completion from this provider.	 This method
 	 * will not remove completions from the parent provider, if there is one.
 	 *
 	 * @param c The completion to remove.
 	 * @return <code>true</code> if this provider contained the specified
-	 *         completion.
+	 *		   completion.
 	 * @see #clear()
 	 * @see #addCompletion(Completion)
 	 * @see #addCompletions(List)
