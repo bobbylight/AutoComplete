@@ -286,7 +286,7 @@ public abstract class AbstractCompletionProvider
 
 	/**
 	 * Returns a list of <tt>Completion</tt>s in this provider with the
-	 * specified input text.
+	 * specified input text (case insensitive).
 	 *
 	 * @param inputText The input text to search for.
 	 * @return A list of {@link Completion}s, or <code>null</code> if there
@@ -323,7 +323,8 @@ public abstract class AbstractCompletionProvider
 				break; // range exceeded
 			}
 		}
-		return (retVal.size() > 0) ? retVal : null;
+        // Binary search indicated we have at least 1 match.
+		return retVal;
 	}
 
 
