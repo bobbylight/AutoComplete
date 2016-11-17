@@ -57,6 +57,29 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		return myAlreadyEnteredText;
 	}
 
+	/**
+	 * basic tests to check the inputText is a prefix in toString()
+	 */
+	@Test
+	public void testBasicPrefixVerification()
+	{
+		final DefaultCompletionProvider provider =
+			new DefaultCompletionProvider();
+		final Completion c1 = new BasicCompletion(provider, "for", "(keyword)");
+		Assert.assertTrue(c1.toString().startsWith("for"));
+		final Completion c2 = new ShorthandCompletion(
+			provider, "soda", "sugar", "(sweet)");
+		Assert.assertTrue(c2.toString().startsWith("soda"));
+		final Completion c3 = new VariableCompletion(provider, "flag", "bool");
+		Assert.assertTrue(c3.toString().startsWith("flag"));
+		final Completion c4 = new MarkupTagCompletion(provider, "ExtCss");
+		Assert.assertTrue(c4.toString().startsWith("ExtCss"));
+		final Completion c5 = new FunctionCompletion(provider, "print", "void");
+		Assert.assertTrue(c5.toString().startsWith("print"));
+		final Completion c6 = new TemplateCompletion(
+			provider, "function()", "function() ...", "f() {}");
+		Assert.assertTrue(c6.toString().startsWith("function()"));
+	}
 
 	@Test
 	public void testCompletionRemoval()
@@ -151,7 +174,7 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		final Completion c3 = new FunctionCompletion(provider, "Sub", "int");
 		Assert.assertTrue(c1.compareTo(c2) < 0);
 		Assert.assertTrue(c2.compareTo(c3) < 0);
-		// (c1 < c2) and (c2 < c3), then it is implied that (c1 < c3) !
+		// (c1 < c2) and (c2 < c3), then it is implied that (c1 < c3)
 		Assert.assertTrue(c1.compareTo(c3) < 0);
 	}
 

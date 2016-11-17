@@ -258,7 +258,7 @@ public abstract class AbstractCompletionProvider
 		// Perform binary search
 		int ptr = Collections.binarySearch(box, c);
 		if (ptr >= 0) {
-			// CHECKME: duplicates are allowed
+			// Allows for overloaded Completion items.
 			box.add(ptr, c);
 		}
 		else
@@ -301,29 +301,28 @@ public abstract class AbstractCompletionProvider
 			return null;
 		}
 		final ArrayList<Completion> retVal = new ArrayList<Completion>();
+		// There might be multiple entries with the same input text.
 		// Perform backward search prior to the target.
 		for (int indx = ptr - 1; indx >= 0; --indx) {
 			final Completion c = box.get(indx);
-			if (Util.cmpIgnoreCase(c.getInputText(), inputText) == 0) {
-				retVal.add(c); // a match
-			}
-			else {
+			if (Util.cmpIgnoreCase(c.getInputText(), inputText) != 0) {
 				break; // range exceeded
 			}
+			retVal.add(c); // a match
 		}
 		// Reverse the order of results taken during backward traversal.
 		Collections.reverse(retVal);
-		// Perform forward search at the target.
-		for (int indx = ptr; indx < box.size(); ++indx) {
+		// Binary search indicated the match location is a hit.
+		retVal.add(box.get(ptr++));
+		// Perform forward search.
+		final int count = box.size();
+		for (int indx = ptr; indx < count; ++indx) {
 			final Completion c = box.get(indx);
-			if (Util.cmpIgnoreCase(c.getInputText(), inputText) == 0) {
-				retVal.add(c); // a match
-			}
-			else {
+			if (Util.cmpIgnoreCase(c.getInputText(), inputText) != 0) {
 				break; // range exceeded
 			}
+			retVal.add(c); // a match
 		}
-		// Binary search indicated we have at least 1 match.
 		return retVal;
 	}
 
@@ -343,30 +342,30 @@ public abstract class AbstractCompletionProvider
 			if (ptr < 0) { // No exact match
 				ptr = (-ptr) - 1; // insertion point calculation
 			}
-			else
-			{
-				// Perform backward search prior to the target.
+			else {
+				// If there are several overloads for the function being
+				// completed, Collections.binarySearch() will return the index
+				// of one of those overloads, but we must return all of them,
+				// so search backward until we find the first one.
 				for (int indx = ptr - 1; indx >= 0; --indx) {
 					final Completion c = box.get(indx);
-					if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
-						retVal.add(c); // a match
-					}
-					else {
+					if (! Util.startsWithIgnoreCase(c.getInputText(), text)) {
 						break; // range exceeded
 					}
+					retVal.add(c); // a match
 				}
 				// Reverse the order of results taken during backward traversal.
 				Collections.reverse(retVal);
+				// Binary search indicated the match location is a hit.
+				retVal.add(box.get(ptr++));
 			}
-			// Perform forward search at the target.
+			// Perform forward search.
 			for (int indx = ptr; indx < box.size(); ++indx) {
 				final Completion c = box.get(indx);
-				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
-					retVal.add(c); // a match
-				}
-				else {
+				if (! Util.startsWithIgnoreCase(c.getInputText(), text)) {
 					break; // range exceeded
 				}
+				retVal.add(c); // a match
 			}
 		}
 		return retVal;
