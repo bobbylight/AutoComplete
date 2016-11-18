@@ -1,5 +1,5 @@
 /*
- * 12/14/2016
+ * 11/17/2016
  *
  * TestDefaultCompletionProvider.java - test basic completion provider implementation.
  *
@@ -81,6 +81,7 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		Assert.assertTrue(c6.toString().startsWith("function()"));
 	}
 
+	// Test case sensitivity of completion removal
 	@Test
 	public void testCompletionRemoval()
 	{
@@ -124,8 +125,9 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		}
 	}
 
+	// a few matching tests
 	@Test
-	public void testPrefixMatching()
+	public void testPrefixMatching1()
 	{
 		TestDefaultCompletionProvider provider1 = new TestDefaultCompletionProvider();
 		// Set up scafold.
@@ -163,6 +165,49 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		// c1 through c5 match
 		List<Completion> allList = provider1.getCompletions(new JTextArea());
 		Assert.assertEquals(5, allList.size());
+	}
+
+	// Test through each addition permutation.
+	@Test
+	public void testAdditionAndMatching()
+	{
+		TestDefaultCompletionProvider provider = new TestDefaultCompletionProvider();
+		JTextArea area = new JTextArea();
+		final Completion c1 = new BasicCompletion(provider, "AllGood");
+		final Completion c2 = new BasicCompletion(provider, "Allgood");
+		final Completion c3 = new VariableCompletion(provider, "Allgood", "int");
+		// Set up scafold.
+		TestDefaultCompletionProvider.setAlreadyEnteredText("Allgood");
+		provider.addCompletion(c1);
+		provider.addCompletion(c2);
+		provider.addCompletion(c3);
+		Assert.assertEquals(3, provider.getCompletions(area).size());
+		provider.clear();
+		provider.addCompletion(c3);
+		provider.addCompletion(c2);
+		provider.addCompletion(c1);
+		Assert.assertEquals(3, provider.getCompletions(area).size());
+		provider.clear();
+		provider.addCompletion(c1);
+		provider.addCompletion(c3);
+		provider.addCompletion(c2);
+		Assert.assertEquals(3, provider.getCompletions(area).size());
+		provider.clear();
+		provider.addCompletion(c3);
+		provider.addCompletion(c1);
+		provider.addCompletion(c2);
+		Assert.assertEquals(3, provider.getCompletions(area).size());
+		provider.clear();
+		provider.addCompletion(c2);
+		provider.addCompletion(c1);
+		provider.addCompletion(c3);
+		Assert.assertEquals(3, provider.getCompletions(area).size());
+		provider.clear();
+		provider.addCompletion(c2);
+		provider.addCompletion(c3);
+		provider.addCompletion(c1);
+		Assert.assertEquals(3, provider.getCompletions(area).size());
+		provider.clear();
 	}
 
 	@Test
