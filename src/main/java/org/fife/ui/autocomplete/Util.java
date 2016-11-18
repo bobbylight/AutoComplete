@@ -28,6 +28,7 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  * Utility methods for the auto-complete framework.
  *
  * @author Robert Futrell
+ * @author Thomas Wang
  * @version 1.0
  */
 public class Util {

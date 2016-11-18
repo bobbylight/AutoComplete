@@ -129,7 +129,8 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 	@Test
 	public void testPrefixMatching1()
 	{
-		TestDefaultCompletionProvider provider1 = new TestDefaultCompletionProvider();
+		TestDefaultCompletionProvider provider1 = this;
+		provider1.clear();
 		// Set up scafold.
 		TestDefaultCompletionProvider.setAlreadyEnteredText("");
 		List<Completion> emptyList = provider1.getCompletions(new JTextArea());
@@ -153,7 +154,8 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		Assert.assertEquals(2, microList.size());
 		for (Completion comp : microList)
 		{
-			Assert.assertTrue("micro".equalsIgnoreCase(comp.getInputText()));
+			Assert.assertEquals(0, this.comparator.compare("micro", comp));
+			Assert.assertEquals(0, this.comparator.compare(comp, "micro"));
 		}
 		// Set up scafold.
 		TestDefaultCompletionProvider.setAlreadyEnteredText("mac");
@@ -165,13 +167,16 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		// c1 through c5 match
 		List<Completion> allList = provider1.getCompletions(new JTextArea());
 		Assert.assertEquals(5, allList.size());
+		Assert.assertEquals(5, this.completions.size());
+		provider1.clear();
 	}
 
 	// Test through each addition permutation.
 	@Test
 	public void testAdditionAndMatching()
 	{
-		TestDefaultCompletionProvider provider = new TestDefaultCompletionProvider();
+		TestDefaultCompletionProvider provider = this;
+		provider.clear();
 		JTextArea area = new JTextArea();
 		final Completion c1 = new BasicCompletion(provider, "AllGood");
 		final Completion c2 = new BasicCompletion(provider, "Allgood");
@@ -182,34 +187,41 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		provider.addCompletion(c2);
 		provider.addCompletion(c3);
 		Assert.assertEquals(3, provider.getCompletions(area).size());
+		Assert.assertEquals(3, this.completions.size());
 		provider.clear();
 		provider.addCompletion(c3);
 		provider.addCompletion(c2);
 		provider.addCompletion(c1);
 		Assert.assertEquals(3, provider.getCompletions(area).size());
+		Assert.assertEquals(3, this.completions.size());
 		provider.clear();
 		provider.addCompletion(c1);
 		provider.addCompletion(c3);
 		provider.addCompletion(c2);
 		Assert.assertEquals(3, provider.getCompletions(area).size());
+		Assert.assertEquals(3, this.completions.size());
 		provider.clear();
 		provider.addCompletion(c3);
 		provider.addCompletion(c1);
 		provider.addCompletion(c2);
 		Assert.assertEquals(3, provider.getCompletions(area).size());
+		Assert.assertEquals(3, this.completions.size());
 		provider.clear();
 		provider.addCompletion(c2);
 		provider.addCompletion(c1);
 		provider.addCompletion(c3);
 		Assert.assertEquals(3, provider.getCompletions(area).size());
+		Assert.assertEquals(3, this.completions.size());
 		provider.clear();
 		provider.addCompletion(c2);
 		provider.addCompletion(c3);
 		provider.addCompletion(c1);
 		Assert.assertEquals(3, provider.getCompletions(area).size());
+		Assert.assertEquals(3, this.completions.size());
 		provider.clear();
 	}
 
+	// Verify non-circularity
 	@Test
 	public void testCompletionOrdering1()
 	{
@@ -223,6 +235,7 @@ public class TestDefaultCompletionProvider extends DefaultCompletionProvider
 		Assert.assertTrue(c1.compareTo(c3) < 0);
 	}
 
+	// Test result stability of getCompletionByInputText()
 	@Test
 	public void testGetCompletionByInputText()
 	{

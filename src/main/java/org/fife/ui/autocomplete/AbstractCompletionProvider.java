@@ -25,6 +25,7 @@ import javax.swing.text.JTextComponent;
  * succeeding completions that also match are also returned.
  *
  * @author Robert Futrell
+ * @author Thomas Wang
  * @version 1.0
  */
 public abstract class AbstractCompletionProvider

@@ -19,6 +19,7 @@ import javax.swing.text.Position;
  * A completion choice representing a function.
  *
  * @author Robert Futrell
+ * @author Thomas Wang
  * @version 1.0
  */
 public class FunctionCompletion extends VariableCompletion
