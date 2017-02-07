@@ -61,7 +61,6 @@ public interface ParameterizedCompletion extends Completion {
 	 */
 	public boolean getShowParameterToolTip();
 
-
 	/**
 	 * A parameter passed to a parameterized {@link Completion}.
 	 */
