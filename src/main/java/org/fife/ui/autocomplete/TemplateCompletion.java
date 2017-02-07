@@ -298,24 +298,57 @@ public class TemplateCompletion extends AbstractCompletion
 			char next = template.charAt(offs+1);
 			switch (next) {
 				case '$': // "$$" => escaped single dollar sign
-					addTemplatePiece(new TemplatePiece.Text(
-							template.substring(lastOffs, offs+1)));
+					addTemplatePiece(new TemplatePiece.Text(template.substring(lastOffs, offs+1)));
 					lastOffs = offs + 2;
 					break;
 				case '{': // "${...}" => variable
-					int closingCurly = template.indexOf('}', offs+2);
-					if (closingCurly>-1) {
-						addTemplatePiece(new TemplatePiece.Text(
-								template.substring(lastOffs, offs)));
-						String varName = template.substring(offs+2, closingCurly);
-						if (!"cursor".equals(varName) && isParamDefined(varName)) {
-							addTemplatePiece(new TemplatePiece.ParamCopy(varName));
+					int closingCurly = -2;
+					
+					// Allow an escaped closing brace character in the 'varname' part of the template
+					// Here we check that a closing brace is not prefixed by a backslash
+					// NOTE :: It doesn't deal with \\ as a prefix to a non escaped '}' currently.
+					
+					int scanStart = offs+2;
+					while (closingCurly == -2) {
+						closingCurly = template.indexOf('}', scanStart);
+						if (closingCurly != -1) {
+							if (template.charAt(closingCurly-1) == '\\') {
+								scanStart = closingCurly+1;
+								closingCurly = -2;
+							}
+						}
+					}
+					
+					if (closingCurly > -1) {
+						final String textPriorToTemplateBlock = template.substring(lastOffs, offs);
+						final TemplatePiece.Text piece = new TemplatePiece.Text(textPriorToTemplateBlock);
+						addTemplatePiece(piece);
+						
+						// Replace escaped rbrace (backslash rbrace) with just rbrace (in varname)
+						String varName = template.substring(offs+2, closingCurly).replace("\\}", "}");
+						
+						// Use a colon as a signifier that the varname is a non-unified 'varname', so we
+						// can use the same initial text in autocomplete without unifying the text input
+						// based on the same initial key. Any varname which starts with colon is essentially
+						// marked as 'not a variable', and it means that we can substitute freeform text
+						// without the autocompleter linking user input based on the values matching (which
+						// is the current behaviour).
+						
+						boolean isTabStopNotVarname = varName.startsWith(":");
+						varName = isTabStopNotVarname ? varName.substring(1) : varName;
+						
+						if ( (!"cursor".equals(varName)) && isParamDefined(varName) && (!isTabStopNotVarname)) {
+							final TemplatePiece.ParamCopy piece2 = new TemplatePiece.ParamCopy(varName);
+							addTemplatePiece(piece2);
 						}
 						else {
-							addTemplatePiece(new TemplatePiece.Param(varName));
+							final TemplatePiece.Param piece2 = new TemplatePiece.Param(varName);
+							addTemplatePiece(piece2);
 						}
 						lastOffs = closingCurly + 1;
 					}
+					
+					
 					break;
 			}
 
@@ -323,7 +356,8 @@ public class TemplateCompletion extends AbstractCompletion
 
 		if (lastOffs<template.length()) {
 			String text = template.substring(lastOffs);
-			addTemplatePiece(new TemplatePiece.Text(text));
+			final TemplatePiece.Text piece = new TemplatePiece.Text(text);
+			addTemplatePiece(piece);
 		}
 
 	}
