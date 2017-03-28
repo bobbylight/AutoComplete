@@ -1220,6 +1220,8 @@ public class AutoCompletion {
 
 			textComponent = null;
 			popupWindowListener.uninstall(popupWindow);
+            // release system resources
+            if (popupWindow != null) popupWindow.dispose();
 			popupWindow = null;
 
 		}
