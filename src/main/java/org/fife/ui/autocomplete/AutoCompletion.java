@@ -8,9 +8,13 @@
  */
 package org.fife.ui.autocomplete;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -145,6 +149,11 @@ public class AutoCompletion {
 	 */
 	private KeyStroke trigger;
 
+    /**
+     * The keystroke to show method parameter tooltip
+     */
+    private KeyStroke paramTrigger;
+
 	/**
 	 * The previous key in the text component's <code>InputMap</code> for the
 	 * trigger key.
@@ -157,7 +166,26 @@ public class AutoCompletion {
 	 */
 	private Action oldTriggerAction;
 
-	/**
+    /**
+     * The previous key in the text component's <code>InputMap</code> for the
+     * paramTrigger key.
+     */
+    private Object oldParamTriggerKey;
+
+    /**
+     * The action previously assigned to {@link #paramTrigger}, so we can reset it if
+     * the user disables auto-completion.
+     */
+    private Action oldParamTriggerAction;
+
+    /**
+     * List of tooltip windows in case user presses Ctrl-P. If multiple ParameterizedCompletion is returned from the
+     * provider, we show multiple tool windows. This holds reference, so we can remove it.
+     */
+    private List<ParameterizedCompletionDescriptionToolTip> parameterTooltipWindows = new ArrayList<ParameterizedCompletionDescriptionToolTip>();
+
+    private ParameterTooltipListener parameterTooltipListener;
+    /**
 	 * The previous key in the text component's <code>InputMap</code> for the
 	 * parameter completion trigger key.
 	 */
@@ -222,6 +250,11 @@ public class AutoCompletion {
 	 */
 	private static final String PARAM_TRIGGER_KEY = "AutoComplete";
 
+    /**
+     * The key used in the input map for the AutoComplete action.
+     */
+    private static final String SHOW_PARAM_TRIGGER_KEY = "AutoCompleteParams";
+
 	/**
 	 * Key used in the input map for the parameter completion action.
 	 */
@@ -252,6 +285,7 @@ public class AutoCompletion {
 
 		setCompletionProvider(provider);
 		setTriggerKey(getDefaultTriggerKey());
+        setParamTrigger(getDefaultParamTriggerKey());
 		setAutoCompleteEnabled(true);
 		setAutoCompleteSingleChoices(true);
 		setAutoActivationEnabled(false);
@@ -369,6 +403,10 @@ public class AutoCompletion {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, mask);
 	}
 
+    public static KeyStroke getDefaultParamTriggerKey() {
+        int mask = InputEvent.CTRL_MASK;
+        return KeyStroke.getKeyStroke(KeyEvent.VK_P, mask);
+    }
 
 	/**
 	 * Returns the handler to use when an external URL is clicked in the
@@ -545,6 +583,7 @@ public class AutoCompletion {
 				return true;
 			}
 		}
+        hideParameterTooltips();
 		return false;
 	}
 
@@ -629,6 +668,7 @@ public class AutoCompletion {
 
 		this.textComponent = c;
 		installTriggerKey(getTriggerKey());
+        installParamTriggerKey(getParamTrigger());
 
 		// Install the function completion key, if there is one.
 		// NOTE: We cannot do this if the start char is ' ' (e.g. just a space
@@ -677,6 +717,69 @@ public class AutoCompletion {
 		am.put(PARAM_TRIGGER_KEY, createAutoCompleteAction());
 	}
 
+
+    /**
+     * Installs a "trigger key" action onto the current text component.
+     *
+     * @param ks The keystroke that should trigger the action.
+     * @see #uninstallTriggerKey()
+     */
+    private void installParamTriggerKey(KeyStroke ks) {
+        InputMap im = textComponent.getInputMap();
+        oldParamTriggerKey = im.get(ks);
+        im.put(ks, SHOW_PARAM_TRIGGER_KEY);
+        ActionMap am = textComponent.getActionMap();
+        oldParamTriggerAction = am.get(SHOW_PARAM_TRIGGER_KEY);
+        am.put(SHOW_PARAM_TRIGGER_KEY, showParameterTooltip());
+    }
+
+    private void hideParameterTooltips() {
+        if (parameterTooltipWindows.size() > 0) {
+            for (ParameterizedCompletionDescriptionToolTip tip : parameterTooltipWindows) {
+                tip.setVisible(false);
+            }
+            parameterTooltipWindows.clear();
+        }
+        if (parameterTooltipListener != null) {
+            parameterTooltipListener.uninstall(textComponent);
+        }
+    }
+
+    private Action showParameterTooltip() {
+        return new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                hideParameterTooltips();
+                if (parameterTooltipListener == null) {
+                    parameterTooltipListener = new ParameterTooltipListener();
+                }
+                parameterTooltipListener.install(textComponent);
+                List<ParameterizedCompletion> completions = provider.getParameterizedCompletions(textComponent);
+
+                if (completions != null && completions.size() > 0) {
+                    for (int i = 0;i < completions.size();i++) {
+                        ParameterizedCompletion pc = completions.get(i);
+                        ParameterizedCompletionDescriptionToolTip tip = new ParameterizedCompletionDescriptionToolTip(parentWindow, new ParameterizedCompletionContext(parentWindow, AutoCompletion.this, pc), AutoCompletion.this, pc);
+                        try {
+                            int dot = textComponent.getCaretPosition();
+                            Rectangle r = textComponent.modelToView(dot);
+                            Point p = new Point(r.x, r.y);
+                            SwingUtilities.convertPointToScreen(p, textComponent);
+                            r.x = p.x;
+                            r.y = p.y - (24 * (completions.size() - (i + 1)));
+                            tip.setLocationRelativeTo(r);
+                            tip.setVisible(true);
+                            parameterTooltipWindows.add(tip);
+                        }
+                        catch (Exception ex) {
+                        }
+                    }
+                }
+            }
+        };
+    }
 
 	/**
 	 * Creates and returns the action to call when the user presses the
@@ -784,6 +887,8 @@ public class AutoCompletion {
 		if (text == null && !isPopupVisible()) {
 			return getLineOfCaret();
 		}
+
+        hideParameterTooltips();
 
 		// If the popup is currently visible, and they type a space (or any
 		// character that resets the completion list to "all completions"),
@@ -1224,6 +1329,8 @@ public class AutoCompletion {
             if (popupWindow != null) popupWindow.dispose();
 			popupWindow = null;
 
+            hideParameterTooltips();
+
 		}
 
 	}
@@ -1533,5 +1640,131 @@ public class AutoCompletion {
 
 	}
 
+    public KeyStroke getParamTrigger()
+    {
+        return paramTrigger;
+    }
 
+    public void setParamTrigger(KeyStroke paramTrigger)
+    {
+        this.paramTrigger = paramTrigger;
+    }
+
+    /**
+     * Listener used to handle focus/caret update and ESC key if the Ctrl-P parameter hint tooltip is visible
+     */
+    private class ParameterTooltipListener implements FocusListener, CaretListener {
+        private int minPos;
+        private int maxPos;
+        private Object oldEscapeKey;
+        private Action oldEscapeAction;
+        private static final String IM_KEY_ESCAPE = "ParamTooltipEscape";
+
+        public void install(JTextComponent textComponent) {
+            if (textComponent instanceof RSyntaxTextArea) {
+                RSyntaxTextArea t = (RSyntaxTextArea) textComponent;
+
+                // set default to the whole line
+                minPos = t.getLineStartOffsetOfCurrentLine();
+                maxPos = t.getLineEndOffsetOfCurrentLine();
+
+                // determine the first ( and the last ) within the method call and set it as boundaries of Parameter
+                // tooltip
+                int parenCounter = 0;
+                Document doc = textComponent.getDocument();
+
+                Element root = doc.getDefaultRootElement();
+                int index = root.getElementIndex(textComponent.getCaretPosition());
+                Element elem = root.getElement(index);
+                int start = elem.getStartOffset();
+                int len = elem.getEndOffset() - start;
+                Segment seg = new Segment(new char[len], 0, 0);
+                try {
+                    doc.getText(start, len, seg);
+
+                    // go from current caret position backwards, till we find an opening ( without a closing )
+                    int i = textComponent.getCaretPosition() - elem.getStartOffset();
+                    while (i >= 0) {
+                        if (seg.charAt(i) == ')') parenCounter++;
+                        else if (seg.charAt(i) == '(' && parenCounter > 0) parenCounter--;
+                        else if (seg.charAt(i) == '(' && parenCounter == 0) {
+                            minPos = i + 1 + elem.getStartOffset();
+                            break;
+                        }
+                        i--;
+                    }
+
+                    // now go from current caret position towards the end of the line trying to find a closing ) without opening (
+                    i = textComponent.getCaretPosition() - elem.getStartOffset();
+                    while (i < seg.length()) {
+                        if (seg.charAt(i) == '(') parenCounter++;
+                        else if (seg.charAt(i) == ')' && parenCounter > 0) parenCounter--;
+                        else if (seg.charAt(i) == ')' && parenCounter == 0) {
+                            maxPos = i + 1 + elem.getStartOffset();
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                catch (Exception ble) {
+                    ble.printStackTrace();
+                }
+            }
+            textComponent.addCaretListener(this);
+            textComponent.addFocusListener(this);
+
+            installKeyBindings(textComponent);
+        }
+
+        public void uninstall(JTextComponent textComponent) {
+            textComponent.removeCaretListener(this);
+            textComponent.removeFocusListener(this);
+
+            uninstallKeyBindings(textComponent);
+        }
+
+        private void installKeyBindings(JTextComponent textComponent) {
+            InputMap im = textComponent.getInputMap();
+            ActionMap am = textComponent.getActionMap();
+
+            KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+            oldEscapeKey = im.get(ks);
+            im.put(ks, IM_KEY_ESCAPE);
+            oldEscapeAction = am.get(IM_KEY_ESCAPE);
+            am.put(IM_KEY_ESCAPE, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    hideParameterTooltips();
+                }
+            });
+        }
+
+        private void uninstallKeyBindings(JTextComponent textComponent) {
+            InputMap im = textComponent.getInputMap();
+            ActionMap am = textComponent.getActionMap();
+
+            KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+            im.put(ks, oldEscapeKey);
+            am.put(IM_KEY_ESCAPE, oldEscapeAction);
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent e) {
+            int dot = e.getDot();
+            if (dot < minPos || dot >= maxPos) {
+                hideParameterTooltips();
+                return;
+            }
+        }
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            // do nothing
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            hideParameterTooltips();
+        }
+    }
 }

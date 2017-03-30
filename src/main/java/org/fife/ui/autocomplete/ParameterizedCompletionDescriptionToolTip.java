@@ -46,6 +46,8 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private ParameterizedCompletion pc;
 
+    private Window owner;
+
 
 	/**
 	 * Constructor.
@@ -58,37 +60,43 @@ class ParameterizedCompletionDescriptionToolTip {
 			ParameterizedCompletionContext context,
 			AutoCompletion ac, ParameterizedCompletion pc) {
 
-		tooltip = new JWindow(owner);
-
 		this.pc = pc;
-
-		descLabel = new JLabel();
-		descLabel.setBorder(BorderFactory.createCompoundBorder(
-					TipUtil.getToolTipBorder(),
-					BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-		descLabel.setOpaque(true);
-		descLabel.setBackground(TipUtil.getToolTipBackground());
-		// It appears that if a JLabel is set as a content pane directly, when
-		// using the JDK's opacity API's, it won't paint its background, even
-		// if label.setOpaque(true) is called.  You have to have a container
-		// underneath it for it to paint its background.  Thus, we embed our
-		// label in a parent JPanel to handle this case.
-		//tooltip.setContentPane(descLabel);
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(descLabel);
-		tooltip.setContentPane(panel);
-
-		// Give apps a chance to decorate us with drop shadows, etc.
-		PopupWindowDecorator decorator = PopupWindowDecorator.get();
-		if (decorator!=null) {
-			decorator.decorate(tooltip);
-		}
-
-		updateText(0);
-
-		tooltip.setFocusableWindowState(false);
-
+        this.owner = owner;
+        initTooltipWindow();
 	}
+
+    /**
+     * Initializes the tooltip window
+     */
+    private void initTooltipWindow() {
+        tooltip = new JWindow(owner);
+
+        descLabel = new JLabel();
+        descLabel.setBorder(BorderFactory.createCompoundBorder(
+                TipUtil.getToolTipBorder(),
+                BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        descLabel.setOpaque(true);
+        descLabel.setBackground(TipUtil.getToolTipBackground());
+        // It appears that if a JLabel is set as a content pane directly, when
+        // using the JDK's opacity API's, it won't paint its background, even
+        // if label.setOpaque(true) is called.  You have to have a container
+        // underneath it for it to paint its background.  Thus, we embed our
+        // label in a parent JPanel to handle this case.
+        //tooltip.setContentPane(descLabel);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(descLabel);
+        tooltip.setContentPane(panel);
+
+        // Give apps a chance to decorate us with drop shadows, etc.
+        PopupWindowDecorator decorator = PopupWindowDecorator.get();
+        if (decorator!=null) {
+            decorator.decorate(tooltip);
+        }
+
+        updateText(0);
+
+        tooltip.setFocusableWindowState(false);
+    }
 
 
 	/**
@@ -98,7 +106,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @see #setVisible(boolean)
 	 */
 	public boolean isVisible() {
-		return tooltip.isVisible();
+		return tooltip == null ? false : tooltip.isVisible();
 	}
 
 
@@ -108,6 +116,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @param r The visual position of the caret (in screen coordinates).
 	 */
 	public void setLocationRelativeTo(Rectangle r) {
+        if (tooltip == null) initTooltipWindow();
 
 		// Multi-monitor support - make sure the completion window (and
 		// description window, if applicable) both fit in the same window in
@@ -145,7 +154,13 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @see #isVisible()
 	 */
 	public void setVisible(boolean visible) {
+        if (tooltip == null) initTooltipWindow();
 		tooltip.setVisible(visible);
+        // if not visible, dispose window resources
+        if (!visible) {
+            tooltip.dispose();
+            tooltip = null;
+        }
 	}
 
 
@@ -157,6 +172,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @return Whether the text needed to be updated.
 	 */
 	public boolean updateText(int selectedParam) {
+        if (tooltip == null) initTooltipWindow();
 
 		StringBuilder sb = new StringBuilder("<html>");
 		int paramCount = pc.getParamCount();
