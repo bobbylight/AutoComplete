@@ -1323,7 +1323,6 @@ public class AutoCompletion {
 
 			UIManager.removePropertyChangeListener(lafListener);
 
-			textComponent = null;
 			popupWindowListener.uninstall(popupWindow);
             // release system resources
             if (popupWindow != null) popupWindow.dispose();
@@ -1331,6 +1330,7 @@ public class AutoCompletion {
 
             hideParameterTooltips();
 
+            textComponent = null;
 		}
 
 	}
