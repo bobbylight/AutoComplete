@@ -9,13 +9,7 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -98,6 +92,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * underneath it, which is preferred unless there is not enough space).
 	 */
 	private boolean aboveCaret;
+
+	/**
+	 * The background color of the description window
+	 */
+	private Color descWindowColor;
 
 	private int lastLine;
 
@@ -603,6 +602,20 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		}
 		else {
 			preferredDescWindowSize = size;
+		}
+	}
+
+	/**
+	 * Sets the color of the description window.
+	 *
+	 * @param color The new color.  This cannot be <code>null</code>.
+	 */
+	public void setDescriptionWindowColor(Color color) {
+		if (descWindow!=null) {
+			descWindow.setBackground(color);
+		}
+		else {
+			descWindowColor = color;
 		}
 	}
 

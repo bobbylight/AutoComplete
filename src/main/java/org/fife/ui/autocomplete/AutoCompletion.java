@@ -77,6 +77,11 @@ public class AutoCompletion {
 	private Dimension preferredDescWindowSize;
 
 	/**
+	* The background color of the description window
+	*/
+	private Color descWindowColor;
+
+	/**
 	 * Manages any parameterized completions that are inserted.
 	 */
 	private ParameterizedCompletionContext pcc;
@@ -467,6 +472,16 @@ public class AutoCompletion {
 	 */
 	public static AutoCompletionStyleContext getStyleContext() {
 		return styleContext;
+	}
+
+
+	/**
+	* Returns the background color for the description window.
+	*
+	* @return The color.
+	*/
+	public Color getDescWindowColor() {
+		return descWindowColor;
 	}
 
 
@@ -983,6 +998,18 @@ public class AutoCompletion {
 		preferredDescWindowSize = new Dimension(w, h);
 		if (popupWindow != null) {
 			popupWindow.setDescriptionWindowSize(preferredDescWindowSize);
+		}
+	}
+
+	/**
+ 	* Sets the color of the description window.
+ 	*
+ 	* @param c The new color.
+ 	*/
+	public void setDescriptionWindowColor(Color c) {
+		descWindowColor = c;
+		if (popupWindow != null) {
+			popupWindow.setDescriptionWindowColor(descWindowColor);
 		}
 	}
 
