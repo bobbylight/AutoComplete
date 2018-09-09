@@ -205,8 +205,14 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 
 	}
 
+    @Override
+    public void dispose()
+    {
+        ac = null;
+        super.dispose();
+    }
 
-	/**
+    /**
 	 * Sets the currently displayed description and updates the history.
 	 *
 	 * @param historyItem The item to add to the history.

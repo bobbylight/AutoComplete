@@ -16,6 +16,8 @@ import java.awt.Rectangle;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.AccessControlException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.swing.JLabel;
@@ -319,5 +321,56 @@ public class Util {
 
 	}
 
+    /**
+     * Return text parts list for given text split at uppercase characters
+     *
+     * @param text
+     * @return
+     */
+    public static List<String> getTextParts(String text) {
+        List<String> textParts = new ArrayList<String>();
+        if (text == null || "".equals(text)) return textParts;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0;i < text.length();i++) {
+            if (Character.isUpperCase(text.charAt(i))) {
+                if (sb.length() > 0) {
+                    textParts.add(sb.toString());
+                    sb = new StringBuilder();
+                }
+            }
+            sb.append(text.charAt(i));
+        }
+        if (sb.length() > 0) textParts.add(sb.toString());
 
+        return textParts;
+    }
+
+    /**
+     * Compares two list of string if they share the same Uppercase segments.
+     *
+     * @param enteredText the text Parts for the entered text
+     * @param toBeMatched the text Parts for method, field, classname, etc.
+     * @return true if they match, false otherwise
+     */
+    public static boolean matchTextParts(List<String> enteredText, List<String> toBeMatched) {
+        if (toBeMatched.size() < enteredText.size()) return false;
+        for (int i = 0;i < enteredText.size();i++) {
+            if (!toBeMatched.get(i).startsWith(enteredText.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Compares two string if they share the same Uppercase segments. This method will
+     * create the string list for both parameter to be matched
+     *
+     * @param enteredText
+     * @param toBeMatched
+     * @return
+     */
+    public static boolean matchTextParts(String enteredText, String toBeMatched) {
+        return matchTextParts(getTextParts(enteredText), getTextParts(toBeMatched));
+    }
 }

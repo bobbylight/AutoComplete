@@ -147,6 +147,10 @@ class ParameterizedCompletionContext {
 	private Action oldUpAction;
 	private Object oldDownKey;
 	private Action oldDownAction;
+    private Object oldPageUpKey;
+    private Action oldPageUpAction;
+    private Object oldPageDownKey;
+    private Action oldPageDownAction;
 	private Object oldEnterKey;
 	private Action oldEnterAction;
 	private Object oldEscapeKey;
@@ -158,6 +162,8 @@ class ParameterizedCompletionContext {
 	private static final String IM_KEY_SHIFT_TAB = "ParamCompKey.ShiftTab";
 	private static final String IM_KEY_UP = "ParamCompKey.Up";
 	private static final String IM_KEY_DOWN = "ParamCompKey.Down";
+    private static final String IM_KEY_PAGEUP = "ParamCompKey.PageUp";
+    private static final String IM_KEY_PAGEDOWN = "ParamCompKey.PageDown";
 	private static final String IM_KEY_ESCAPE = "ParamCompKey.Escape";
 	private static final String IM_KEY_ENTER = "ParamCompKey.Enter";
 	private static final String IM_KEY_CLOSING = "ParamCompKey.Closing";
@@ -262,6 +268,8 @@ class ParameterizedCompletionContext {
 		}
 		if (paramChoicesWindow!=null) {
 			paramChoicesWindow.setVisible(false);
+            paramChoicesWindow.dispose();
+            paramChoicesWindow = null;
 		}
 	}
 
@@ -482,15 +490,27 @@ class ParameterizedCompletionContext {
 		oldUpKey = im.get(ks);
 		im.put(ks, IM_KEY_UP);
 		oldUpAction = am.get(IM_KEY_UP);
-		am.put(IM_KEY_UP, new NextChoiceAction(-1, oldUpAction));
+		am.put(IM_KEY_UP, new NextChoiceAction(-1, oldUpAction, true));
 
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
 		oldDownKey = im.get(ks);
 		im.put(ks, IM_KEY_DOWN);
 		oldDownAction = am.get(IM_KEY_DOWN);
-		am.put(IM_KEY_DOWN, new NextChoiceAction(1, oldDownAction));
+		am.put(IM_KEY_DOWN, new NextChoiceAction(1, oldDownAction, true));
 
-		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+        ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
+        oldPageUpKey = im.get(ks);
+        im.put(ks, IM_KEY_PAGEUP);
+        oldPageUpAction = am.get(IM_KEY_PAGEUP);
+        am.put(IM_KEY_PAGEUP, new NextChoiceAction(-8, oldPageUpAction, false));
+
+        ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
+        oldPageDownKey = im.get(ks);
+        im.put(ks, IM_KEY_PAGEDOWN);
+        oldPageDownAction = am.get(IM_KEY_PAGEDOWN);
+        am.put(IM_KEY_PAGEDOWN, new NextChoiceAction(8, oldPageDownAction, false));
+
+        ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		oldEnterKey = im.get(ks);
 		im.put(ks, IM_KEY_ENTER);
 		oldEnterAction = am.get(IM_KEY_ENTER);
@@ -781,7 +801,15 @@ class ParameterizedCompletionContext {
 		im.put(ks, oldDownKey);
 		am.put(IM_KEY_DOWN, oldDownAction);
 
-		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+        ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
+        im.put(ks, oldPageUpKey);
+        am.put(IM_KEY_PAGEUP, oldPageUpAction);
+
+        ks = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
+        im.put(ks, oldPageDownKey);
+        am.put(IM_KEY_PAGEDOWN, oldPageDownAction);
+
+        ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		im.put(ks, oldEnterKey);
 		am.put(IM_KEY_ENTER, oldEnterAction);
 
@@ -1185,16 +1213,18 @@ class ParameterizedCompletionContext {
 
 		private Action oldAction;
 		private int amount;
+        private boolean cyclic;
 
-		public NextChoiceAction(int amount, Action oldAction) {
+		public NextChoiceAction(int amount, Action oldAction, boolean cyclic) {
 			this.amount = amount;
 			this.oldAction = oldAction;
+            this.cyclic = cyclic;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (paramChoicesWindow!=null && paramChoicesWindow.isVisible()) {
-				paramChoicesWindow.incSelection(amount);
+				paramChoicesWindow.incSelection(amount, cyclic);
 			}
 			else if (oldAction!=null) {
 				oldAction.actionPerformed(e);
@@ -1244,6 +1274,4 @@ class ParameterizedCompletionContext {
 		}
 
 	}
-
-
 }

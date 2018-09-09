@@ -116,8 +116,14 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 	}
 
+    @Override
+    public void dispose()
+    {
+        ac = null;
+        super.dispose();
+    }
 
-	/**
+    /**
 	 * Returns the selected value.
 	 *
 	 * @return The selected value, or <code>null</code> if nothing is
@@ -133,14 +139,21 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * Changes the selected index.
 	 *
 	 * @param amount The amount by which to change the selected index.
+     * @param cyclic true if the selection should go around, false, if it should stop at first or last item
 	 */
-	public void incSelection(int amount) {
+	public void incSelection(int amount, boolean cyclic) {
 		int selection = list.getSelectedIndex();
 		selection += amount;
-		if (selection<0) {
+		if (selection < 0 && cyclic) {
 			// Account for nothing selected yet
 			selection = model.getSize()-1;//+= model.getSize();
 		}
+        else if (selection < 0) {
+            selection = 0;
+        }
+        else if (selection >= model.getSize() && !cyclic) {
+            selection = model.getSize() - 1;
+        }
 		else {
 			selection %= model.getSize();
 		}
@@ -225,6 +238,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 		model.clear();
 		List<Completion> temp = new ArrayList<Completion>();
+        List<String> prefixParts = Util.getTextParts(prefix);
 
 		if (choicesListList!=null && param>=0 && param<choicesListList.size()) {
 
@@ -232,7 +246,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			if (choices!=null) {
 				for (Completion c : choices) {
 					String choice = c.getReplacementText();
-					if (prefix==null || Util.startsWithIgnoreCase(choice, prefix)) {
+					if (prefix==null || Util.startsWithIgnoreCase(choice, prefix) || Util.matchTextParts(prefixParts, Util.getTextParts(choice))) {
 						temp.add(c);
 					}
 				}

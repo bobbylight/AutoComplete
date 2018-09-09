@@ -187,8 +187,18 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 	}
 
+    @Override
+    public void dispose()
+    {
+        ac = null;
+        if (descWindow != null) {
+            descWindow.dispose();
+            descWindow = null;
+        }
+        super.dispose();
+    }
 
-	@Override
+    @Override
 	public void caretUpdate(CaretEvent e) {
 		if (isVisible()) { // Should always be true
 			int line = ac.getLineOfCaret();
