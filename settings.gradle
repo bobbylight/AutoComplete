@@ -1,0 +1,3 @@
+rootProject.name = 'AutoComplete'
+
+include 'AutoComplete', 'AutoCompleteDemo'

@@ -1,0 +1,1389 @@
+##### assert.h #####
+
+assert function
+void|
+int expression|
+ Macro used for internal error detection. (Ignored if NDEBUG is defined where <assert.h> is included.) If expression equals zero, message printed on <a href="stderr">stderr</a> and abort called to terminate execution. Source filename and line number in message are from preprocessor macros __FILE__ and __LINE__.
+
+
+##### ctype.h #####
+
+isalnum function
+int|
+int c|
+ <a href="isalpha">isalpha</a>(c) or <a href="isdigit">isdigit</a>(c)
+
+isalpha function
+int|
+int c|
+ <a href="isupper">isupper</a>(c) or <a href="islower">islower</a>(c)
+
+iscntrl function
+int|
+int c|
+ is control character. In ASCII, control characters are 0x00 (NUL) to 0x1F (US), and 0x7F (DEL)
+
+isdigit function
+int|
+int c|
+ is decimal digit
+
+isgraph function
+int|
+int c|
+ is printing character other than space
+
+islower function
+int|
+int c|
+ is lower-case letter
+
+isprint function
+int|
+int c|
+ is printing character (including space). In ASCII, printing characters are 0x20 (' ') to 0x7E ('~')
+
+ispunct function
+int|
+int c|
+ is printing character other than space, letter, digit
+
+isspace function
+int|
+int c|
+ is space, formfeed, newline, carriage return, tab, vertical tab
+
+isupper function
+int|
+int c|
+ is upper-case letter
+
+isxdigit function
+int|
+int c|
+ is hexadecimal digit
+
+tolower function
+int|
+int c|
+ return lower-case equivalent
+
+toupper function
+int|
+int c|
+ return upper-case equivalent
+
+
+##### errno.h #####
+
+EDOM constant
+ code used for domain errors
+
+ERANGE constant
+ code used for range errors
+
+
+errno constant
+ object to which certain library functions assign specific positive values on error
+
+##### float.h #####
+
+DBL_DIG constant
+ The precision (in decimal digits) of the type double.
+
+DBL_EPSILON constant
+ The smallest double x such that 1.0 + x != 1.0
+
+DBL_MANT_DIG constant
+ The number of digits of a double, base FLT_RADIX, in mantissa
+
+DBL_MAX constant
+ The maximum value of a double
+
+DBL_MAX_EXP constant
+ The largest positive integer exponent to which FLT_RADIX can be raised and remain representable
+
+DBL_MIN constant
+ The minimum normalized double value.
+
+DBL_MIN_EXP constant
+ The smallest negative integer exponent to which FLT_RADIX can be raised and remain representable
+
+FLT_DIG constant
+ The precision (in decimal digits) of the type float.
+
+FLT_EPSILON constant
+ The smallest float x such that 1.0 + x != 1.0
+
+FLT_MANT_DIG constant
+ The number of digits of a float, base FLT_RADIX, in mantissa
+
+FLT_MAX constant
+ The maximum value of a float
+
+FLT_MAX_EXP constant
+ The largest positive integer exponent to which FLT_RADIX can be raised and remain representable
+
+FLT_MIN constant
+ The minimum normalized float value.
+
+FLT_MIN_EXP constant
+ The smallest negative integer exponent to which FLT_RADIX can be raised and remain representable
+
+FLT_RADIX constant
+ radix of floating-point representations
+
+FLT_ROUNDS constant
+ floating-point rounding mode
+
+
+LDBL_DIG constant
+ The precision (in decimal digits) of the type long double.
+
+LDBL_EPSILON constant
+ The smallest long double x such that 1.0 + x != 1.0
+
+LDBL_MANT_DIG constant
+ The number of digits of a long double, base FLT_RADIX, in mantissa
+
+LDBL_MAX constant
+ The maximum value of a long double.
+
+LDBL_MAX_EXP constant
+ The largest positive integer exponent to which FLT_RADIX can be raised and remain representable
+
+LDBL_MIN constant
+ The minimum normalized long double value.
+
+LDBL_MIN_EXP constant
+ The smallest negative integer exponent to which FLT_RADIX can be raised and remain representable
+
+
+##### limits.h #####
+
+CHAR_BIT constant
+ number of bits in a char
+
+CHAR_MAX constant
+ maximum value of type char
+
+CHAR_MIN constant
+ minimum value of type char
+
+INT_MAX constant
+ maximum value of type int
+
+INT_MIN constant
+ minimum value of type int
+
+LONG_MAX constant
+ maximum value of type long
+
+LONG_MIN constant
+ minimum value of type long
+
+SCHAR_MAX constant
+ maximum value of type signed char
+
+SCHAR_MIN constant
+ minimum value of type signed char
+
+SHRT_MAX constant
+ maximum value of type short
+
+SHRT_MIN constant
+ minimum value of type short
+
+UCHAR_MAX constant
+ maximum value of type unsigned char
+
+UINT_MAX constant
+ maximum value of type unsigned int
+
+ULONG_MAX constant
+ maximum value of type unsigned long
+
+
+USHRT_MAX constant
+ maximum value of type unsigned short
+
+##### locale.h #####
+
+LC_ALL constant
+ category argument for all categories
+
+LC_COLLATE constant
+ category for information affecting collating functions
+
+LC_CTYPE constant
+ category for information affecting character class tests functions
+
+LC_MONETARY constant
+ category for monetary formatting information
+
+LC_NUMERIC constant
+ category for numeric formatting information
+
+LC_TIME constant
+ category for information affecting time conversions functions
+
+localeconv function
+struct lconv*|
+void|
+ returns pointer to formatting information for current locale
+
+NULL constant
+ null pointer constant
+
+
+setlocale function
+char*|A string describing the new locale or <a href="NULL">NULL</a> on error. 
+int category|
+const char* locale|
+ Sets components of locale according to specified category and locale. (Implementations are permitted to define values of category additional to those describe here.)
+
+struct lconv constant
+ Describes formatting of monetary and other numeric values:
+
+ char* decimal_point;
+  decimal point for non-monetary values
+ char* grouping;
+  sizes of digit groups for non-monetary values
+ char* thousands_sep;
+  separator for digit groups for non-monetary values (left of "decimal point")
+ char* currency_symbol;
+  currency symbol
+ char* int_curr_symbol;
+  international currency symbol
+ char* mon_decimal_point;
+  decimal point for monetary values
+ char* mon_grouping;
+  sizes of digit groups for monetary values
+ char* mon_thousands_sep;
+  separator for digit groups for monetary values (left of "decimal point")
+ char* negative_sign;
+  negative sign for monetary values
+ char* positive_sign;
+  positive sign for monetary values
+ char frac_digits;
+  number of digits to be displayed to right of "decimal point" for monetary values
+ char int_frac_digits;
+  number of digits to be displayed to right of "decimal point" for international monetary values
+ char n_cs_precedes;
+  whether currency symbol precedes (1) or follows (0) negative monetary values
+ char n_sep_by_space;
+  whether currency symbol is (1) or is not (0) separated by space from negative monetary values
+ char n_sign_posn;
+  format for negative monetary values:
+
+  0
+   parentheses surround quantity and currency symbol
+  1
+   sign precedes quantity and currency symbol
+  2
+   sign follows quantity and currency symbol
+  3
+   sign immediately precedes currency symbol
+  4
+   sign immediately follows currency symbol 
+
+ char p_cs_precedes;
+  whether currency symbol precedes (1) or follows (0) positive monetary values
+ char p_sep_by_space;
+  whether currency symbol is (1) or is not (0) separated by space from non-negative monetary values
+ char p_sign_posn;
+  format for non-negative monetary values, with values as for n_sign_posn
+
+ Implementations may change field order and include additional fields. Standard C Library functions use only decimal_point.
+
+##### math.h #####
+
+acos function
+double|
+double x|
+ arc-cosine of x
+
+asin function
+double|
+double x|
+ arc-sine of x
+
+atan function
+double|
+double x|
+ arc-tangent of x
+
+atan2 function
+double|
+double y|
+double x|
+ arc-tangent of y/x
+
+ceil function
+double|
+double x|
+ smallest integer not less than x
+
+cos function
+double|
+double x|
+ cosine of x
+
+cosh function
+double|
+double x|
+ hyperbolic cosine of x
+
+exp function
+double|
+double x|
+ exponential of x
+
+fabs function
+double|
+double x|
+ absolute value of x
+
+floor function
+double|
+double x|
+ largest integer not greater than x
+
+fmod function
+double|
+double x|
+double y|
+ if y non-zero, floating-point remainder of x/y, with same sign as x; if y zero, result is implementation-defined
+
+frexp function
+double|
+double x|
+int* exp|
+ if x non-zero, returns value, with absolute value in interval [1/2, 1), and assigns to *exp integer such that product of return value and 2 raised to the power *exp equals x; if x zero, both return value and *exp are zero
+
+HUGE_VAL constant
+ magnitude returned (with correct sign) on overflow error
+
+ldexp function
+double|
+double x|
+int n|
+ x times 2 to the power n
+
+log function
+double|
+double x|
+ natural logarithm of x
+
+log10 function
+double|
+double x|
+ base-10 logarithm of x
+
+modf function
+double|
+double x|
+double* ip|
+ returns fractional part and assigns to *ip integral part of x, both with same sign as x
+
+pow function
+double|
+double x|
+double y|
+ x raised to power y
+
+sin function
+double|
+double x|
+ sine of x
+
+sinh function
+double|
+double x|
+ hyperbolic sine of x
+
+sqrt function
+double|
+double x|
+ square root of x
+
+tan function
+double|
+double x|
+ tangent of x
+
+tanh function
+double|
+double x|
+ hyperbolic tangent of x
+
+
+##### setjmp.h #####
+
+jmp_buf constant
+ type of object holding context information
+
+longjmp function
+void|
+jmp_buf env|
+int val|
+ Restores context saved by most recent call to setjmp with specified env. Execution resumes as a second return from setjmp, with returned value val if specified value non-zero, or 1 otherwise.
+
+
+setjmp function
+int|
+jmp_buf env|
+ Saves context information in env and returns zero. Subsequent call to longjmp with same env returns non-zero.
+
+##### signal.h #####
+
+raise function
+int|
+int sig|
+ Sends signal sig. Returns zero on success.
+
+
+SIG_DFL constant
+ specifies default signal handling
+
+SIG_ERR constant
+ signal return value indicating error
+
+SIG_IGN constant
+ specifies that signal should be ignored
+
+SIGABRT constant
+ abnormal termination
+
+SIGFPE constant
+ arithmetic error
+
+SIGILL constant
+ invalid execution
+
+SIGINT constant
+ (asynchronous) interactive attention
+
+SIGSEGV constant
+ illegal storage access
+
+SIGTERM constant
+ (asynchronous) termination request
+
+##### stdarg.h #####
+
+va_arg function
+type|
+va_list ap|
+type|
+ Yields value of the type (type) and value of the next unnamed argument.
+
+va_end function
+void|
+va_list ap|
+ Termination macro which must be called once after argument processing and before exit from function.
+
+
+va_list constant
+ type of object holding context information
+
+va_start function
+void|
+va_list ap|
+lastarg|
+ Initialisation macro which must be called once before any unnamed argument is accessed. Stores context information in ap. lastarg is the last named parameter of the function.
+
+##### stddef.h #####
+
+NULL constant
+ Null pointer constant.
+
+offsetof constant
+stype|
+m|
+ Offset (in bytes) of member m from start of structure type stype.
+
+ptrdiff_t constant
+ Type for objects declared to store result of subtracting pointers.
+
+size_t constant
+ Type for objects declared to store result of sizeof operator.
+
+
+##### stdio.h #####
+
+_IOFBF constant
+ Value for mode argument to setvbuf specifying full buffering.
+
+_IOLBF constant
+ Value for mode argument to setvbuf specifying line buffering.
+
+_IONBF constant
+ Value for mode argument to setvbuf specifying no buffering.
+
+BUFSIZ constant
+ Size of buffer used by setbuf.
+
+clearerr function
+void|
+FILE* stream|Pointer to a file structure.
+ Clears end-of-file and error indicators for stream <em>stream</em>.
+
+EOF constant
+ Value used to indicate end-of-stream or to report an error.
+
+fclose function
+int|0 if the stream is successfully closed, or <a href="EOF">EOF</a> on error.
+FILE* stream|A pointer to a file structure
+ Closes stream <em>stream</em> (after flushing, if output stream). Returns <a href="EOF">EOF</a> on error, zero otherwise.
+
+feof function
+int|Nonzero if a read operation has attempted to read past the end of the file; 0 otherwise.
+FILE* stream|Pointer to a file structure.
+ Determines whether the end of <em>stream</em> has been passed.  When the end of file
+ is passed, read operations return an end-of-file indicator until the stream is closed or
+ until <a href="rewind">rewind</a>, <a href="fsetpos">fsetpos</a>, <a href="fseek">fseek</a>,
+ or <a href="clearerr">clearerr</a> is called against it.
+
+ferror function
+int|0 if no error has occurred on <em>stream</em>, nonzero otherwise.
+FILE* stream|Pointer to a file structure.
+ Tests for a reading or writing error on the file associated with <em>stream</em>. If
+ an error has occurred, the error indicator for the stream remains set until the stream
+ is closed or rewound, or until <a href="clearerr">clearerr</a> is called against it.
+
+fflush function
+int|0 on success or <a href="EOF">EOF</a> on error. Effect undefined for input stream. 
+FILE* stream|Pointer to a file structure.  <b>fflush</b>(<a href="NULL">NULL</a>) flushes all output streams.
+ Flushes a stream. 
+
+fgetc function
+int|The character read, as an <b>int</b> or <a href="EOF">EOF</a> on end-of-file or error.
+FILE* stream|Pointer to a file structure.
+ Reads a character from a stream. 
+
+fgetpos function
+int|0 on success, non-zero on error.
+FILE* stream|Pointer to a file structure.
+fpos_t* ptr|Position indicator storage.
+ Gets <em>stream</em>'s file position indicator.
+
+fgets function
+char*|<a href="NULL">NULL</a> on end-of-file or error, str otherwise.  Use <a href="feof">feof</a> or <a href="ferror">ferror</a> to determine whether an error occurred.
+char* str|The storage location for the string.
+int n|The maximum number of characters to read.
+FILE* stream|Pointer to a file structure.
+ Copies characters from (input) stream <em>stream</em> to <em>str</em>, stopping when n-1 characters copied, newline copied, end-of-file reached or error occurs. If no error, str is NUL-terminated.
+
+FILE constant
+ Type of object holding information necessary to control a stream.
+
+FILENAME_MAX constant
+ Maximum length required for array of characters to hold a filename.
+
+fopen function
+FILE*|A pointer to the open file.  A null pointer indicates an error.
+const char* filename|The name of the file to open.
+const char* mode|The type of access required.
+ Opens file named filename and returns a stream, or <a href="NULL">NULL</a> on failure. mode may be one of the following for text files:
+ <ul>
+  <li>"r"
+   text reading</li>
+  <li>"w"
+   text writing</li>
+  <li>"a"
+   text append</li>
+  <li>"r+"
+   text update (reading and writing)</li>
+  <li>"w+"
+   text update, discarding previous content (if any)</li>
+  <li>"a+"
+   text append, reading, and writing at end</li>
+ </ul>
+
+ or one of those strings with b included (after the first character), for binary files.
+
+FOPEN_MAX constant
+ Maximum number of files which may be open simultaneously.
+
+fpos_t constant
+ Type for objects declared to store file position information.
+
+fprintf function
+int|The number of bytes written, or a negative value if an error occurred.
+FILE* stream|A pointer to the file to write to.
+const char* format|A format control string.
+...|Optional arguments.
+ Converts (according to format format) and writes output to stream <em>stream</em>. Number of characters written, or negative value on error, is returned. Conversion specifications consist of:
+
+ <ul>
+  <li>%</li>
+  <li>(optional) flag:
+
+    -
+     left adjust
+    +
+     always sign
+    space
+     space if no sign
+    0
+     zero pad
+    #
+     Alternate form: for conversion character o, first digit will be zero, for [xX], prefix 0x or 0X to non-zero value, for [eEfgG], always decimal point, for [gG] trailing zeros not removed.
+  </li>
+  <li>(optional) minimum width: if specified as *, value taken from next argument (which must be int).</li>
+  <li>(optional) . (separating width from precision):</li>
+  <li>(optional) precision: for conversion character s, maximum characters to be printed from the string, for [eEf], digits after decimal point, for [gG], significant digits, for an integer, minimum number of digits to be printed. If specified as *, value taken from next argument (which must be int).</li>
+  <li>(optional) length modifier:
+
+    h
+     short or unsigned short
+    l
+     long or unsigned long
+    L
+     long double
+  </li>
+  <li>conversion character:
+
+    d,i
+     int argument, printed in signed decimal notation
+    o
+     int argument, printed in unsigned octal notation
+    x,X
+     int argument, printed in unsigned hexadecimal notation
+    u
+     int argument, printed in unsigned decimal notation
+    c
+     int argument, printed as single character
+    s
+     char* argument
+    f
+     double argument, printed with format [-]mmm.ddd
+    e,E
+     double argument, printed with format [-]m.<a href="dddddd">dddddd</a>(e|E)(+|-)xx
+    g,G
+     double argument
+    p
+     void* argument, printed as pointer
+    n
+     int* argument : the number of characters written to this point is written into argument
+    %
+     no argument; prints %
+  </li>
+ </ul>
+
+
+fputc function
+int|The character written, or <a href="EOF">EOF</a> on error.
+int c|The character to be written.
+FILE* stream|Pointer to a file structure.
+ Writes a character to a stream.
+
+fputs function
+int|Non-negative on success or <a href="EOF">EOF</a> on error.
+const char* s|The string to write.
+FILE* stream|A pointer to the file to write to.
+ Writes s to an output stream. Returns non-negative on success or <a href="EOF">EOF</a> on error.
+
+fread function
+size_t|The number of items actually read.  Use <a href="feof">feof</a> or <a href="ferror">ferror</a> to distinguish a read error from an end-of-file condition.
+void* ptr|Storage location for data.
+size_t size|Item size in bytes.
+size_t nobj|Maximum number of items to read.
+FILE* stream|Pointer to a file structure.
+ Reads (at most) nobj objects of size size from stream <em>stream</em> into ptr.
+
+freopen function
+FILE*|A pointer to the newly opened file, or <a href="NULL">NULL</a> if an error occurs.
+const char* filename|The new file to open.
+const char* mode|The type of access permitted.
+FILE* stream|Pointer to a file structure.
+ Closes file associated with stream, then opens file filename with specified mode and associates it with stream.
+
+fscanf function
+int|The number of items converted and assigned, or <a href="EOF">EOF</a> if end-of-file or error occurs before any conversion. 
+FILE* stream|Pointer to a file structure.
+const char* format|Format control string.
+...|Optional arguments.
+ Performs formatted input conversion, reading from stream <em>stream</em> according to format format. The function returns when format is fully processed. Each of the arguments following format must be a pointer. Format string may contain:
+
+  * blanks and tabs, which are ignored
+  * ordinary characters, which are expected to match next non-white-space of input
+  * conversion specifications, consisting of:
+     o %
+     o (optional) assignment suppression character "*"
+     o (optional) maximum field width
+     o (optional) target width indicator:
+
+    h
+     argument is pointer to short rather than int
+    l
+     argument is pointer to long rather than int, or double rather than float
+    L
+     argument is pointer to long double rather than float
+
+     o conversion character:
+
+    d
+     decimal integer; int* parameter required
+    i
+     integer; int* parameter required; decimal, octal or hex
+    o
+     octal integer; int* parameter required
+    u
+     unsigned decimal integer; unsigned int* parameter required
+    x
+     hexadecimal integer; int* parameter required
+    c
+     characters; char* parameter required; white-space is not skipped, and NUL-termination is not performed
+    s
+     string of non-white-space; char* parameter required; string is NUL-terminated
+    e,f,g
+     floating-point number; float* parameter required
+    p
+     pointer value; void* parameter required
+    n
+     chars read so far; int* parameter required
+    [...]
+     longest non-empty string from specified set; char* parameter required; string is NUL-terminated
+    [^...]
+     longest non-empty string not from specified set; char* parameter required; string is NUL-terminated
+    %
+     literal %; no assignment 
+
+
+fseek function
+int|Zero on success, non-zero on error.
+FILE* stream|Pointer to a file structure.
+long offset|Number of bytes from <em>origin</em>.
+int origin|Initial position.
+ Sets file position for stream <em>stream</em> and clears end-of-file indicator. For a binary stream, file position is set to offset bytes from the position indicated by origin: beginning of file for SEEK_SET, current position for SEEK_CUR, or end of file for SEEK_END. Behaviour is similar for a text stream, but offset must be zero or, for SEEK_SET only, a value returned by ftell.
+
+fsetpos function
+int|Zero on success, non-zero on error.
+FILE* stream|Pointer to a file structure.
+const fpos_t* ptr|Position indicator storage.
+ Sets current position of stream <em>stream</em> to *ptr.
+
+ftell function
+long|The current file position for stream <em>stream</em>, or -1 on error.
+FILE* stream|Pointer to a file structure.
+ Gets the current position of a file pointer.
+
+fwrite function
+size_t|The number of objects written, which may be less than <em>nobj</em> if an error occurs.
+const void* ptr|Pointer to data to be written.
+size_t size|Item size in bytes.
+size_t nobj|Maximum number of items to be written.
+FILE* stream|Pointer to a file structure.
+ Writes data to a stream.
+
+getc function
+int|The character read, or <a href="EOF">EOF</a> for a read error or end-of-file.  Use <a href="ferror">ferror</a> or <a href="feof">feof</a> to check for an error or end-of-file.
+FILE* stream|Pointer to a file structure.
+ Returns a character from a stream.  This is equivalent to <a href="fgetc">fgetc</a> except that it may be a macro.
+
+getchar function
+int|The character read.
+void|
+ Returns a character from <a href="stdin">stdin</a>.  This is equivalent to <a href="getc">getc</a>(<a href="stdin">stdin</a>).
+
+gets function
+char*|<em>s</em>, or <a href="NULL">NULL</a> on end-of-file or error.  Use <a href="ferror">ferror</a> or <a href="feof">feof</a> to determine which one has occurred.
+char* s|Storage location for the input string.
+ Copies characters from <a href="stdin">stdin</a> into s until newline encountered, end-of-file reached, or error occurs. Does not copy newline. NUL-terminates s. <em>This function should not be used because of the potential for buffer overflow.</em>
+
+L_tmpnam constant
+ Number of characters required for temporary filename generated by tmpnam.
+
+NULL constant
+ Null pointer constant.
+
+perror function
+void|
+const char* s|
+ Prints s (if non-null) and <a href="strerror">strerror</a>(errno) to standard error as would:
+
+ <tt><a href="fprintf">fprintf</a>(<a href="stderr">stderr</a>, "%s: %s\n", (s != <a href="NULL">NULL</a> ? s : ""), <a href="strerror">strerror</a>(errno))</tt>
+
+
+printf function
+int|The number of characters printed, or a negative value if an error occurs.
+const char* format|Format control
+...|Optional arguments
+ <a href="printf">printf</a>(f, ...) is equivalent to <a href="fprintf">fprintf</a>(<a href="stdout">stdout</a>, f, ...)
+
+putc function
+int|The character written, or <a href="EOF">EOF</a> on end-of-file or error.  Use <a href="ferror">ferror</a> or <a href="feof">feof</a> to determine which one has occurred.
+int c|The character to be written.
+FILE* stream|Pointer to a file structure.
+ Writes a character to a stream.  This is equivalent to fputc except that it may be a macro.
+
+putchar function
+int|The character written, or <a href="EOF">EOF</a> on end-of-file or error.  Use <a href="ferror">ferror</a> or <a href="feof">feof</a> to determine which one has occurred.
+int c|The character to be written.
+ Writes a character to <a href="stdout">stdout</a>.  This is equivalent to <a href="putc">putc</a>(c, <a href="stdout">stdout</a>).
+
+puts function
+int|Non-negative on success or <a href="EOF">EOF</a> on error.
+const char* s|The string to write.
+ Writes s (excluding terminating NUL) and a newline to <a href="stdout">stdout</a>.
+
+remove function
+int|
+const char* filename|
+ Removes specified file. Returns non-zero on failure.
+
+rename function
+int|
+const char* oldname|
+const char* newname|
+ Changes name of file oldname to newname. Returns non-zero on failure.
+
+rewind function
+void|
+FILE* stream|Pointer to a file structure.
+ Equivalent to <a href="fseek">fseek</a>(stream, 0L, SEEK_SET); <a href="clearerr">clearerr</a>(stream).
+
+scanf function
+int|
+const char* format|
+...|
+ <a href="scanf">scanf</a>(f, ...) is equivalent to <a href="fscanf">fscanf</a>(<a href="stdin">stdin</a>, f, ...)
+
+SEEK_CUR constant
+ Value for origin argument to fseek specifying current file position.
+
+SEEK_END constant
+ Value for origin argument to fseek specifying end of file.
+
+SEEK_SET constant
+ Value for origin argument to fseek specifying beginning of file.
+
+setbuf function
+void|
+FILE* stream|Pointer to a file structure.
+char* buf|
+ Controls buffering for stream <em>stream</em>. For null buf, turns off buffering, otherwise equivalent to (void)<a href="setvbuf">setvbuf</a>(stream, buf, _IOFBF, BUFSIZ).
+
+setvbuf function
+int|
+FILE* stream|Pointer to a file structure.
+char* buf|
+int mode|
+size_t size|
+ Controls buffering for stream <em>stream</em>. mode is _IOFBF for full buffering, _IOLBF for line buffering, _IONBF for no buffering. Non-null buf specifies buffer of size size to be used; otherwise, a buffer is allocated. Returns non-zero on error. Call must be before any other operation on stream.
+
+size_t constant
+ Type for objects declared to store result of sizeof operator.
+
+sprintf function
+int|
+char* s|
+const char* format|
+...|
+ Like fprintf, but output written into string s, which must be large enough to hold the output, rather than to a stream. Output is NUL-terminated. Returns length (excluding the terminating NUL).
+
+sscanf function
+int|
+char* s|
+const char* format|
+...|
+ Like fscanf, but input read from string s.
+
+stderr constant
+ File pointer for standard error stream. Automatically opened when program execution begins.
+
+stdin constant
+ File pointer for standard input stream. Automatically opened when program execution begins.
+
+stdout constant
+ File pointer for standard output stream. Automatically opened when program execution begins.
+
+TMP_MAX constant
+ Minimum number of unique filenames generated by calls to tmpnam.
+
+tmpfile function
+FILE*|
+ Creates temporary file (mode "wb+") which will be removed when closed or on normal program termination. Returns stream or <a href="NULL">NULL</a> on failure.
+
+tmpnam function
+char*|
+char s[L_tmpnam]|
+ Assigns to s (if s non-null) and returns unique name for a temporary file. Unique name is returned for each of the first TMP_MAX invocations.
+
+ungetc function
+int|
+int c|
+FILE* stream|Pointer to a file structure.
+ Pushes c (which must not be EOF), onto (input) stream <em>stream</em> such that it will be returned by the next read. Only one character of pushback is guaranteed (for each stream). Returns c, or <a href="EOF">EOF</a> on error.
+
+vfprintf function
+int|
+FILE* stream|Pointer to a file structure.
+const char* format|
+va_list arg|
+ Equivalent to fprintf with variable argument list replaced by arg, which must have been initialised by the va_start macro (and may have been used in calls to va_arg).
+
+vprintf function
+int|
+const char* format|
+va_list arg|
+ Equivalent to printf with variable argument list replaced by arg, which must have been initialised by the va_start macro (and may have been used in calls to va_arg).
+
+vsprintf function
+int|
+char* s|
+const char* format|
+va_list arg|
+ Equivalent to sprintf with variable argument list replaced by arg, which must have been initialised by the va_start macro (and may have been used in calls to va_arg).
+
+##### stdlib.h #####
+
+abort function
+void|
+ Terminates program abnormally, by calling <a href="raise">raise</a>(<a href="SIGABRT">SIGABRT</a>).
+
+abs function
+int|The absolute value of <em>n</em>.
+int n|The number to get the absolute value of.
+ Calculates the absolute value of an int. 
+
+atexit function
+int|
+void (*fcm)(void)|
+ Registers fcn to be called when program terminates normally (or when main returns). Returns non-zero on failure.
+
+atof function
+double|
+const char* s|The float, as a string.
+ Equivalent to <a href="strtod">strtod</a>(s, (char**)<a href="NULL">NULL</a>) except that errno is not necessarily set on conversion error.
+
+atoi function
+int|
+const char* s|The int, as a string.
+ Equivalent to (int)<a href="strtol">strtol</a>(s, (char**)<a href="NULL">NULL</a>, 10) except that errno is not necessarily set on conversion error.
+
+atol function
+long|
+const char* s|The long, as a string.
+ Equivalent to <a href="strtol">strtol</a>(s, (char**)<a href="NULL">NULL</a>, 10) except that errno is not necessarily set on conversion error.
+
+bsearch function
+void*|
+const void* key|
+const void* base|
+size_t n|
+size_t size|
+int (*cmp)(const void* keyval, const void* datum)|
+ Searches ordered array base (of n objects each of size size) for item matching key according to comparison function cmp. cmp must return negative value if first argument is less than second, zero if equal and positive if greater. Items of base are assumed to be in ascending order (according to cmp). Returns a pointer to an item matching key, or <a href="NULL">NULL</a> if none found.
+
+calloc function
+void*|
+size_t nobj|
+size_t size|
+ Returns pointer to zero-initialised newly-allocated space for an array of nobj objects each of size size, or <a href="NULL">NULL</a> on error.
+
+div function
+div_t|
+int num|
+int denom|
+ Returns quotient and remainder of num/denom.
+
+div_t constant
+ Return type of <a href="div">div</a>(). Structure having members:
+
+ int quot;
+  quotient
+ int rem;
+  remainder 
+
+
+exit function
+void|
+int status|The return code to exit with.
+ Terminates program normally. Functions installed using atexit are called (in reverse order to that in which installed), open files are flushed, open streams are closed and control is returned to environment. status is returned to environment in implementation-dependent manner. Zero or EXIT_SUCCESS indicates successful termination and EXIT_FAILURE indicates unsuccessful termination. Implementations may define other values.
+
+EXIT_FAILURE constant
+ Value for status argument to <a href="exit"exit</a> indicating failure.
+
+EXIT_SUCCESS constant
+ Value for status argument to <a href="exit">exit</a> indicating success.
+
+free function
+void|
+void* p|Pointer to the memory to free.
+ If p non-null, deallocates space to which it points.
+
+getenv function
+char*|
+const char* name|The name of the environment variable.
+ Returns string associated with name name from implementation's environment, or <a href="NULL">NULL</a> if no such string exists.
+
+labs function
+long|
+long n|The long to get the absolute value of.
+ Returns absolute value of <em>n</em>.
+
+ldiv function
+ldiv_t|
+long num|
+long denom|
+ Returns quotient and remainder of num/denom.
+
+ldiv_t constant
+ Return type of <a href="ldiv">ldiv</a>(). Structure having members:
+
+ long quot;
+  quotient
+ long rem;
+  remainder 
+
+
+malloc function
+void*|
+size_t size|
+ Returns pointer to uninitialised newly-allocated space for an object of size size, or <a href="NULL">NULL</a> on error.
+
+NULL constant
+ Null pointer constant.
+
+qsort function
+void|
+void* base|
+size_t n|
+size_t size|
+int (*cmp)(const void*|
+const void*)|
+ Arranges into ascending order array base (of n objects each of size size) according to comparison function cmp. cmp must return negative value if first argument is less than second, zero if equal and positive if greater.
+
+rand function
+int|
+void|
+ Returns pseudo-random number in range 0 to RAND_MAX.
+
+RAND_MAX constant
+ Maximum value returned by <a href="rand">rand</a>().
+
+realloc function
+void*|
+void* p|
+size_t size|
+ Returns pointer to newly-allocated space for an object of size size, initialised, to minimum of old and new sizes, to existing contents of p (if non-null), or <a href="NULL">NULL</a> on error. On success, old object deallocated, otherwise unchanged.
+
+size_t constant
+ Type for objects declared to store result of sizeof operator.
+
+srand function
+void|
+unsigned int seed|
+ Uses seed as seed for new sequence of pseudo-random numbers. Initial seed is 1.
+
+
+strtod function
+double|
+const char* s|
+char** endp|
+ Converts initial characters (ignoring leading white space) of s to type double. If endp non-null, stores pointer to unconverted suffix in *endp. On overflow, sets errno to ERANGE and returns HUGE_VAL with the appropriate sign; on underflow, sets errno to ERANGE and returns zero; otherwise returns converted value.
+
+strtol function
+long|
+const char* s|
+char** endp|
+int base|
+ Converts initial characters (ignoring leading white space) of s to type long. If endp non-nu ll, stores pointer to unconverted suffix in *endp. If base between 2 and 36, that base used for conversion; if zero, leading (after any sign) 0X or 0x implies hexadecimal, leading 0 (after any sign) implies octal, otherwise decimal assumed. Leading 0X or 0x permitted for base hexadecimal. On overflow, sets errno to ERANGE and returns LONG_MAX or LONG_MIN (as appropriate for sign); otherwise returns converted value.
+
+strtoul function
+unsigned long|
+const char* s|
+char** endp|
+int base|
+ As for strtol except result is unsigned long and value on overflow is ULONG_MAX.
+
+system function
+int|
+const char* s|
+ If s is not <a href="NULL">NULL</a>, passes s to environment for execution, and returns status reported by command processor; if s is <a href="NULL">NULL</a>, non-zero returned if environment has a command processor.
+
+##### string.h #####
+
+memchr function
+void*|
+const void* cs|
+int c|
+size_t n|
+ Returns pointer to first occurrence of c in first n characters of cs, or <a href="NULL">NULL</a> if not found.
+
+memcmp function
+int|
+const void* cs|
+const void* ct|
+size_t n|
+ Compares at most (the first) n characters of cs and ct, returning negative value if cs&lt;ct, zero if cs==ct, positive value if cs&gt;ct.
+
+memcpy function
+void*|
+void* s|
+const void* ct|
+size_t n|
+ Copies n characters from ct to s and returns s. s may be corrupted if objects overlap.
+
+memmove function
+void*|
+void* s|
+const void* ct|
+size_t n|
+ Copies n characters from ct to s and returns s. s will not be corrupted if objects overlap.
+
+memset function
+void*|
+void* s|
+int c|
+size_t n|
+ Replaces each of the first n characters of s by c and returns s.
+
+
+NULL constant
+ Null pointer constant.
+
+size_t constant
+ Type for objects declared to store result of sizeof operator.
+
+strcat function
+char*|
+char* s|
+const char* ct|
+ Concatenate ct to s and return s.
+
+strchr function
+char*|
+const char* cs|
+int c|
+ Returns pointer to first occurrence of c in cs, or <a href="NULL">NULL</a> if not found.
+
+strcmp function
+int|
+const char* cs|
+const char* ct|
+ Compares cs with ct, returning negative value if cs&lt;ct, zero if cs==ct, positive value if cs&gt;ct.
+
+strcoll function
+int|
+const char* cs|
+const char* ct|
+ Compares cs with ct according to locale, returning negative value if cs&lt;ct, zero if cs==ct, positive value if cs&gt;ct.
+
+strcpy function
+char*|
+char* s|
+const char* ct|
+ Copies ct to s including terminating NUL and returns s.
+
+strcspn function
+size_t|
+const char* cs|
+const char* ct|
+ Returns length of prefix of cs which consists of characters which are not in ct.
+
+strerror function
+char*|
+int n|
+ Returns pointer to implementation-defined message string corresponding with error n.
+
+strlen function
+size_t|
+const char* cs|
+ Returns length of cs.
+
+strncat function
+char*|
+char* s|
+const char* ct|
+size_t n|
+ Concatenate at most n characters of ct to s. NUL-terminates s and return it.
+
+strncmp function
+int|
+const char* cs|
+const char* ct|
+size_t n|
+ Compares at most (the first) n characters of cs and ct, returning negative value if cs&lt;ct, zero if cs==ct, positive value if cs&gt;ct.
+
+strncpy function
+char*|
+char* s|
+const char* ct|
+size_t n|
+ Copies at most n characters of ct to s. Pads with NUL characters if ct is of length less than n. Note that this may leave s without NUL-termination. Return s.
+
+strpbrk function
+char*|
+const char* cs|
+const char* ct|
+ Returns pointer to first occurrence in cs of any character of ct, or <a href="NULL">NULL</a> if none is found.
+
+strrchr function
+char*|
+const char* cs|
+int c|
+ Returns pointer to last occurrence of c in cs, or <a href="NULL">NULL</a> if not found.
+
+strspn function
+size_t|
+const char* cs|
+const char* ct|
+ Returns length of prefix of cs which consists of characters which are in ct.
+
+strstr function
+char*|
+const char* cs|
+const char* ct|
+ Returns pointer to first occurrence of ct within cs, or <a href="NULL">NULL</a> if none is found.
+
+strtok function
+char*|
+char* s|
+const char* t|
+ Searches s for next token delimited by any character from ct. Non-<a href="NULL">NULL</a> s indicates the first call of a sequence. If a token is found, it is NUL-terminated and returned, otherwise <a href="NULL">NULL</a> is returned. ct need not be identical for each call in a sequence.
+
+strxfrm function
+size_t|
+char* s|
+const char* ct|
+size_t n|
+ Stores in s no more than n characters (including terminating NUL) of a string produced from ct according to a locale-specific transformation. Returns length of entire transformed string.
+
+##### time.h #####
+
+asctime function
+char*|
+const struct tm* tp|
+ Returns the given time as a string of the form:
+ Sun Jan 3 13:08:42 1988\n\0
+
+clock function
+clock_t|
+void|
+ Returns elapsed processor time used by program or -1 if not available.
+
+clock_t constant
+ An arithmetic type elapsed processor representing time.
+
+CLOCKS_PER_SEC constant
+ The number of clock_t units per second.
+
+ctime function
+char*|
+const time_t* tp|
+ Returns string equivalent to calendar time tp converted to local time. Equivalent to:
+ <a href="asctime">asctime</a>(<a href="localtime">localtime</a>(tp))
+
+difftime function
+double|
+time_t time2|
+time_t time1|
+ Returns the difference in seconds between time2 and time1.
+
+gmtime function
+struct tm*|
+const time_t* tp|
+ Returns calendar time *tp converted to Coordinated Universal Time, or <a href="NULL">NULL</a> if not available.
+
+localtime function
+struct tm*|
+const time_t* tp|
+ Returns calendar time *tp converted into local time.
+
+mktime function
+time_t|
+struct tm* tp|
+ If necessary, adjusts fields of *tp to fall withing normal ranges. Returns the corresponding calendar time, or -1 if it cannot be represented.
+
+NULL constant
+ Null pointer constant.
+
+strftime function
+size_t|
+char* s|
+size_t smax|
+const char* fmt|
+const struct tm* tp|
+ Formats *tp into s according to fmt. Places no more than smax characters into s, and returns number of characters produced (excluding terminating NUL), or 0 if greater than smax. Formatting conversions (%c) are:
+
+ A
+  name of weekday
+ a
+  abbreviated name of weekday
+ B
+  name of month
+ b
+  abbreviated name of month
+ c
+  local date and time representation
+ d
+  day of month [01-31]
+ H
+  hour (24-hour clock) [00-23]
+ I
+  hour (12-hour clock) [01-12]
+ j
+  day of year [001-366]
+ M
+  minute [00-59]
+ m
+  month [01-12]
+ p
+  local equivalent of "AM" or "PM"
+ S
+  second [00-61]
+ U
+  week number of year (Sunday as 1st day of week) [00-53]
+ W
+  week number of year (Monday as 1st day of week) [00-53]
+ w
+  weekday (Sunday as 0) [0-6]
+ X
+  local time representation
+ x
+  local date representation
+ Y
+  year with century
+ y
+  year without century [00-99]
+ Z
+  name (if any) of time zone
+ %
+  % 
+
+struct tm constant
+ Represents the components of calendar time:
+
+ int tm_sec;
+  seconds after the minute
+ int tm_min;
+  minutes after the hour
+ int tm_hour;
+  hours since midnight
+ int tm_mday;
+  day of the month
+ int tm_mon;
+  months since January
+ int tm_year;
+  years since 1900
+ int tm_wday;
+  days since Sunday
+ int tm_yday;
+  days since January 1
+ int tm_isdst;
+  Daylight Saving Time flag : is positive if DST is in effect, zero if not in effect, negative if information not known.
+
+ Implementations may change field order and include additional fields.
+
+time function
+time_t|
+time_t* tp|
+ Returns current calendar time or -1 if not available. If tp is non-<a href="NULL">NULL</a>, return value is also assigned to *tp.
+
+time_t constant
+ An arithmetic type representing calendar time.
+
