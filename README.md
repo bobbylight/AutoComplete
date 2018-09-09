@@ -4,6 +4,9 @@ Features include a completion choices list that updates as the user types, a "do
 
 AutoComplete is available under a [modified BSD license](https://github.com/bobbylight/AutoComplete/blob/master/src/main/dist/AutoComplete.License.txt).
 
+Available in the [Maven Central repository](http://search.maven.org/#search%7Cga%7C1%7Cautocomplete%20jar) (`com.fifesoft:autocomplete:XXX`).
+SNAPSHOT builds of the in-development, unreleased version are hosted on [Sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/fifesoft/autocomplete/).
+
 # Example Usage
 
 The example below shows how to add code completion for simple keywords to RSyntaxTextArea.
