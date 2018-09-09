@@ -94,7 +94,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private boolean aboveCaret;
 
 	/**
-	 * The background color of the description window
+	 * The background color of the description window.
 	 */
 	private Color descWindowColor;
 
@@ -211,13 +211,23 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @return The description window.
 	 */
 	private AutoCompleteDescWindow createDescriptionWindow() {
+
 		AutoCompleteDescWindow dw = new AutoCompleteDescWindow(this, ac);
 		dw.applyComponentOrientation(ac.getTextComponentOrientation());
+
 		Dimension size = preferredDescWindowSize;
 		if (size==null) {
 			size = getSize();
 		}
 		dw.setSize(size);
+
+		if (descWindowColor  != null) {
+		    dw.setBackground(descWindowColor);
+        }
+        else {
+            descWindowColor = dw.getBackground();
+        }
+
 		return dw;
 	}
 
@@ -275,6 +285,19 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 		return KeyStroke.getKeyStroke(key, mask);
 	}
+
+    /**
+     * Returns the background color of the description window.
+     *
+     * @return The background color, or {@code null} if it has not been created yet.
+     * @see #setDescriptionWindowColor(Color)
+     */
+    public Color getDescriptionWindowColor() {
+        if (descWindow != null) {
+            return descWindow.getBackground();
+        }
+        return descWindowColor;
+    }
 
 
 	/**
@@ -605,10 +628,12 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		}
 	}
 
+
 	/**
 	 * Sets the color of the description window.
 	 *
 	 * @param color The new color.  This cannot be <code>null</code>.
+     * @see #getDescriptionWindowColor()
 	 */
 	public void setDescriptionWindowColor(Color color) {
 		if (descWindow!=null) {
