@@ -82,7 +82,7 @@ public interface CompletionProvider {
 	 *         be used.
 	 * @see #setListCellRenderer(ListCellRenderer)
 	 */
-	ListCellRenderer getListCellRenderer();
+	ListCellRenderer<Object> getListCellRenderer();
 
 
 	/**
@@ -177,7 +177,7 @@ public interface CompletionProvider {
 	 * @param r The renderer to use.
 	 * @see #getListCellRenderer()
 	 */
-	void setListCellRenderer(ListCellRenderer r);
+	void setListCellRenderer(ListCellRenderer<Object> r);
 
 
 	/**

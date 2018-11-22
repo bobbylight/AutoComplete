@@ -95,7 +95,7 @@ public class AutoCompletion {
 	 * The renderer to use for the completion choices. If this is
 	 * <code>null</code>, then a default renderer is used.
 	 */
-	private ListCellRenderer renderer;
+	private ListCellRenderer<Object> renderer;
 
 	/**
 	 * The handler to use when an external URL is clicked in the help
@@ -143,7 +143,7 @@ public class AutoCompletion {
 	 * popup window (displayed when a {@link ParameterizedCompletion} is
 	 * code-completed). If this isn't set, a default renderer is used.
 	 */
-	private ListCellRenderer paramChoicesRenderer;
+	private ListCellRenderer<Object> paramChoicesRenderer;
 
 	/**
 	 * The keystroke that triggers the completion window.
@@ -428,7 +428,7 @@ public class AutoCompletion {
 	 * @see #setParamChoicesRenderer(ListCellRenderer)
 	 * @see #isParameterAssistanceEnabled()
 	 */
-	public ListCellRenderer getParamChoicesRenderer() {
+	public ListCellRenderer<Object> getParamChoicesRenderer() {
 		return paramChoicesRenderer;
 	}
 
@@ -861,13 +861,7 @@ public class AutoCompletion {
 		}
 
 		else if (count == 1) { // !isPopupVisible && autoCompleteSingleChoices
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					insertCompletion(completions.get(0));
-				}
-			});
+			SwingUtilities.invokeLater(() -> insertCompletion(completions.get(0)));
 		}
 
 		else {
@@ -1080,7 +1074,7 @@ public class AutoCompletion {
 	 *        default renderer is used.
 	 * @see #getListCellRenderer()
 	 */
-	public void setListCellRenderer(ListCellRenderer renderer) {
+	public void setListCellRenderer(ListCellRenderer<Object> renderer) {
 		this.renderer = renderer;
 		if (popupWindow != null) {
 			popupWindow.setListCellRenderer(renderer);
@@ -1099,7 +1093,7 @@ public class AutoCompletion {
 	 * @see #getParamChoicesRenderer()
 	 * @see #setParameterAssistanceEnabled(boolean)
 	 */
-	public void setParamChoicesRenderer(ListCellRenderer r) {
+	public void setParamChoicesRenderer(ListCellRenderer<Object> r) {
 		paramChoicesRenderer = r;
 	}
 

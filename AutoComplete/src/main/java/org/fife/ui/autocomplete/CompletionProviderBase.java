@@ -38,7 +38,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 * The renderer to use for completions from this provider.  If this is
 	 * <code>null</code>, a default renderer is used.
 	 */
-	private ListCellRenderer listCellRenderer;
+	private ListCellRenderer<Object> listCellRenderer;
 
 	/**
 	 * Text that marks the beginning of a parameter list, for example, '('.
@@ -85,9 +85,6 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 								new SortByRelevanceComparator();
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void clearParameterizedCompletionParams() {
 		paramListEnd = paramListStart = 0;
@@ -95,9 +92,6 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Completion> getCompletions(JTextComponent comp) {
 
@@ -132,63 +126,42 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	protected abstract List<Completion> getCompletionsImpl(JTextComponent comp);
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public ListCellRenderer getListCellRenderer() {
+	public ListCellRenderer<Object> getListCellRenderer() {
 		return listCellRenderer;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ParameterChoicesProvider getParameterChoicesProvider() {
 		return paramChoicesProvider;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public char getParameterListEnd() {
 		return paramListEnd;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getParameterListSeparator() {
 		return paramListSeparator;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public char getParameterListStart() {
 		return paramListStart;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public CompletionProvider getParent() {
 		return parent;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isAutoActivateOkay(JTextComponent tc) {
 		Document doc = tc.getDocument();
@@ -234,18 +207,12 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void setListCellRenderer(ListCellRenderer r) {
+	public void setListCellRenderer(ListCellRenderer<Object> r) {
 		listCellRenderer = r;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setParameterizedCompletionParams(char listStart,
 										String separator, char listEnd) {
@@ -264,9 +231,6 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setParent(CompletionProvider parent) {
 		this.parent = parent;

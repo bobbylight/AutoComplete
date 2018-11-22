@@ -112,12 +112,7 @@ class DemoRootPane extends JRootPane {
 		setContentPane(contentPane);
 
 		// Put the focus into the text area, not the "label" JEditorPane.
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				textArea.requestFocusInWindow();
-			}
-		});
+		SwingUtilities.invokeLater(() -> textArea.requestFocusInWindow());
 
 	}
 

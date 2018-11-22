@@ -31,7 +31,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 * The renderer to fall back on if one isn't specified by a provider.
 	 * This is usually <tt>this</tt>.
 	 */
-	private ListCellRenderer fallback;
+	private ListCellRenderer<Object> fallback;
 
 
 	/**
@@ -40,20 +40,17 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 * @return The fallback cell renderer.
 	 * @see #setFallbackCellRenderer(ListCellRenderer)
 	 */
-	public ListCellRenderer getFallbackCellRenderer() {
+	public ListCellRenderer<Object> getFallbackCellRenderer() {
 		return fallback;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
+	public Component getListCellRendererComponent(JList<?> list, Object value,
 						int index, boolean selected, boolean hasFocus) {
 		Completion c = (Completion)value;
 		CompletionProvider p = c.getProvider();
-		ListCellRenderer r = p.getListCellRenderer();
+		ListCellRenderer<Object> r = p.getListCellRenderer();
 		if (r!=null) {
 			return r.getListCellRendererComponent(list, value, index, selected,
 													hasFocus);
@@ -74,14 +71,11 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 *        <code>null</code>, <tt>this</tt> will be used.
 	 * @see #getFallbackCellRenderer()
 	 */
-	public void setFallbackCellRenderer(ListCellRenderer fallback) {
+	public void setFallbackCellRenderer(ListCellRenderer<Object> fallback) {
 		this.fallback = fallback;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void updateUI() {
 		super.updateUI();

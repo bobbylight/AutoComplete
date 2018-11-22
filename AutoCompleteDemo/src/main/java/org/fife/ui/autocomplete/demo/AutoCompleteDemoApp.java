@@ -53,20 +53,17 @@ public class AutoCompleteDemoApp extends JFrame {
 	 */
 	public static void main(String[] args) {
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				String laf = UIManager.getSystemLookAndFeelClassName();
-//laf = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
-				try {
-					UIManager.setLookAndFeel(laf);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				AutoCompleteDemoApp frame = new AutoCompleteDemoApp();
-				frame.getToolkit().setDynamicLayout(true);
-				frame.setVisible(true);
+		SwingUtilities.invokeLater(() -> {
+			String laf = UIManager.getSystemLookAndFeelClassName();
+			//laf = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+			try {
+				UIManager.setLookAndFeel(laf);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			AutoCompleteDemoApp frame = new AutoCompleteDemoApp();
+			frame.getToolkit().setDynamicLayout(true);
+			frame.setVisible(true);
 		});
 
 	}

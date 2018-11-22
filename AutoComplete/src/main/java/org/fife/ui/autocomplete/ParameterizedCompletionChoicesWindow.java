@@ -49,12 +49,12 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	/**
 	 * The list of completion choices.
 	 */
-	private JList list;
+	private JList<Completion> list;
 
 	/**
 	 * The currently displayed completion choices.
 	 */
-	private DefaultListModel model;
+	private DefaultListModel<Completion> model;
 
 	/**
 	 * A list of lists of choices for each parameter.
@@ -89,8 +89,8 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 		this.ac = ac;
 		ComponentOrientation o = ac.getTextComponentOrientation();
 
-		model = new DefaultListModel();
-		list = new JList(model);
+		model = new DefaultListModel<>();
+		list = new JList<>(model);
 		if (ac.getParamChoicesRenderer()!=null) {
 			list.setCellRenderer(ac.getParamChoicesRenderer());
 		}
@@ -166,7 +166,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 		}
 
 		int paramCount = pc.getParamCount();
-		choicesListList = new ArrayList<List<Completion>>(paramCount);
+		choicesListList = new ArrayList<>(paramCount);
 		JTextComponent tc = ac.getTextComponent();
 
 		for (int i=0; i<paramCount; i++) {
@@ -224,7 +224,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	public void setParameter(int param, String prefix) {
 
 		model.clear();
-		List<Completion> temp = new ArrayList<Completion>();
+		List<Completion> temp = new ArrayList<>();
 
 		if (choicesListList!=null && param>=0 && param<choicesListList.size()) {
 

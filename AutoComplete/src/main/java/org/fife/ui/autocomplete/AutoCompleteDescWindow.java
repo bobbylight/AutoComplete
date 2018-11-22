@@ -414,12 +414,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		}
 		descArea.setText(desc);
 		if (anchor!=null) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					descArea.scrollToReference(anchor);
-				}
-			});
+			SwingUtilities.invokeLater(() -> descArea.scrollToReference(anchor));
 		}
 		else {
 			descArea.setCaretPosition(0); // In case of scrolling

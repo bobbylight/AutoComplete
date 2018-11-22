@@ -91,14 +91,12 @@ public class AutoCompleteDemo extends JFrame {
 
    public static void main(String[] args) {
       // Instantiate GUI on the EDT.
-      SwingUtilities.invokeLater(new Runnable() {
-         public void run() {
-            try {
-               String laf = UIManager.getSystemLookAndFeelClassName();
-               UIManager.setLookAndFeel(laf);
-            } catch (Exception e) { /* Never happens */ }
-            new AutoCompleteDemo().setVisible(true);
-         }
+      SwingUtilities.invokeLater(() -> {
+        try {
+           String laf = UIManager.getSystemLookAndFeelClassName();
+           UIManager.setLookAndFeel(laf);
+        } catch (Exception e) { /* Never happens */ }
+        new AutoCompleteDemo().setVisible(true);
       });
    }
 

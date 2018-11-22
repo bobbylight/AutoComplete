@@ -58,7 +58,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	/**
 	 * The list of completion choices.
 	 */
-	private JList list;
+	private PopupList list;
 
 	/**
 	 * The contents of {@link #list()}.
@@ -653,7 +653,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *        a default renderer is used.
 	 * @see #getListCellRenderer()
 	 */
-	public void setListCellRenderer(ListCellRenderer renderer) {
+	public void setListCellRenderer(ListCellRenderer<Object> renderer) {
 		DelegatingCellRenderer dcr = (DelegatingCellRenderer)list.
 													getCellRenderer();
 		dcr.setFallbackCellRenderer(renderer);
@@ -1020,7 +1020,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	/**
 	 * The actual list of completion choices in this popup window.
 	 */
-	private class PopupList extends JList {
+	private class PopupList extends JList<Completion> {
 
 		PopupList(CompletionListModel model) {
 			super(model);

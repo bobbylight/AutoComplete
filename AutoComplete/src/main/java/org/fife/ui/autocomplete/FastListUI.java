@@ -10,9 +10,7 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.SystemColor;
+import java.awt.*;
 import javax.swing.JViewport;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
@@ -143,6 +141,7 @@ class FastListUI extends BasicListUI {
 	 * completions.
 	 */
 	@Override
+	@SuppressWarnings("unchecked") // BasicListUI has unparameterized JList
 	protected void updateLayoutState() {
 
 		ListModel model = list.getModel();
@@ -158,8 +157,7 @@ class FastListUI extends BasicListUI {
 
 		// Otherwise, assume all cells are the same height as the first cell,
 		// and estimate the necessary width.
-
-		ListCellRenderer renderer = list.getCellRenderer();
+		ListCellRenderer<Object> renderer = (ListCellRenderer<Object>)list.getCellRenderer();
 
 		cellWidth = list.getWidth();
 		if (list.getParent() instanceof JViewport) { // Always true for us
@@ -172,7 +170,7 @@ class FastListUI extends BasicListUI {
 
 		if (renderer != null) { // Definitely true that itemCount > 0 due to check above
 			Object value = model.getElementAt(0);
-			java.awt.Component c = renderer.getListCellRendererComponent(list,
+			Component c = renderer.getListCellRendererComponent(list,
 												value, 0, false, false);
 			rendererPane.add(c);
 			Dimension cellSize = c.getPreferredSize();

@@ -23,7 +23,7 @@ import javax.swing.AbstractListModel;
  * @author Robert Futrell
  * @version 1.0
  */
-class CompletionListModel extends AbstractListModel {
+class CompletionListModel extends AbstractListModel<Completion> {
 
 	/**
 	 * Container for items in this model.
@@ -35,7 +35,7 @@ class CompletionListModel extends AbstractListModel {
 	 * Constructor.
 	 */
 	CompletionListModel() {
-		delegate = new ArrayList<Completion>();
+		delegate = new ArrayList<>();
 	}
 
 
@@ -54,18 +54,12 @@ class CompletionListModel extends AbstractListModel {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public Object getElementAt(int index) {
+	public Completion getElementAt(int index) {
 		return delegate.get(index);
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int getSize() {
 		return delegate.size();

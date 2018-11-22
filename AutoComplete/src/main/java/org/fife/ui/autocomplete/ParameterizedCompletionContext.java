@@ -1049,12 +1049,9 @@ class ParameterizedCompletionContext {
 		private void handleDocumentEvent(final DocumentEvent e) {
 			if (!ignoringDocumentEvents) {
 				ignoringDocumentEvents = true;
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						possiblyUpdateParamCopies(e.getDocument());
-						ignoringDocumentEvents = false;
-					}
+				SwingUtilities.invokeLater(() -> {
+					possiblyUpdateParamCopies(e.getDocument());
+					ignoringDocumentEvents = false;
 				});
 			}
 		}
