@@ -70,11 +70,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	private JScrollPane scrollPane;
 
 	/**
-	 * The bottom panel, containing the toolbar and size grip.
-	 */
-	private JPanel bottomPanel;
-
-	/**
 	 * The toolbar with "back" and "forward" buttons.
 	 */
 	private JToolBar descWindowNavBar;
@@ -166,7 +161,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		descWindowNavBar.add(new JButton(backAction));
 		descWindowNavBar.add(new JButton(forwardAction));
 
-		bottomPanel = new JPanel(new BorderLayout());
+		JPanel bottomPanel = new JPanel(new BorderLayout());
 		b = new AbstractBorder() {
 			@Override
 			public Insets getBorderInsets(Component c) {
@@ -515,7 +510,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			setDisplayedDesc(completion, anchor, addToHistory);
 		}
 
-		public void setCompletion(Completion c, String anchor,
+		void setCompletion(Completion c, String anchor,
 									boolean addToHistory) {
 			this.completion = c;
 			this.anchor = anchor;
