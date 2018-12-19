@@ -100,7 +100,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private DefaultListCellRenderer delegate;
 
 	private static final String SUBSTANCE_RENDERER_CLASS_NAME =
-			"org.pushingpixels.substance.api.renderers.SubstanceDefaultListCellRenderer";
+			"org.pushingpixels.substance.api.renderer.SubstanceDefaultListCellRenderer";
 
 	/**
 	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
