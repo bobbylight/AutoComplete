@@ -35,7 +35,7 @@ import javax.swing.Action;
 public class RoundRobinAutoCompletion extends AutoCompletion {
 
 	/** The List of CompletionProviders to use. */
-	private List<CompletionProvider> cycle = new ArrayList<CompletionProvider>();
+	private List<CompletionProvider> cycle = new ArrayList<>();
 
 
 	/**

@@ -42,7 +42,7 @@ class ParameterizedCompletionInsertionInfo {
 
 	public void addReplacementCopy(String id, int start, int end) {
 		if (replacementCopies==null) {
-			replacementCopies = new ArrayList<ReplacementCopy>(1);
+			replacementCopies = new ArrayList<>(1);
 		}
 		replacementCopies.add(new ReplacementCopy(id, start, end));
 	}
@@ -59,7 +59,7 @@ class ParameterizedCompletionInsertionInfo {
 	 */
 	public void addReplacementLocation(int start, int end) {
 		if (replacementLocations==null) {
-			replacementLocations = new ArrayList<DocumentRange>(1);
+			replacementLocations = new ArrayList<>(1);
 		}
 		replacementLocations.add(new DocumentRange(start, end));
 	}

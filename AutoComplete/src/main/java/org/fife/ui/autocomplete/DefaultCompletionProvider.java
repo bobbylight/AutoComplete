@@ -228,13 +228,12 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 			// narrow it down to just the ParameterizedCompletions.
 			List<Completion> l = getCompletionByInputText(text);
 			if (l!=null && !l.isEmpty()) {
-				for (int i=0; i<l.size(); i++) {
-					Object o = l.get(i);
+				for (Object o : l) {
 					if (o instanceof ParameterizedCompletion) {
-						if (list==null) {
-							list = new ArrayList<ParameterizedCompletion>(1);
+						if (list == null) {
+							list = new ArrayList<>(1);
 						}
-						list.add((ParameterizedCompletion)o);
+						list.add((ParameterizedCompletion) o);
 					}
 				}
 			}
@@ -278,12 +277,9 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * @throws IOException If an IO error occurs.
 	 */
 	public void loadFromXML(File file) throws IOException {
-		BufferedInputStream bin = new BufferedInputStream(
-										new FileInputStream(file));
-		try {
+		try (BufferedInputStream bin = new BufferedInputStream(
+			new FileInputStream(file))) {
 			loadFromXML(bin);
-		} finally {
-			bin.close();
 		}
 	}
 
@@ -318,29 +314,24 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(true);
 		CompletionXMLParser handler = new CompletionXMLParser(this, cl);
-		BufferedInputStream bin = new BufferedInputStream(in);
-		try {
+		try (BufferedInputStream bin = new BufferedInputStream(in)) {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(bin, handler);
-			List<Completion> completions =  handler.getCompletions();
+			List<Completion> completions = handler.getCompletions();
 			addCompletions(completions);
 			char startChar = handler.getParamStartChar();
-			if (startChar!=0) {
+			if (startChar != 0) {
 				char endChar = handler.getParamEndChar();
 				String sep = handler.getParamSeparator();
-				if (endChar!=0 && sep!=null && sep.length()>0) { // Sanity
+				if (endChar != 0 && sep != null && sep.length() > 0) { // Sanity
 					setParameterizedCompletionParams(startChar, sep, endChar);
 				}
 			}
-		} catch (SAXException se) {
-			throw new IOException(se.toString());
-		} catch (ParserConfigurationException pce) {
-			throw new IOException(pce.toString());
-		} finally {
-			//long time = System.currentTimeMillis() - start;
-			//System.out.println("XML loaded in: " + time + "ms");
-			bin.close();
+		} catch (SAXException | ParserConfigurationException e) {
+			throw new IOException(e.toString());
 		}
+		//long time = System.currentTimeMillis() - start;
+		//System.out.println("XML loaded in: " + time + "ms");
 
 	}
 
@@ -364,11 +355,8 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 				throw new IOException("No such resource: " + resource);
 			}
 		}
-		BufferedInputStream bin = new BufferedInputStream(in);
-		try {
+		try (BufferedInputStream bin = new BufferedInputStream(in)) {
 			loadFromXML(bin);
-		} finally {
-			bin.close();
 		}
 	}
 

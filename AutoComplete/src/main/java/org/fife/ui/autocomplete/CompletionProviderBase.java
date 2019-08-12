@@ -108,7 +108,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 		// things alphabetical so we can easily narrow down completions to
 		// those starting with what was already typed.
 		if (/*sortByRelevance*/true) {
-			Collections.sort(completions, SORT_BY_RELEVANCE_COMPARATOR);
+			completions.sort(SORT_BY_RELEVANCE_COMPARATOR);
 		}
 
 		return completions;

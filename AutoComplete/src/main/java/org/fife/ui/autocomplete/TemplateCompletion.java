@@ -90,8 +90,8 @@ public class TemplateCompletion extends AbstractCompletion
 		this.definitionString = definitionString;
 		this.shortDescription = shortDescription;
 		this.summary = summary;
-		pieces = new ArrayList<TemplatePiece>(3);
-		params = new ArrayList<Parameter>(3);
+		pieces = new ArrayList<>(3);
+		params = new ArrayList<>(3);
 		parse(template);
 	}
 
@@ -184,7 +184,7 @@ public class TemplateCompletion extends AbstractCompletion
 		int selEnd = selStart;
 
 		Document doc = tc.getDocument();
-		String leadingWS = null;
+		String leadingWS;
 		try {
 			leadingWS = RSyntaxUtilities.getLeadingWhitespace(doc, dot);
 		} catch (BadLocationException ble) { // Never happens
@@ -290,7 +290,7 @@ public class TemplateCompletion extends AbstractCompletion
 	 */
 	private void parse(String template) {
 
-		int offs = 0;
+		int offs;
 		int lastOffs = 0;
 
 		while ((offs=template.indexOf('$', lastOffs))>-1 && offs<template.length()-1) {
@@ -356,7 +356,7 @@ public class TemplateCompletion extends AbstractCompletion
 
 			int lastOffs = 0;
 			do {
-				sb.append(text.substring(lastOffs, tab));
+				sb.append(text, lastOffs, tab);
 				sb.append(tabStr);
 				lastOffs = tab + 1;
 			} while ((tab=text.indexOf('\t', lastOffs))>-1);

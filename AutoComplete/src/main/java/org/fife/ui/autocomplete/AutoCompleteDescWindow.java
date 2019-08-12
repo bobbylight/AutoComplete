@@ -191,7 +191,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			}
 		}
 
-		history = new ArrayList<HistoryEntry>(1); // Usually small
+		history = new ArrayList<>(1); // Usually small
 		historyPos = -1;
 
 		timerAction = new TimerAction();
@@ -388,7 +388,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * Sets the description displayed in this window.
 	 *
 	 * @param item The item whose description you want to display.
-	 * @parma anchor The anchor to jump to, or <code>null</code> if none.
+	 * @param anchor The anchor to jump to, or <code>null</code> if none.
 	 * @param addToHistory Whether to add this page to the page history
 	 *        (as opposed to clearing it and starting anew).
 	 */

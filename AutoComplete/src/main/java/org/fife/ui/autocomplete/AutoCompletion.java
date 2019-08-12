@@ -13,7 +13,6 @@ import java.awt.event.*;
 import java.beans.*;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
@@ -572,7 +571,7 @@ public class AutoCompletion {
 	 * @return Whether debug should be enabled.
 	 */
 	private static boolean initDebug() {
-		boolean debug = false;
+		boolean debug;
 		try {
 			debug = Boolean.getBoolean("AutoCompletion.debug");
 		} catch (SecurityException se) { // We're in an applet or WebStart.
@@ -648,7 +647,7 @@ public class AutoCompletion {
 		// Install the function completion key, if there is one.
 		// NOTE: We cannot do this if the start char is ' ' (e.g. just a space
 		// between the function name and parameters) because it overrides
-		// RSTA's special space action. It seems KeyStorke.getKeyStroke(' ')
+		// RSTA's special space action. It seems KeyStroke.getKeyStroke(' ')
 		// hoses ctrl+space, shift+space, etc., even though I think it
 		// shouldn't...
 		char start = provider.getParameterListStart();
@@ -842,7 +841,7 @@ public class AutoCompletion {
 			popupWindow.setCompletions(completions);
 
 			if (!popupWindow.isVisible()) {
-				Rectangle r = null;
+				Rectangle r;
 				try {
 					r = textComponent.modelToView(textComponent
 							.getCaretPosition());

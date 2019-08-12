@@ -47,7 +47,7 @@ public abstract class AbstractCompletionProvider
 	public AbstractCompletionProvider() {
 		comparator = new CaseInsensitiveComparator();
 		clearParameterizedCompletionParams();
-		completions = new ArrayList<Completion>();
+		completions = new ArrayList<>();
 	}
 
 
@@ -164,7 +164,7 @@ public abstract class AbstractCompletionProvider
 	@SuppressWarnings("unchecked")
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
 
-		List<Completion> retVal = new ArrayList<Completion>();
+		List<Completion> retVal = new ArrayList<>();
 		String text = getAlreadyEnteredText(comp);
 
 		if (text!=null) {

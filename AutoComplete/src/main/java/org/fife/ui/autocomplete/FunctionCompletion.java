@@ -107,7 +107,7 @@ public class FunctionCompletion extends VariableCompletion
 	@Override
 	public int compareTo(Completion c2) {
 
-		int rc = -1;
+		int rc;
 
 		if (c2==this) {
 			rc = 0;
@@ -408,7 +408,7 @@ public class FunctionCompletion extends VariableCompletion
 	public void setParams(List<Parameter> params) {
 		if (params!=null) {
 			// Deep copy so parsing can re-use its array.
-			this.params = new ArrayList<Parameter>(params);
+			this.params = new ArrayList<>(params);
 		}
 	}
 

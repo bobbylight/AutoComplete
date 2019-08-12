@@ -235,7 +235,7 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	 */
 	public void setAttributes(List<? extends Parameter> attrs) {
 		// Deep copy so parsing can re-use its array.
-		this.attrs = new ArrayList<Parameter>(attrs);
+		this.attrs = new ArrayList<>(attrs);
 	}
 
 

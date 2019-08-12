@@ -16,7 +16,6 @@ import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -124,7 +123,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *         selected.
 	 */
 	public String getSelectedChoice() {
-		Completion c = (Completion)list.getSelectedValue();
+		Completion c = list.getSelectedValue();
 		return c==null ? null : c.toString();
 	}
 
@@ -243,9 +242,9 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 			if (/*sortByRelevance*/true) {
 				c = SORT_BY_RELEVANCE_COMPARATOR;
 			}
-			Collections.sort(temp, c);
-			for (int i=0; i<temp.size(); i++) {
-				model.addElement(temp.get(i));
+			temp.sort(c);
+			for (Completion completion : temp) {
+				model.addElement(completion);
 			}
 
 			int visibleRowCount = Math.min(model.size(), 10);

@@ -320,7 +320,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @return The selected value.
 	 */
 	public Completion getSelection() {
-		return isShowing() ? (Completion)list.getSelectedValue():lastSelection;
+		return isShowing() ? list.getSelectedValue() : lastSelection;
 	}
 
 
@@ -737,7 +737,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 				// Also, the newly-selected item in the choices list is
 				// probably different from the previous one anyway.
 				if (descWindow!=null) {
-					Completion c = (Completion)list.getSelectedValue();
+					Completion c = list.getSelectedValue();
 					if (c!=null) {
 						descWindow.setDescriptionFor(c);
 					}
@@ -760,7 +760,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			// you're getting roughly 2x the necessary Completions in memory
 			// until the Completions are actually passed to this window.
 			if (!visible) { // Do after super.setVisible(false)
-				lastSelection = (Completion)list.getSelectedValue();
+				lastSelection = list.getSelectedValue();
 				model.clear();
 			}
 
@@ -838,9 +838,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) {
-			Object value = list.getSelectedValue();
+			Completion value = list.getSelectedValue();
 			if (value!=null && descWindow!=null) {
-				descWindow.setDescriptionFor((Completion)value);
+				descWindow.setDescriptionFor(value);
 				positionDescWindow();
 			}
 		}

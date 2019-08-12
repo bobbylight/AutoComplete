@@ -179,8 +179,8 @@ class ParameterizedCompletionContext {
 		endingP = new OutlineHighlightPainter(
 				sc.getParameterizedCompletionCursorPositionColor());
 		paramCopyP = new ChangeableHighlightPainter(sc.getParameterCopyColor());
-		tags = new ArrayList<Object>(1); // Usually small
-		paramCopyInfos = new ArrayList<ParamCopyInfo>(1);
+		tags = new ArrayList<>(1); // Usually small
+		paramCopyInfos = new ArrayList<>(1);
 
 	}
 
@@ -408,13 +408,13 @@ class ParameterizedCompletionContext {
 
 
 	public List<Highlight> getParameterHighlights() {
-		List<Highlight> paramHighlights = new ArrayList<Highlight>(2);
+		List<Highlight> paramHighlights = new ArrayList<>(2);
 		JTextComponent tc = ac.getTextComponent();
 		Highlight[] highlights = tc.getHighlighter().getHighlights();
-		for (int i=0; i<highlights.length; i++) {
-			HighlightPainter painter = highlights[i].getPainter();
-			if (painter==p || painter==endingP) {
-				paramHighlights.add(highlights[i]);
+		for (Highlight highlight : highlights) {
+			HighlightPainter painter = highlight.getPainter();
+			if (painter == p || painter == endingP) {
+				paramHighlights.add(highlight);
 			}
 		}
 		return paramHighlights;
@@ -698,8 +698,8 @@ class ParameterizedCompletionContext {
 	private void removeParameterHighlights() {
 		JTextComponent tc = ac.getTextComponent();
 		Highlighter h = tc.getHighlighter();
-		for (int i=0; i<tags.size(); i++) {
-			h.removeHighlight(tags.get(i));
+		for (Object tag : tags) {
+			h.removeHighlight(tag);
 		}
 		tags.clear();
 		for (ParamCopyInfo pci : paramCopyInfos) {
@@ -952,7 +952,7 @@ class ParameterizedCompletionContext {
 		public int getCount(String text, char ch) {
 			int count = 0;
 			int old = 0;
-			int pos = 0;
+			int pos;
 			while ((pos=text.indexOf(ch, old))>-1) {
 				count++;
 				old = pos + 1;

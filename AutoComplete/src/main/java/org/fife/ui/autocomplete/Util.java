@@ -89,8 +89,8 @@ public final class Util {
 			if (desktop!=null) {
 				try {
 					Method m = desktop.getClass().getDeclaredMethod(
-								"browse", new Class[] { URI.class });
-					m.invoke(desktop, new Object[] { uri });
+								"browse", URI.class);
+					m.invoke(desktop, uri);
 					success = true;
 				} catch (RuntimeException re) {
 					throw re; // Keep FindBugs happy
@@ -125,7 +125,7 @@ public final class Util {
 					Method m = desktopClazz.
 						getDeclaredMethod("isDesktopSupported");
 
-					boolean supported= ((Boolean)m.invoke(null)).booleanValue();
+					boolean supported= (Boolean) m.invoke(null);
 					if (supported) {
 						m = desktopClazz.getDeclaredMethod("getDesktop");
 						desktop = m.invoke(null);
@@ -220,8 +220,8 @@ public final class Util {
 		GraphicsEnvironment env = GraphicsEnvironment.
 										getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = env.getScreenDevices();
-		for (int i=0; i<devices.length; i++) {
-			GraphicsConfiguration config = devices[i].getDefaultConfiguration();
+		for (GraphicsDevice device : devices) {
+			GraphicsConfiguration config = device.getDefaultConfiguration();
 			Rectangle gcBounds = config.getBounds();
 			if (gcBounds.contains(x, y)) {
 				return gcBounds;

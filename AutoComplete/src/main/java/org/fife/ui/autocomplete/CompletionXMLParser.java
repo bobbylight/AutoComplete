@@ -112,8 +112,8 @@ public class CompletionXMLParser extends DefaultHandler {
 			// May also be null, but that's okay.
 			completionCL = defaultCompletionClassLoader;
 		}
-		completions = new ArrayList<Completion>();
-		params = new ArrayList<ParameterizedCompletion.Parameter>(1);
+		completions = new ArrayList<>();
+		params = new ArrayList<>(1);
 		desc = new StringBuilder();
 		paramDesc = new StringBuilder();
 		returnValDesc = new StringBuilder();
@@ -144,7 +144,7 @@ public class CompletionXMLParser extends DefaultHandler {
 		FunctionCompletion fc = null;
 		if (funcCompletionType!=null) {
 			try {
-				Class<?> clazz = null;
+				Class<?> clazz;
 				if (completionCL!=null) {
 					clazz = Class.forName(funcCompletionType, true,
 											completionCL);
@@ -231,7 +231,7 @@ public class CompletionXMLParser extends DefaultHandler {
 		else if (doingKeywords) {
 
 			if ("keyword".equals(qName)) {
-				Completion c = null;
+				Completion c;
 				if ("function".equals(type)) {
 					c = createFunctionCompletion();
 				}
@@ -424,7 +424,7 @@ public class CompletionXMLParser extends DefaultHandler {
 			paramStartChar = getSingleChar(attrs.getValue("paramStartChar"));
 			paramEndChar = getSingleChar(attrs.getValue("paramEndChar"));
 			paramSeparator = attrs.getValue("paramSeparator");
-			//paramTerminal = attrs.getValua("terminal");
+			//paramTerminal = attrs.getValue("terminal");
 		}
 		else if ("completionTypes".equals(qName)) {
 			inCompletionTypes = true;
