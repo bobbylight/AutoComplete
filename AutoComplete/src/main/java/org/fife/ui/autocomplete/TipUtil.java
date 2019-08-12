@@ -12,9 +12,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
 import java.net.URL;
-import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.text.html.HTMLDocument;
@@ -88,6 +86,29 @@ final class TipUtil {
 
 
 	/**
+	 * Returns the color to use for hyperlink-style components in tool tips.
+	 * This method will return <code>Color.blue</code> unless it appears
+	 * that the current LookAndFeel uses light text on a dark background,
+	 * in which case a brighter alternative is returned.
+	 *
+	 * @return The color to use for hyperlinks in tool tips.
+	 * @see Util#getHyperlinkForeground()
+	 */
+	static Color getToolTipHyperlinkForeground() {
+
+		// This property is defined by all standard LaFs, even Nimbus (!),
+		// but you never know what crazy LaFs there are...
+		Color fg = UIManager.getColor("ToolTip.foreground");
+		if (fg == null || TipUtil.isNimbusLookAndFeel()) {
+			fg = new JToolTip().getForeground();
+		}
+
+		return Util.isLightForeground(fg) ? Util.LIGHT_HYPERLINK_FG : Color.blue;
+
+	}
+
+
+	/**
 	 * Returns whether a color is a Nimbus DerivedColor, which is troublesome
 	 * in that it doesn't use its RGB values (uses HSB instead?) and so
 	 * querying them is useless.
@@ -139,7 +160,10 @@ final class TipUtil {
 		// Set the foreground color.  Important because when rendering HTML,
 		// default foreground becomes black, which may not match all LAF's
 		// (e.g. Substance).
-		Color fg = UIManager.getColor("Label.foreground");
+		Color fg = UIManager.getColor("ToolTip.foreground");
+		if (fg == null) {
+			fg = UIManager.getColor("Label.foreground");
+		}
 		if (fg==null || (isNimbus && isDerivedColor(fg))) {
 			fg = SystemColor.textText;
 		}
@@ -163,7 +187,7 @@ final class TipUtil {
 		// Always add link foreground rule.  Unfortunately these CSS rules
 		// stack each time the LaF is changed (how can we overwrite them
 		// without clearing out the important "standard" ones?).
-		Color linkFG = Util.getHyperlinkForeground();
+		Color linkFG = TipUtil.getToolTipHyperlinkForeground();
 		doc.getStyleSheet().addRule(
 				"a { color: " + Util.getHexString(linkFG) + "; }");
 

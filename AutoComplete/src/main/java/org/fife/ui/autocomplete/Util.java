@@ -18,8 +18,7 @@ import java.net.URI;
 import java.security.AccessControlException;
 import java.util.regex.Pattern;
 
-import javax.swing.JLabel;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
@@ -60,7 +59,7 @@ public final class Util {
 	 * Used for the color of hyperlinks when a LookAndFeel uses light text
 	 * against a dark background.
 	 */
-	private static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
+	public static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
 
 	private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]*>");
 
@@ -192,6 +191,7 @@ public final class Util {
 	 * brighter alternative is returned.
 	 *
 	 * @return The color to use for hyperlinks.
+	 * @see TipUtil#getToolTipHyperlinkForeground()
 	 */
 	static Color getHyperlinkForeground() {
 
