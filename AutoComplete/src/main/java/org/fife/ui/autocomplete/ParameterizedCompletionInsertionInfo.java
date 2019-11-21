@@ -23,7 +23,7 @@ import org.fife.ui.rsyntaxtextarea.DocumentRange;
  * @author Robert Futrell
  * @version 1.0
  */
-class ParameterizedCompletionInsertionInfo {
+public class ParameterizedCompletionInsertionInfo {
 
 	private int minOffs;
 	private Position maxOffs;
@@ -35,7 +35,7 @@ class ParameterizedCompletionInsertionInfo {
 	private List<ReplacementCopy> replacementCopies;
 
 
-	ParameterizedCompletionInsertionInfo() {
+	public ParameterizedCompletionInsertionInfo() {
 		defaultEnd = -1;
 	}
 
