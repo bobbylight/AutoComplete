@@ -359,7 +359,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 			g.fillRect(0, 0, getWidth(), getHeight());
 		}
 		if (getIcon()!=null) {
-			getIcon().paintIcon(this, g, 0, 0);
+			Icon icon = getIcon();
+			icon.paintIcon(this, g, 0, (getHeight() - icon.getIconHeight()) / 2);
 		}
 
 		String text = getText();
