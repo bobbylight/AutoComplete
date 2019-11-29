@@ -52,7 +52,12 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  *
  * Leading whitespace is automatically added to lines if the template spans
  * more than one line, and if used with a text component using a
- * <code>PlainDocument</code>, tabs will be converted to spaces if requested.
+ * <code>PlainDocument</code>, tabs will be converted to spaces if requested.<p>
+ *
+ * In order to use any instance of a {@code ParameterizedCompletion}, you need
+ * to call {@link AutoCompletion#setParameterAssistanceEnabled(boolean)} with
+ * a value of {@code true} first.  Otherwise, any completion choices will be
+ * visible in the completion list, but won't insert anything when selected.
  *
  * @author Robert Futrell
  * @version 1.0

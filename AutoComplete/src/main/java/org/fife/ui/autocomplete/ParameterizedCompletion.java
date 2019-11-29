@@ -12,7 +12,12 @@ import javax.swing.text.JTextComponent;
 
 
 /**
- * A completion option that takes parameters, such as a function or method.
+ * A completion option that takes parameters, such as a function or method.<p>
+ *
+ * In order to use any instance of a {@code ParameterizedCompletion}, you need
+ * to call {@link AutoCompletion#setParameterAssistanceEnabled(boolean)} with
+ * a value of {@code true} first.  Otherwise, any completion choices will be
+ * visible in the completion list, but won't insert anything when selected.
  *
  * @author Robert Futrell
  * @version 1.0
