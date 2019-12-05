@@ -148,6 +148,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		descArea.addHyperlinkListener(this);
 		scrollPane = new JScrollPane(descArea);
 		Border b = BorderFactory.createEmptyBorder();
+		descArea.setBackground(ac.getDescWindowColor());
 		scrollPane.setBorder(b);
 		scrollPane.setViewportBorder(b);
 		scrollPane.setBackground(descArea.getBackground());
@@ -158,6 +159,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		backAction = new ToolBarBackAction(o.isLeftToRight());
 		forwardAction = new ToolBarForwardAction(o.isLeftToRight());
 		descWindowNavBar.setFloatable(false);
+		descWindowNavBar.setBackground(ac.getDescWindowColor());
 		descWindowNavBar.add(new JButton(backAction));
 		descWindowNavBar.add(new JButton(forwardAction));
 
@@ -174,9 +176,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			}
 		};
 		bottomPanel.setBorder(b);
+		bottomPanel.setBackground(ac.getDescWindowColor());
 		SizeGrip rp = new SizeGrip();
 		bottomPanel.add(descWindowNavBar, BorderLayout.LINE_START);
 		bottomPanel.add(rp, BorderLayout.LINE_END);
+		rp.setBackground(ac.getDescWindowColor());
 		cp.add(bottomPanel, BorderLayout.SOUTH);
 		setContentPane(cp);
 
