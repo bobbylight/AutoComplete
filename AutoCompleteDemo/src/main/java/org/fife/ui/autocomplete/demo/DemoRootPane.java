@@ -307,9 +307,9 @@ class DemoRootPane extends JRootPane {
 			"at any time to see a list of completion choices (function names, "+
 			"for example). If there is only one possible completion, it will " +
 			"be automatically inserted.<p>" +
-			"Also, completions are context-sensitive.  If you type Ctrl+Space" +
-			"in a comment or in the middle of a string, you will get " +
-			"different completion choices than if you are in code.";
+			"Also, completions are context-sensitive.  If you type " +
+			"Ctrl+Space in a comment or in the middle of a string, you will " +
+			"get different completion choices than if you are in code.";
 		ep.setText(text);
 		ep.setBorder(BorderFactory.createEmptyBorder(5,5,10,5));
 		ep.setEditable(false);

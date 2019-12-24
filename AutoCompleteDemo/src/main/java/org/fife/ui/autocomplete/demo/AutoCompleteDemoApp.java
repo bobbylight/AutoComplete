@@ -42,7 +42,7 @@ public class AutoCompleteDemoApp extends JFrame {
 		setTitle("AutoCompletion Demo");
 		setSize(new Dimension(500,600));//pack();
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
 
