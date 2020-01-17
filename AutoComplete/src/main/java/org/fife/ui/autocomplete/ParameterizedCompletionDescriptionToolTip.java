@@ -32,6 +32,11 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 class ParameterizedCompletionDescriptionToolTip {
 
 	/**
+	 * The backing AutoCompletion.
+	 */
+	private AutoCompletion ac;
+
+	/**
 	 * The actual tool tip.
 	 */
 	private JWindow tooltip;
@@ -46,6 +51,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 */
 	private ParameterizedCompletion pc;
 
+	private boolean overflow;
 
 	/**
 	 * Constructor.
@@ -60,6 +66,7 @@ class ParameterizedCompletionDescriptionToolTip {
 
 		tooltip = new JWindow(owner);
 
+		this.ac = ac;
 		this.pc = pc;
 
 		descLabel = new JLabel();
@@ -157,28 +164,33 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @return Whether the text needed to be updated.
 	 */
 	public boolean updateText(int selectedParam) {
-
 		StringBuilder sb = new StringBuilder("<html>");
 		int paramCount = pc.getParamCount();
-		for (int i=0; i<paramCount; i++) {
+		if (overflow) {
+			String temp = pc.getParam(Math.min(paramCount-1, selectedParam)).toString();
+			sb.append("...<b>")
+				.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false))
+				.append("</b>...");
+		} else {
+			for (int i=0; i<paramCount; i++) {
+				if (i==selectedParam) {
+					sb.append("<b>");
+				}
 
-			if (i==selectedParam) {
-				sb.append("<b>");
+				// Some parameter types may have chars in them unfriendly to HTML
+				// (such as type parameters in Java).  We need to take care to
+				// escape these.
+				String temp = pc.getParam(i).toString();
+				sb.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false));
+
+				if (i==selectedParam) {
+					sb.append("</b>");
+				}
+				if (i<paramCount-1) {
+					sb.append(pc.getProvider().getParameterListSeparator());
+				}
+
 			}
-
-			// Some parameter types may have chars in them unfriendly to HTML
-			// (such as type parameters in Java).  We need to take care to
-			// escape these.
-			String temp = pc.getParam(i).toString();
-			sb.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false));
-
-			if (i==selectedParam) {
-				sb.append("</b>");
-			}
-			if (i<paramCount-1) {
-				sb.append(pc.getProvider().getParameterListSeparator());
-			}
-
 		}
 
 		if (selectedParam>=0 && selectedParam<paramCount) {
@@ -192,7 +204,13 @@ class ParameterizedCompletionDescriptionToolTip {
 		}
 
 		descLabel.setText(sb.toString());
-		tooltip.pack();
+		if (!overflow && sb.length() > ac.getParameterDescriptionTruncateThreshold()) {
+			overflow = true;
+			updateText(selectedParam);
+		} else {
+			overflow = false;
+			tooltip.pack();
+		}
 
 		return true;
 

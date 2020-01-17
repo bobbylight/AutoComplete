@@ -138,6 +138,11 @@ public class AutoCompletion {
 	private boolean parameterAssistanceEnabled;
 
 	/**
+	 * The maximum length to attempt to display the 'full' parameter description for before truncating.
+	 */
+	private int parameterDescriptionTruncateThreshold = 300;
+
+	/**
 	 * A renderer used for {@link Completion}s in the optional parameter choices
 	 * popup window (displayed when a {@link ParameterizedCompletion} is
 	 * code-completed). If this isn't set, a default renderer is used.
@@ -1277,6 +1282,18 @@ public class AutoCompletion {
 		if (paramChoicesRenderer instanceof JComponent) {
 			((JComponent) paramChoicesRenderer).updateUI();
 		}
+	}
+
+	public int getParameterDescriptionTruncateThreshold() {
+		return parameterDescriptionTruncateThreshold;
+	}
+
+	/**
+	 * Set the maximum number of characters that the {@link ParameterizedCompletionDescriptionToolTip} will attempt to
+	 * display on one line before truncating to a short-form representation.
+	 */
+	public void setParameterDescriptionTruncateThreshold(int truncateThreshold) {
+		this.parameterDescriptionTruncateThreshold = truncateThreshold;
 	}
 
 	/**
