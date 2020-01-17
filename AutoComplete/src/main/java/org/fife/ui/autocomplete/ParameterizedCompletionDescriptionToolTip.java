@@ -10,6 +10,7 @@
 package org.fife.ui.autocomplete;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.Window;
 import javax.swing.BorderFactory;
@@ -134,7 +135,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		}
 
 		tooltip.setLocation(x, y);
-
+		EventQueue.invokeLater(tooltip::pack);
 	}
 
 
