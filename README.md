@@ -7,9 +7,22 @@ AutoComplete is available under a [modified BSD license](https://github.com/bobb
 Available in the [Maven Central repository](http://search.maven.org/#search%7Cga%7C1%7Cautocomplete%20jar) (`com.fifesoft:autocomplete:XXX`).
 SNAPSHOT builds of the in-development, unreleased version are hosted on [Sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/fifesoft/autocomplete/).
 
+# Compiling
+
+AutoComplete is built using Gradle.  To compile the source, run all tests, and build the distribution jar,
+you must check out AutoComplete and its sister project `RSyntaxTextArea` side by side.
+Then use Gradle to build:
+
+    cd RSyntaxTextArea
+    gradlew build
+    cd ../AutoComplete
+    gradlew build --warning-mode all
+
+
 # Example Usage
 
-The example below shows how to add code completion for simple keywords to RSyntaxTextArea.
+Besides, the `AutoCompleteDemo` child module, the example below shows how to add code completion for
+simple keywords to RSyntaxTextArea.
 
 ```java
 import java.awt.*;

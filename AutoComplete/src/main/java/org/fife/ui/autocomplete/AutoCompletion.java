@@ -140,7 +140,7 @@ public class AutoCompletion {
 	/**
 	 * The maximum length to attempt to display the 'full' parameter description for before truncating.
 	 */
-	private int parameterDescriptionTruncateThreshold = 300;
+	private int parameterDescriptionTruncateThreshold;
 
 	/**
 	 * A renderer used for {@link Completion}s in the optional parameter choices
@@ -267,6 +267,7 @@ public class AutoCompletion {
 		setShowDescWindow(false);
 		setHideOnCompletionProviderChange(true);
 		setHideOnNoText(true);
+		setParameterDescriptionTruncateThreshold(300);
 		parentWindowListener = new ParentWindowListener();
 		textComponentListener = new TextComponentListener();
 		autoActivationListener = new AutoActivationListener();
@@ -486,6 +487,18 @@ public class AutoCompletion {
 	*/
 	public Color getDescWindowColor() {
 		return descWindowColor;
+	}
+
+
+	/**
+	 * Returns the maximum number of characters that the {@link ParameterizedCompletionDescriptionToolTip}
+	 * will attempt to display on one line before truncating to a short-form representation.
+	 *
+	 * @return The number of characters.
+	 * @see #setParameterDescriptionTruncateThreshold(int)
+	 */
+	public int getParameterDescriptionTruncateThreshold() {
+		return parameterDescriptionTruncateThreshold;
 	}
 
 
@@ -1284,17 +1297,18 @@ public class AutoCompletion {
 		}
 	}
 
-	public int getParameterDescriptionTruncateThreshold() {
-		return parameterDescriptionTruncateThreshold;
-	}
 
 	/**
-	 * Set the maximum number of characters that the {@link ParameterizedCompletionDescriptionToolTip} will attempt to
-	 * display on one line before truncating to a short-form representation.
+	 * Sets the maximum number of characters that the {@link ParameterizedCompletionDescriptionToolTip}
+	 * will attempt to display on one line before truncating to a short-form representation.
+	 *
+	 * @param truncateThreshold The number of characters before truncation occurs.
+	 * @see #getParameterDescriptionTruncateThreshold()
 	 */
 	public void setParameterDescriptionTruncateThreshold(int truncateThreshold) {
 		this.parameterDescriptionTruncateThreshold = truncateThreshold;
 	}
+
 
 	/**
 	 * Listens for events in the text component to auto-activate the code
