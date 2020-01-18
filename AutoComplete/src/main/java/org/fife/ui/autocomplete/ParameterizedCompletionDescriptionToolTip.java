@@ -165,15 +165,31 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @return Whether the text needed to be updated.
 	 */
 	public boolean updateText(int selectedParam) {
+
 		StringBuilder sb = new StringBuilder("<html>");
 		int paramCount = pc.getParamCount();
+
 		if (overflow) {
-			String temp = pc.getParam(Math.min(paramCount-1, selectedParam)).toString();
-			sb.append("...<b>")
-				.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false))
-				.append("</b>...");
-		} else {
+			if (selectedParam < paramCount) { // Not end-of-function parameter
+				String temp = pc.getParam(Math.min(paramCount - 1, selectedParam)).toString();
+				sb.append("...<b>")
+					.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false))
+					.append("</b>...");
+				// Hacky calls to hide tool tip if "trailing" parameter is focused and we are displaying only
+				// one argument at a time, then re-show if it they tab back into a parameter.  Otherwise we
+				// end up showing an empty tool tip here
+				if (!isVisible()) {
+					setVisible(true);
+				}
+			}
+			else {
+				setVisible(false);
+			}
+		}
+		else {
+
 			for (int i=0; i<paramCount; i++) {
+
 				if (i==selectedParam) {
 					sb.append("<b>");
 				}
@@ -208,7 +224,8 @@ class ParameterizedCompletionDescriptionToolTip {
 		if (!overflow && sb.length() > ac.getParameterDescriptionTruncateThreshold()) {
 			overflow = true;
 			updateText(selectedParam);
-		} else {
+		}
+		else {
 			overflow = false;
 			tooltip.pack();
 		}

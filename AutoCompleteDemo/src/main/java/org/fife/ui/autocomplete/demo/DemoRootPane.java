@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -34,13 +35,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.text.TextAction;
 
-import org.fife.ui.autocomplete.AutoCompletion;
-import org.fife.ui.autocomplete.BasicCompletion;
-import org.fife.ui.autocomplete.CompletionCellRenderer;
-import org.fife.ui.autocomplete.CompletionProvider;
-import org.fife.ui.autocomplete.DefaultCompletionProvider;
-import org.fife.ui.autocomplete.LanguageAwareCompletionProvider;
-import org.fife.ui.autocomplete.ShorthandCompletion;
+import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -149,6 +144,35 @@ class DemoRootPane extends JRootPane {
 		cp.addCompletion(new ShorthandCompletion(cp, "main",
 							"int main(int argc, char **argv)"));
 
+		// Add a parameterized completion with a ton of parameters (see #67)
+		FunctionCompletion functionCompletionWithLotsOfParameters = new FunctionCompletion(cp, "long", "int");
+		functionCompletionWithLotsOfParameters.setParams(Arrays.asList(
+			new ParameterizedCompletion.Parameter("int", "intVal"),
+			new ParameterizedCompletion.Parameter("float", "floatVal"),
+			new ParameterizedCompletion.Parameter("string", "stringVal"),
+			new ParameterizedCompletion.Parameter("int", "otherVal1"),
+			new ParameterizedCompletion.Parameter("int", "otherVal2"),
+			new ParameterizedCompletion.Parameter("int", "otherVal3"),
+			new ParameterizedCompletion.Parameter("int", "otherVal4"),
+			new ParameterizedCompletion.Parameter("int", "otherVal5"),
+			new ParameterizedCompletion.Parameter("int", "otherVal6"),
+			new ParameterizedCompletion.Parameter("int", "otherVal7"),
+			new ParameterizedCompletion.Parameter("int", "otherVal8"),
+			new ParameterizedCompletion.Parameter("int", "otherVal9"),
+			new ParameterizedCompletion.Parameter("int", "otherVal9"),
+			new ParameterizedCompletion.Parameter("int", "otherVal10"),
+			new ParameterizedCompletion.Parameter("int", "otherVal11"),
+			new ParameterizedCompletion.Parameter("int", "otherVal12"),
+			new ParameterizedCompletion.Parameter("int", "otherVal13"),
+			new ParameterizedCompletion.Parameter("int", "otherVal14"),
+			new ParameterizedCompletion.Parameter("int", "otherVal15"),
+			new ParameterizedCompletion.Parameter("int", "otherVal16"),
+			new ParameterizedCompletion.Parameter("int", "otherVal17"),
+			new ParameterizedCompletion.Parameter("int", "otherVal18"),
+			new ParameterizedCompletion.Parameter("int", "otherVal19"),
+			new ParameterizedCompletion.Parameter("int", "otherVal20")
+		));
+		cp.addCompletion(functionCompletionWithLotsOfParameters);
 		return cp;
 
 	}
