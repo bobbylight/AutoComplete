@@ -1,5 +1,3 @@
 dependencies {
-    implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/classes/java/main")
-    implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/resources/main")
     implementation project(path: ':AutoComplete')
 }

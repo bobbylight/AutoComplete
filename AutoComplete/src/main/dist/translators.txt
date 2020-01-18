@@ -1,0 +1,19 @@
+Translators
+-----------
+
+  Arabic:                 Mawaheb, Linostar
+  Chinese:                Terrance, peter_barnes, Sunquan, sonyichi, zvest
+  Chinese (Traditional):  kin Por Fok, liou xiao
+  Dutch:                  Roel, Sebastiaan, lovepuppy
+  French:                 Pat, PivWan
+  German:                 Domenic, bikerpete
+  Hungarian:              Zityi, flatron
+  Indonesian:             azis, Sonny
+  Italian:                Luca, stepagweb
+  Japanese:               Josh, izumi, tomoM
+  Korean:                 Changkyoon, sbrownii
+  Polish:                 Chris, Maciej Mrug
+  Portuguese (Brazil):    Pat, Marcos Parmeggiani, Leandro
+  Russian:                Nadiya, Vladimir
+  Spanish:                Leonardo, phrodo, daloporhecho
+  Turkish:                Cahit, Burak

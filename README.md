@@ -1,26 +1,29 @@
-AutoComplete is a code completion library for Swing JTextComponents, with enhanced functionality available when used with its sister project [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea).
-
-Features include a completion choices list that updates as the user types, a "documentation" companion window for displaying documentation about the currently selected completion choice, and parameter assistance (e.g. tabbing through function/method parameters, with tool tip assistance for each argument and a possible list of valid variable completions for each).
+AutoComplete is a code completion library for Swing JTextComponents, with enhanced functionality available
+for instances of [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea).
 
 AutoComplete is available under a [modified BSD license](https://github.com/bobbylight/AutoComplete/blob/master/AutoComplete/src/main/dist/AutoComplete.License.txt).
 
-Available in the [Maven Central repository](http://search.maven.org/#search%7Cga%7C1%7Cautocomplete%20jar) (`com.fifesoft:autocomplete:XXX`).
-SNAPSHOT builds of the in-development, unreleased version are hosted on [Sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/fifesoft/autocomplete/).
+# Features
+* A completion choices list that updates as the user types
+* A "documentation" companion window for displaying documentation about the currently selected completion choice
+* Parameter assistance (e.g. tabbing through function/method parameters, with tool tip assistance for each argument
+  and a possible list of valid variable completions for each)
+
+# Adding to Your Project
+This library is available in the
+[Maven Central repository](http://search.maven.org/#search%7Cga%7C1%7Cautocomplete%20jar) (`com.fifesoft:autocomplete:XXX`).
+SNAPSHOT builds of the in-development, unreleased version are hosted on
+[Sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/fifesoft/autocomplete/).
 
 # Compiling
-
 AutoComplete is built using Gradle.  To compile the source, run all tests, and build the distribution jar,
-you must check out AutoComplete and its sister project `RSyntaxTextArea` side by side.
-Then use Gradle to build:
+simply run the following gradle command:
 
-    cd RSyntaxTextArea
-    gradlew build
-    cd ../AutoComplete
-    gradlew build --warning-mode all
-
+```bash
+gradlew clean build --warning-mode all
+```
 
 # Example Usage
-
 Besides, the `AutoCompleteDemo` child module, the example below shows how to add code completion for
 simple keywords to RSyntaxTextArea.
 
@@ -116,12 +119,10 @@ public class AutoCompleteDemo extends JFrame {
 }
 ```
 # Sister Projects
-
 * [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea) provides syntax highlighting, code folding, and many other features out-of-the-box.
 * [RSTALanguageSupport](https://github.com/bobbylight/RSTALanguageSupport) - Code completion for RSTA for the following languages: Java, JavaScript, HTML, PHP, JSP, Perl, C, Unix Shell.  Built on both RSTA and AutoComplete.
 * [SpellChecker](https://github.com/bobbylight/SpellChecker) - Adds squiggle-underline spell checking to RSyntaxTextArea.
 * [RSTAUI](https://github.com/bobbylight/RSTAUI) - Common dialogs needed by text editing applications: Find, Replace, Go to Line, File Properties.
 
 # Getting Help
-
 * Add an [issue on GitHub](https://github.com/bobbylight/AutoComplete/issues)
