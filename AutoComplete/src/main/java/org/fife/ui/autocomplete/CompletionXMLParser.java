@@ -71,7 +71,7 @@ public class CompletionXMLParser extends DefaultHandler {
 	/**
 	 * If specified in the XML, this class will be used instead of
 	 * {@link FunctionCompletion} when appropriate.  This class should extend
-	 * <tt>FunctionCompletion</tt>, or stuff will break.
+	 * {@code FunctionCompletion}, or stuff will break.
 	 */
 	private String funcCompletionType;
 

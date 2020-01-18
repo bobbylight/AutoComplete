@@ -213,7 +213,7 @@
     </module>
 	
 	<module name="SuppressionFilter">
-		<property name="file" value="config/checkstyle/acSuppressions.xml"/>
+        <property name="file" value="${config_loc}/acSuppressions.xml"/>
 	</module>
 
 </module>

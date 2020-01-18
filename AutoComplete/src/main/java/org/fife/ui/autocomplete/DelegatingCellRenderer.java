@@ -29,7 +29,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 
 	/**
 	 * The renderer to fall back on if one isn't specified by a provider.
-	 * This is usually <tt>this</tt>.
+	 * This is usually {@code this}.
 	 */
 	private ListCellRenderer<Object> fallback;
 
@@ -68,7 +68,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 * Sets the fallback cell renderer.
 	 *
 	 * @param fallback The fallback cell renderer.  If this is
-	 *        <code>null</code>, <tt>this</tt> will be used.
+	 *        <code>null</code>, {@code this} will be used.
 	 * @see #getFallbackCellRenderer()
 	 */
 	public void setFallbackCellRenderer(ListCellRenderer<Object> fallback) {

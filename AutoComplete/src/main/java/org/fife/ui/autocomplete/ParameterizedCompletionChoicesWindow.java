@@ -303,7 +303,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 
 	/**
-	 * Updates the <tt>LookAndFeel</tt> of this window.
+	 * Updates the {@code LookAndFeel} of this window.
 	 */
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(this);

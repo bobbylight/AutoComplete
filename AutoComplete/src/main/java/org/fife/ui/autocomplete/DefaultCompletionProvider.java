@@ -48,7 +48,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	/**
 	 * Used to speed up {@link #getCompletionsAt(JTextComponent, Point)},
 	 * since this may be called multiple times in succession (this is usually
-	 * called by <tt>JTextComponent.getToolTipText()</tt>, and if the user
+	 * called by {@code JTextComponent.getToolTipText()}, and if the user
 	 * wiggles the mouse while a tool tip is displayed, this method gets
 	 * repeatedly called.  It can be costly so we try to speed it up a tad).
 	 */

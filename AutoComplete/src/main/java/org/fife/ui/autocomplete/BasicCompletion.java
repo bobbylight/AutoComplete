@@ -130,7 +130,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 *
 	 * <code>getInputText() + " - " + shortDesc</code>
 	 *
-	 * otherwise, it will return <tt>getInputText()</tt>.
+	 * otherwise, it will return {@code getInputText()}.
 	 *
 	 * @return A string representation of this completion.
 	 */

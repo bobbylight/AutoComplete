@@ -69,7 +69,7 @@ public interface CompletionProvider {
 	 * mouse over completed text.
 	 *
 	 * @param comp The text component.
-	 * @param p The position, usually from a <tt>MouseEvent</tt>.
+	 * @param p The position, usually from a {@code MouseEvent}.
 	 * @return The completions, or an empty list if there are none.
 	 */
 	List<Completion> getCompletionsAt(JTextComponent comp, Point p);
@@ -186,14 +186,14 @@ public interface CompletionProvider {
 	 * and methods will not have their parameters auto-completed.
 	 *
 	 * @param listStart The character that marks the beginning of a list of
-	 *        parameters, such as '<tt>(</tt>' in C or Java.
+	 *        parameters, such as '{@code (}' in C or Java.
 	 * @param separator Text that should separate parameters in a parameter
-	 *        list when one is inserted.  For example, "<tt>, </tt>".
+	 *        list when one is inserted.  For example, "{@code , }".
 	 * @param listEnd The character that marks the end of a list of parameters,
-	 *        such as '<tt>)</tt>' in C or Java.
-	 * @throws IllegalArgumentException If either <tt>listStart</tt> or
-	 *         <tt>listEnd</tt> is not printable ASCII, or if
-	 *         <tt>separator</tt> is <code>null</code> or an empty string.
+	 *        such as '{@code )}' in C or Java.
+	 * @throws IllegalArgumentException If either {@code listStart} or
+	 *         {@code listEnd} is not printable ASCII, or if
+	 *         {@code separator} is <code>null</code> or an empty string.
 	 * @see #clearParameterizedCompletionParams()
 	 */
 	void setParameterizedCompletionParams(char listStart,

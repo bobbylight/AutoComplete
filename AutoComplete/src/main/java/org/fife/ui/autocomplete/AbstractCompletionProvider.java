@@ -58,7 +58,7 @@ public abstract class AbstractCompletionProvider
 	 *
 	 * @param c The completion to add.
 	 * @throws IllegalArgumentException If the completion's provider isn't
-	 *         this <tt>CompletionProvider</tt>.
+	 *         this {@code CompletionProvider}.
 	 * @see #addCompletions(List)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
@@ -75,7 +75,7 @@ public abstract class AbstractCompletionProvider
 	 * @param completions The completions to add.  This cannot be
 	 *        <code>null</code>.
 	 * @throws IllegalArgumentException If a completion's provider isn't
-	 *         this <tt>CompletionProvider</tt>.
+	 *         this {@code CompletionProvider}.
 	 * @see #addCompletion(Completion)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
@@ -114,7 +114,7 @@ public abstract class AbstractCompletionProvider
 
 	/**
 	 * Removes all completions from this provider.  This does not affect
-	 * the parent <tt>CompletionProvider</tt>, if there is one.
+	 * the parent {@code CompletionProvider}, if there is one.
 	 *
 	 * @see #addCompletion(Completion)
 	 * @see #addCompletions(List)
@@ -126,12 +126,12 @@ public abstract class AbstractCompletionProvider
 
 
 	/**
-	 * Returns a list of <tt>Completion</tt>s in this provider with the
+	 * Returns a list of {@code Completion}s in this provider with the
 	 * specified input text.
 	 *
 	 * @param inputText The input text to search for.
 	 * @return A list of {@link Completion}s, or <code>null</code> if there
-	 *         are no matching <tt>Completion</tt>s.
+	 *         are no matching {@code Completion}s.
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Completion> getCompletionByInputText(String inputText) {

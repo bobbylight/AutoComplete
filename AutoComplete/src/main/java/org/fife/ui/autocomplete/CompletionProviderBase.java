@@ -20,7 +20,7 @@ import javax.swing.text.Segment;
 
 /**
  * A base class for all standard completion providers.  This class implements
- * functionality that should be sharable across all <tt>CompletionProvider</tt>
+ * functionality that should be sharable across all {@code CompletionProvider}
  * implementations.
  *
  * @author Robert Futrell

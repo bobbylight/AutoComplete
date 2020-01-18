@@ -819,7 +819,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 
 	/**
-	 * Updates the <tt>LookAndFeel</tt> of this window and the description
+	 * Updates the {@code LookAndFeel} of this window and the description
 	 * window.
 	 */
 	public void updateUI() {

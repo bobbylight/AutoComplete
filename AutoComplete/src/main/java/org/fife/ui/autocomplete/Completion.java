@@ -14,7 +14,7 @@ import javax.swing.text.JTextComponent;
 
 /**
  * Represents a completion choice.  A {@link CompletionProvider} returns lists
- * of objects implementing this interface.  A <tt>Completion</tt> contains the
+ * of objects implementing this interface.  A {@code Completion} contains the
  * following information:
  *
  * <ul>
@@ -27,7 +27,7 @@ import javax.swing.text.JTextComponent;
  *       can be displayed in a helper "tooltip"-style window beside the
  *       completion list.  This may be <code>null</code>.  It may also be
  *       lazily generated to cut down on memory usage.
- *   <li>The <tt>CompletionProvider</tt> that returned this completion.
+ *   <li>The {@code CompletionProvider} that returned this completion.
  *   <li>Tool tip text that can be displayed when a mouse hovers over this
  *       completion in a text component.
  * </ul>
@@ -137,11 +137,11 @@ public interface Completion extends Comparable<Completion> {
 	 * completion.<p>
 	 *
 	 * Note that for this functionality to be enabled, a
-	 * <tt>JTextComponent</tt> must be registered with the
-	 * <tt>ToolTipManager</tt>, and the text component must know to search
+	 * {@code JTextComponent} must be registered with the
+	 * {@code ToolTipManager}, and the text component must know to search
 	 * for this value.  In the case of an
 	 * <a href="http://fifesoft.com/rsyntaxtextarea">RSyntaxTextArea</a>, this
-	 * can be done with a <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> that
+	 * can be done with a {@code org.fife.ui.rtextarea.ToolTipSupplier} that
 	 * calls into
 	 * {@link CompletionProvider#getCompletionsAt(JTextComponent, java.awt.Point)}.
 	 *

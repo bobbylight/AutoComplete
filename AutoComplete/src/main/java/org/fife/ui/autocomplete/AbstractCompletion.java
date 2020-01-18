@@ -15,8 +15,8 @@ import javax.swing.text.JTextComponent;
 /**
  * Base class for possible completions.  Most, if not all, {@link Completion}
  * implementations can extend this class.  It remembers the
- * <tt>CompletionProvider</tt> that returns this completion, and also implements
- * <tt>Comparable</tt>, allowing such completions to be compared
+ * {@code CompletionProvider} that returns this completion, and also implements
+ * {@code Comparable}, allowing such completions to be compared
  * lexicographically (ignoring case).<p>
  *
  * This implementation assumes the input text and replacement text are the

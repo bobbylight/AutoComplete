@@ -442,7 +442,7 @@ public class AutoCompletion {
 	 * Returns the text to replace with in the document. This is a "last-chance"
 	 * hook for subclasses to make special modifications to the completion text
 	 * inserted. The default implementation simply returns
-	 * <tt>c.getReplacementText()</tt>. You usually will not need to modify this
+	 * {@code c.getReplacementText()}. You usually will not need to modify this
 	 * method.
 	 *
 	 * @param c The completion being inserted.

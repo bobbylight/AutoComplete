@@ -39,12 +39,12 @@ import org.fife.ui.rtextarea.ToolTipSupplier;
  * for example.<p>
  *
  * This provider also implements the
- * <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> interface, which allows it
+ * {@code org.fife.ui.rtextarea.ToolTipSupplier} interface, which allows it
  * to display tooltips for completion choices.  Thus the standard
  * {@link VariableCompletion} and {@link FunctionCompletion} completions should
  * be able to display tooltips with the variable declaration or function
- * definition (provided the <tt>RSyntaxTextArea</tt> was registered with the
- * <tt>javax.swing.ToolTipManager</tt>).
+ * definition (provided the {@code RSyntaxTextArea} was registered with the
+ * {@code javax.swing.ToolTipManager}).
  *
  * @author Robert Futrell
  * @version 1.0
@@ -400,8 +400,8 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	/**
 	 * Returns the tool tip to display for a mouse event.<p>
 	 *
-	 * For this method to be called, the <tt>RSyntaxTextArea</tt> must be
-	 * registered with the <tt>javax.swing.ToolTipManager</tt> like so:
+	 * For this method to be called, the {@code RSyntaxTextArea} must be
+	 * registered with the {@code javax.swing.ToolTipManager} like so:
 	 *
 	 * <pre>
 	 * ToolTipManager.sharedInstance().registerComponent(textArea);

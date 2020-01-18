@@ -14,11 +14,11 @@ import javax.swing.text.JTextComponent;
 /**
  * A completion for a variable (or constant) in a programming language.<p>
  *
- * This completion type uses its <tt>shortDescription</tt> property as part of
+ * This completion type uses its {@code shortDescription} property as part of
  * its summary returned by {@link #getSummary()}; for this reason, it may be
  * a little longer (even much longer), if desired, than what is recommended
- * for <tt>BasicCompletion</tt>s (where the <tt>shortDescription</tt> is used
- * in {@link #toString()} for <tt>ListCellRenderers</tt>).
+ * for {@code BasicCompletion}s (where the {@code shortDescription} is used
+ * in {@link #toString()} for {@code ListCellRenderers}).
  *
  * @author Robert Futrell
  * @version 1.0
@@ -112,11 +112,11 @@ public class VariableCompletion extends BasicCompletion {
 	 * completion.<p>
 	 *
 	 * Note that for this functionality to be enabled, a
-	 * <tt>JTextComponent</tt> must be registered with the
-	 * <tt>ToolTipManager</tt>, and the text component must know to search
+	 * {@code JTextComponent} must be registered with the
+	 * {@code ToolTipManager}, and the text component must know to search
 	 * for this value.  In the case of an
 	 * <a href="http://fifesoft.com/rsyntaxtextarea">RSyntaxTextArea</a>, this
-	 * can be done with a <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> that
+	 * can be done with a {@code org.fife.ui.rtextarea.ToolTipSupplier} that
 	 * calls into
 	 * {@link CompletionProvider#getCompletionsAt(JTextComponent, java.awt.Point)}.
 	 *
