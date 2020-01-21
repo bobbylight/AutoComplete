@@ -27,4 +27,5 @@
 <!-- Need to specify at least one of the two attributes below. -->
 <!ATTLIST param
           name       CDATA #IMPLIED
-          type       CDATA #IMPLIED>
+          type       CDATA #IMPLIED
+          endParam   (true|false) "false">
