@@ -53,6 +53,7 @@ public class CompletionXMLParser extends DefaultHandler {
 	private StringBuilder desc;
 	private String paramName;
 	private String paramType;
+	private boolean endParam;
 	private StringBuilder paramDesc;
 	private List<ParameterizedCompletion.Parameter> params;
 	private String definedIn;
@@ -260,8 +261,7 @@ public class CompletionXMLParser extends DefaultHandler {
 					}
 					else if ("param".equals(qName)) {
 						FunctionCompletion.Parameter param =
-							new FunctionCompletion.Parameter(paramType,
-														paramName);
+							new FunctionCompletion.Parameter(paramType, paramName, endParam);
 						if (paramDesc.length()>0) {
 							param.setDescription(paramDesc.toString());
 							paramDesc.setLength(0);
@@ -407,6 +407,7 @@ public class CompletionXMLParser extends DefaultHandler {
 					if ("param".equals(qName)) {
 						paramName = attrs.getValue("name");
 						paramType = attrs.getValue("type");
+						endParam = Boolean.parseBoolean(attrs.getValue("endParam"));
 						inParam = true;
 					}
 					if (inParam) {
