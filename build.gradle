@@ -3,12 +3,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.3.1'
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.0.0'
     }
 }
 
 plugins {
-    id 'com.github.spotbugs' version '2.0.1'
+    id 'com.github.spotbugs' version '4.0.1'
 }
 
 group = 'com.fifesoft'
@@ -23,7 +23,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '6.1'
+        gradleVersion = '6.2.2'
     }
 }
 
@@ -34,19 +34,33 @@ subprojects {
     apply plugin: 'com.github.spotbugs'
 
     checkstyle {
-        toolVersion = '8.28'
+        toolVersion = '8.30'
         configFile = '../config/checkstyle/checkstyle.xml' as File // Relative to subprojects
     }
 
-    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    spotbugsMain {
         reports {
-            xml.enabled = false
-            html.enabled = true
+            html {
+                enabled = true
+            }
+            xml {
+                enabled = false
+            }
+        }
+    }
+    spotbugsTest {
+        reports {
+            html {
+                enabled = true
+            }
+            xml {
+                enabled = false
+            }
         }
     }
 
     dependencies {
-        testImplementation 'junit:junit:4.12'
+        testImplementation 'junit:junit:4.13'
     }
 
     compileJava {
