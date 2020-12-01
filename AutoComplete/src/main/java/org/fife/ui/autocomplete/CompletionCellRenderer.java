@@ -331,7 +331,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 
 	private void init() {
-		//setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
+		//setDisplayFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 		setShowTypes(true);
 		typeColor = createTypeColor();
 		paramColor = createParamColor();
