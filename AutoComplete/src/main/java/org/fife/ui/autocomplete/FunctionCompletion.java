@@ -283,7 +283,12 @@ public class FunctionCompletion extends VariableCompletion
 				start = end + sep.length();
 			}
 		}
-		sb.append(getProvider().getParameterListEnd());
+
+		char charListEnd = getProvider().getParameterListEnd();
+		if (charListEnd > 0) {
+			sb.append(getProvider().getParameterListEnd());
+		}
+
 		int endOffs = dot + sb.length();
 		endOffs -= 1;//getProvider().getParameterListStart().length();
 		info.addReplacementLocation(endOffs, endOffs); // offset after function

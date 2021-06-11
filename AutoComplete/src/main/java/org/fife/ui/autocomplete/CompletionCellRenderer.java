@@ -9,6 +9,8 @@
  */
 package org.fife.ui.autocomplete;
 
+import org.fife.ui.rsyntaxtextarea.HtmlUtil;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -153,7 +155,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	private String createParamColor() {
 		return Util.isLightForeground(getForeground()) ?
-				Util.getHexString(Util.getHyperlinkForeground()): "#aa0077";
+			HtmlUtil.getHexString(Util.getHyperlinkForeground()): "#aa0077";
 	}
 
 
@@ -648,7 +650,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public void setParamColor(Color color) {
 		if (color!=null) {
-			paramColor = Util.getHexString(color);
+			paramColor = HtmlUtil.getHexString(color);
 		}
 	}
 
@@ -677,7 +679,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 */
 	public void setTypeColor(Color color) {
 		if (color!=null) {
-			typeColor = Util.getHexString(color);
+			typeColor = HtmlUtil.getHexString(color);
 		}
 	}
 

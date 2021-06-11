@@ -114,7 +114,7 @@ public interface CompletionProvider {
 	 * function or method.
 	 *
 	 * @return The text for a parameter list end, for example,
-	 *         '<code>)</code>'.
+	 *         '<code>)</code>', or {@code 0} if none.
 	 * @see #getParameterListStart()
 	 * @see #getParameterListSeparator()
 	 * @see #setParameterizedCompletionParams(char, String, char)

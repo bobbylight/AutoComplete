@@ -8,6 +8,8 @@
  */
 package org.fife.ui.autocomplete;
 
+import org.fife.ui.rsyntaxtextarea.HtmlUtil;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
@@ -182,14 +184,14 @@ final class TipUtil {
 		doc.getStyleSheet().addRule(
 				"body { font-family: " + font.getFamily() +
 						"; font-size: " + font.getSize() + "pt" +
-						"; color: " + Util.getHexString(fg) + "; }");
+						"; color: " + HtmlUtil.getHexString(fg) + "; }");
 
 		// Always add link foreground rule.  Unfortunately these CSS rules
 		// stack each time the LaF is changed (how can we overwrite them
 		// without clearing out the important "standard" ones?).
 		Color linkFG = TipUtil.getToolTipHyperlinkForeground();
 		doc.getStyleSheet().addRule(
-				"a { color: " + Util.getHexString(linkFG) + "; }");
+				"a { color: " + HtmlUtil.getHexString(linkFG) + "; }");
 
 		URL url = TipUtil.class.getResource("bullet_black.png");
 		if (url!=null) {

@@ -147,44 +147,6 @@ public final class Util {
 
 
 	/**
-	 * Returns a hex string for the specified color, suitable for HTML.
-	 *
-	 * @param c The color.
-	 * @return The string representation, in the form "<code>#rrggbb</code>",
-	 *         or <code>null</code> if <code>c</code> is <code>null</code>.
-	 */
-	public static String getHexString(Color c) {
-
-		if (c==null) {
-			return null;
-		}
-
-		// Don't assume 0xff alpha
-		//return "#" + Integer.toHexString(c.getRGB()&0xffffff).substring(2);
-
-		StringBuilder sb = new StringBuilder("#");
-		int r = c.getRed();
-		if (r<16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(r));
-		int g = c.getGreen();
-		if (g<16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(g));
-		int b = c.getBlue();
-		if (b<16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(b));
-
-		return sb.toString();
-
-	}
-
-
-	/**
 	 * Returns the color to use for hyperlink-style components.  This method
 	 * will return <code>Color.blue</code> unless it appears that the current
 	 * LookAndFeel uses light text on a dark background, in which case a

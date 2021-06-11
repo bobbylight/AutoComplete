@@ -24,8 +24,9 @@ gradlew clean build --warning-mode all
 ```
 
 # Example Usage
-Besides, the `AutoCompleteDemo` child module, the example below shows how to add code completion for
-simple keywords to RSyntaxTextArea.
+The example below shows how to add code completion for simple keywords to
+RSyntaxTextArea.  For more examples, see the `AutoCompleteDemo`
+submodule in this project.
 
 ```java
 import java.awt.*;

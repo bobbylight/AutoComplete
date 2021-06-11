@@ -8,10 +8,11 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.spotbugs' version '4.6.0'
+    id 'com.github.spotbugs' version '4.7.1'
 }
 
 group = 'com.fifesoft'
+// NOTE: Local Java 8:  /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
 
 allprojects {
 
@@ -23,7 +24,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '6.7.1'
+        gradleVersion = '7.0.2'
     }
 }
 
@@ -34,8 +35,8 @@ subprojects {
     apply plugin: 'com.github.spotbugs'
 
     checkstyle {
-        toolVersion = '8.37'
-        configFile = '../config/checkstyle/checkstyle.xml' as File // Relative to subprojects
+        toolVersion = '8.43'
+        configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
     spotbugsMain {
@@ -60,12 +61,12 @@ subprojects {
     }
 
     dependencies {
-        testImplementation 'junit:junit:4.13.1'
+        testImplementation 'junit:junit:4.13.2'
     }
 
     compileJava {
-        sourceCompatibility javaVersion
-        targetCompatibility javaVersion
+        sourceCompatibility javaVersion.toString()
+        targetCompatibility javaVersion.toString()
         options.debug = true
         options.debugOptions.debugLevel = 'source,vars,lines'
         options.compilerArgs << "-Xlint:deprecation" << '-Xlint:unchecked'

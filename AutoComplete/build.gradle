@@ -11,7 +11,7 @@ assert current().isJava8Compatible()
 archivesBaseName = 'autocomplete'
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.1.2'
+    api 'com.fifesoft:rsyntaxtextarea:3.1.3-SNAPSHOT'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
@@ -32,42 +32,6 @@ java {
 jar {
 	manifest { from sharedManifest }
 }
-
-// We use "distributions" to create the zip files uploaded to SourceForge
-distributions {
-	main {
-        distributionBaseName = 'autocomplete'
-		contents {
-			from { [ 'build/libs' ] }
-			rename 'AutoComplete-.*\\.jar', 'autocomplete.jar'
-		}
-	}
-	src {
-        distributionBaseName = 'autocomplete'
-	}
-}
-distZip.classifier = null
-distZip.dependsOn jar
-srcDistZip.classifier = 'src'
-srcDistZip {
-	from projectDir
-	include 'src/**/*'
-	include 'build.gradle'
-	include '.classpath'
-	include '.project'
-	include 'gradle.properties'
-	include 'gradle/**/*'
-	include 'gradlew*'
-	include 'README.md'
-	include '.settings/**'
-}
-
-task buildSourceForgeZips {
-    doLast {
-        println 'Building zip files for SourceForge'
-    }
-}
-buildSourceForgeZips.dependsOn clean, jar, distZip, srcDistZip
 
 publishing {
 	repositories {

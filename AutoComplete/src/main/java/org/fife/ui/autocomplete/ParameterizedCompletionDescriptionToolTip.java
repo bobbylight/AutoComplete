@@ -19,8 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
+import org.fife.ui.rsyntaxtextarea.HtmlUtil;
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
-import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 
 
 /**
@@ -173,7 +173,7 @@ class ParameterizedCompletionDescriptionToolTip {
 			if (selectedParam < paramCount) { // Not end-of-function parameter
 				String temp = pc.getParam(Math.min(paramCount - 1, selectedParam)).toString();
 				sb.append("...<b>")
-					.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false))
+					.append(HtmlUtil.escapeForHtml(temp, "<br>", false))
 					.append("</b>...");
 				// Hacky calls to hide tool tip if "trailing" parameter is focused and we are displaying only
 				// one argument at a time, then re-show if it they tab back into a parameter.  Otherwise we
@@ -198,7 +198,7 @@ class ParameterizedCompletionDescriptionToolTip {
 				// (such as type parameters in Java).  We need to take care to
 				// escape these.
 				String temp = pc.getParam(i).toString();
-				sb.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false));
+				sb.append(HtmlUtil.escapeForHtml(temp, "<br>", false));
 
 				if (i==selectedParam) {
 					sb.append("</b>");

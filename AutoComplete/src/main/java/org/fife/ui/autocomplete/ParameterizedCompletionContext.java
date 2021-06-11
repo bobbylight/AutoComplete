@@ -503,12 +503,13 @@ class ParameterizedCompletionContext {
 		am.put(IM_KEY_ESCAPE, new HideAction());
 
 		char end = pc.getProvider().getParameterListEnd();
-		ks = KeyStroke.getKeyStroke(end);
-		oldClosingKey = im.get(ks);
-		im.put(ks, IM_KEY_CLOSING);
-		oldClosingAction = am.get(IM_KEY_CLOSING);
-		am.put(IM_KEY_CLOSING, new ClosingAction());
-
+		if (end > 0) {
+			ks = KeyStroke.getKeyStroke(end);
+			oldClosingKey = im.get(ks);
+			im.put(ks, IM_KEY_CLOSING);
+			oldClosingAction = am.get(IM_KEY_CLOSING);
+			am.put(IM_KEY_CLOSING, new ClosingAction());
+		}
 	}
 
 
@@ -790,10 +791,11 @@ class ParameterizedCompletionContext {
 		am.put(IM_KEY_ESCAPE, oldEscapeAction);
 
 		char end = pc.getProvider().getParameterListEnd();
-		ks = KeyStroke.getKeyStroke(end);
-		im.put(ks, oldClosingKey);
-		am.put(IM_KEY_CLOSING, oldClosingAction);
-
+		if (end > 0) {
+			ks = KeyStroke.getKeyStroke(end);
+			im.put(ks, oldClosingKey);
+			am.put(IM_KEY_CLOSING, oldClosingAction);
+		}
 	}
 
 
