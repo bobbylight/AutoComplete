@@ -27,5 +27,5 @@ jobs:
       #run: ./gradlew build --warning-mode all
       uses: GabrielBB/xvfb-action@v1
       with:
-        run: ./gradlew build jacocoTestReport -xsign -xpublish --warning-mode all
+        run: ./gradlew build -xsign -xpublish --warning-mode all
         working-directory: ./ #optional
