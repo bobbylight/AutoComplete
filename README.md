@@ -1,4 +1,4 @@
-#AutoComplete
+# AutoComplete
 
 ![Java Build](https://github.com/bobbylight/AutoComplete/actions/workflows/gradle.yml/badge.svg)
 ![Java Build](https://github.com/bobbylight/AutoComplete/actions/workflows/codeql-analysis.yml/badge.svg)
