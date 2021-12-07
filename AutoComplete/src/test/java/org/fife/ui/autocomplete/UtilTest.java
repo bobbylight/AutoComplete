@@ -4,31 +4,31 @@
  */
 package org.fife.ui.autocomplete;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 
-public class UtilTest {
+class UtilTest {
 
 	@Test
-	public void startsWithIgnoreCase_happyPath() {
+	void startsWithIgnoreCase_happyPath() {
 
-		Assert.assertTrue(Util.startsWithIgnoreCase("a", "a"));
-		Assert.assertTrue(Util.startsWithIgnoreCase("a", "A"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("a", "a"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("a", "A"));
 
-		Assert.assertTrue(Util.startsWithIgnoreCase("Hello world", "Hello"));
-		Assert.assertTrue(Util.startsWithIgnoreCase("Hello world", "hello"));
-		Assert.assertTrue(Util.startsWithIgnoreCase("Hello world", "HELLO"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("Hello world", "Hello"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("Hello world", "hello"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("Hello world", "HELLO"));
 
 	}
 
 
 	@Test
-	public void startsWithIgnoreCase_tricky_iWithoutDot() {
-		Assert.assertTrue(Util.startsWithIgnoreCase("\u0131", "i"));
-		Assert.assertTrue(Util.startsWithIgnoreCase("\u0131", "I"));
-		Assert.assertTrue(Util.startsWithIgnoreCase("i", "\u0131"));
-		Assert.assertTrue(Util.startsWithIgnoreCase("I", "\u0131"));
+	void startsWithIgnoreCase_tricky_iWithoutDot() {
+		Assertions.assertTrue(Util.startsWithIgnoreCase("\u0131", "i"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("\u0131", "I"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("i", "\u0131"));
+		Assertions.assertTrue(Util.startsWithIgnoreCase("I", "\u0131"));
 	}
 
 

@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -95,8 +96,20 @@ class DemoRootPane extends JRootPane {
 		ac.setListCellRenderer(new CCellRenderer());
 		ac.setShowDescWindow(true);
 		ac.setParameterAssistanceEnabled(true);
+
+		ac.setAutoCompleteEnabled(true);
+		ac.setAutoActivationEnabled(true);
+		ac.setAutoCompleteSingleChoices(true);
+		ac.setAutoActivationDelay(800);
+
 		ac.install(textArea);
 		contentPane.add(new RTextScrollPane(textArea, true));
+
+		try {
+			textArea.read(new StringReader("int main() {\n  printf(\"Hello world\\n\");\n}\n"), null);
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 
 		textArea.setToolTipSupplier((ToolTipSupplier)provider);
 		ToolTipManager.sharedInstance().registerComponent(textArea);
@@ -123,6 +136,8 @@ class DemoRootPane extends JRootPane {
 
 		// Add completions for the C standard library.
 		DefaultCompletionProvider cp = new DefaultCompletionProvider();
+
+		cp.setAutoActivationRules(true, ".");
 
 		// First try loading resource (running from demo jar), then try
 		// accessing file (debugging in Eclipse).

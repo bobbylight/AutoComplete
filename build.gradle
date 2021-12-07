@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.2.0'
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:6.1.0'
     }
 }
 
@@ -24,7 +24,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '7.0.2'
+        gradleVersion = '7.3.1'
     }
 }
 
@@ -35,7 +35,7 @@ subprojects {
     apply plugin: 'com.github.spotbugs'
 
     checkstyle {
-        toolVersion = '8.43'
+        toolVersion = '9.2'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
@@ -61,7 +61,8 @@ subprojects {
     }
 
     dependencies {
-        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
     }
 
     compileJava {
