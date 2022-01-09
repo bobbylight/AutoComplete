@@ -5,7 +5,7 @@
  * changes required for a specific parameterized completion.
  *
  * This library is distributed under a modified BSD license.  See the included
- * AutoComplete.License.txt file for details.
+ * LICENSE.md file for details.
  */
 package org.fife.ui.autocomplete;
 

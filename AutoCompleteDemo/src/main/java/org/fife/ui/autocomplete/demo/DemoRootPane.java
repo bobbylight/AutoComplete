@@ -4,7 +4,7 @@
  * DemoRootPane.java - Root pane for the demo applet and standalone application.
  *
  * This library is distributed under a modified BSD license.  See the included
- * RSyntaxTextArea.License.txt file for details.
+ * LICENSE.md file for details.
  */
 package org.fife.ui.autocomplete.demo;
 

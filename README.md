@@ -6,7 +6,7 @@
 AutoComplete is a code completion library for Swing JTextComponents, with enhanced functionality available
 for instances of [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea).
 
-AutoComplete is available under a [modified BSD license](https://github.com/bobbylight/AutoComplete/blob/master/AutoComplete/src/main/dist/AutoComplete.License.txt).
+AutoComplete is available under a [modified BSD license](https://github.com/bobbylight/AutoComplete/blob/master/LICENSE.md).
 
 # Features
 * A completion choices list that updates as the user types

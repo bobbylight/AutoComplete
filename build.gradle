@@ -11,7 +11,7 @@ plugins {
     id 'com.github.spotbugs' version '4.7.1'
 }
 
-group = 'com.fifesoft'
+group 'com.fifesoft'
 // NOTE: Local Java 8:  /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
 
 allprojects {
@@ -24,7 +24,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '7.3.1'
+        gradleVersion = '7.3.3'
     }
 }
 
@@ -34,35 +34,39 @@ subprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.spotbugs'
 
+    test {
+        useJUnitPlatform()
+    }
+
     checkstyle {
-        toolVersion = '9.2'
+        toolVersion = '9.2.1'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
     spotbugsMain {
         reports {
             html {
-                enabled = true
+                required = true
             }
             xml {
-                enabled = false
+                required = false
             }
         }
     }
     spotbugsTest {
         reports {
             html {
-                enabled = true
+                required = true
             }
             xml {
-                enabled = false
+                required = false
             }
         }
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     }
 
     compileJava {

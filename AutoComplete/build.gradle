@@ -11,7 +11,7 @@ assert current().isJava8Compatible()
 archivesBaseName = 'autocomplete'
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.1.4'
+    api 'com.fifesoft:rsyntaxtextarea:3.1.6'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
@@ -70,7 +70,7 @@ publishing {
                 licenses {
                     license {
                         name = 'BSD-3-Clause'
-                        url = 'https://github.com/bobbylight/AutoComplete/blob/master/AutoComplete/src/main/dist/AutoComplete.License.txt'
+                        url = 'https://github.com/bobbylight/AutoComplete/blob/master/LICENSE.md'
                     }
                 }
                 developers {
