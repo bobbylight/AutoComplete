@@ -47,6 +47,7 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  * @author Robert Futrell
  * @version 1.0
  */
+@SuppressWarnings("checkstyle:MultipleVariableDeclarations")
 class AutoCompletePopupWindow extends JWindow implements CaretListener,
 									ListSelectionListener, MouseListener {
 

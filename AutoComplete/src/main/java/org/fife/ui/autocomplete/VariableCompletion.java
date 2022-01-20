@@ -56,6 +56,11 @@ public class VariableCompletion extends BasicCompletion {
 	}
 
 
+	/**
+	 * Return the definition of this variable completion.
+	 *
+	 * @return The definition string.
+	 */
 	public String getDefinitionString() {
 
 		StringBuilder sb = new StringBuilder();

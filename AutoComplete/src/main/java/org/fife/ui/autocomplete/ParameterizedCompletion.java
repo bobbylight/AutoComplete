@@ -54,6 +54,14 @@ public interface ParameterizedCompletion extends Completion {
 	int getParamCount();
 
 
+	/**
+	 * Returns completion information for this parameterized completion,
+	 * given the specified text component.
+	 *
+	 * @param tc The text component.
+	 * @param replaceTabsWithSpaces Whether to replace tabs with spaces.
+	 * @return The completion info.
+	 */
 	ParameterizedCompletionInsertionInfo getInsertionInfo(
 			JTextComponent tc, boolean replaceTabsWithSpaces);
 

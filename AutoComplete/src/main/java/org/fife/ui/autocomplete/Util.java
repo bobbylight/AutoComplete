@@ -76,7 +76,7 @@ public final class Util {
 	 * Attempts to open a web browser to the specified URI.
 	 *
 	 * @param uri The URI to open.  If this is <code>null</code>, nothing
-	          happens and this method returns <code>false</code>.
+	 *        happens and this method returns <code>false</code>.
 	 * @return Whether the operation was successful.  This will be
 	 *         <code>false</code> on JRE's older than 1.6.
 	 */

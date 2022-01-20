@@ -40,6 +40,13 @@ public class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	/**
+	 * Adds a copy of a replacement.
+	 *
+	 * @param id The ID of the replacement copy, e.g. the text itself.
+	 * @param start The start offset.
+	 * @param end The end offset.
+	 */
 	public void addReplacementCopy(String id, int start, int end) {
 		if (replacementCopies==null) {
 			replacementCopies = new ArrayList<>(1);
@@ -109,6 +116,14 @@ public class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	/**
+	 * Returns the specified replacement copy.
+	 *
+	 * @param index The index of the replacement to retrieve.
+	 * @return The replacement.
+	 * @see #getReplacementCopyCount()
+	 * @see #addReplacementCopy(String, int, int)
+	 */
 	public ReplacementCopy getReplacementCopy(int index) {
 		return replacementCopies.get(index);
 	}

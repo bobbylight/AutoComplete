@@ -40,6 +40,7 @@
     -->
 
 	<property name="fileExtensions" value="java"/>
+    <property name="tabWidth" value="4"/>
 
 	<!-- Part of turning off individual checks: -->
 	<!-- http://stackoverflow.com/questions/4023185/how-to-disable-a-particular-checkstyle-rule-for-a-particular-line-of-code -->
@@ -62,11 +63,11 @@
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sf.net/config_sizes.html -->
     <module name="FileLength">
-		<property name="max" value="3500"/>
+		<property name="max" value="1600"/>
 	</module>
 
     <module name="LineLength">
-        <property name="max" value="150"/>
+        <property name="max" value="120"/>
     </module>
 
     <!-- Checks for whitespace                               -->
@@ -105,6 +106,23 @@
 		</module>
 		-->
         <module name="JavadocStyle"/>
+        <module name="AtclauseOrder"/>
+        <module name="InvalidJavadocPosition"/>
+        <module name="JavadocBlockTagLocation"/>
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public"/>
+        </module>
+        <module name="JavadocMissingLeadingAsterisk"/>
+        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+        <module name="MissingJavadocMethod">
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
+        </module>
+        <module name="MissingJavadocPackage"/>
+        <module name="MissingJavadocType"/>
 
         <module name="JavadocContentLocationCheck"/>
 
@@ -120,6 +138,12 @@
         <module name="StaticVariableName"/>
         <module name="TypeName"/>
 
+        <!-- Checks for annotations.                                      -->
+        <!-- See https://checkstyle.sourceforge.io/config_annotation.html -->
+        <module name="AnnotationLocation"/>
+        <module name="AnnotationUseStyle"/>
+        <module name="MissingDeprecated"/>
+        <module name="MissingOverride"/>
 
         <!-- Checks for imports                              -->
         <!-- See http://checkstyle.sf.net/config_import.html -->
@@ -178,19 +202,30 @@
         <!-- See http://checkstyle.sf.net/config_coding.html -->
         <!--<module name="AvoidInlineConditionals"/>-->
         <!--<module name="EmptyStatement"/> Removed to allow "while (doSomething());" -->
+        <module name="EqualsAvoidNull"/>
         <module name="EqualsHashCode"/>
+        <module name="ExplicitInitialization"/>
 		<!-- Completely overridden since it's common in Java to do e.g. this.foo = foo;
         <module name="HiddenField">
 			<property name="ignoreSetter" value="true" />
 			<property name="ignoreConstructorParameter" value="true" />
 		</module>
 		-->
+<!--        <module name="IllegalCatch"/>-->
         <module name="IllegalInstantiation"/>
+        <module name="IllegalThrows"/>
+        <module name="IllegalType"/>
         <!--<module name="InnerAssignment"/> -->
         <!--<module name="MagicNumber"/> Unfortunately, too much noise -->
         <!--<module name="MissingSwitchDefault"/>-->
+        <module name="MultipleVariableDeclarations"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
+<!--        <module name="UnnecessaryParentheses"/>-->
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+        <module name="UnnecessarySemicolonInEnumeration"/>
+        <module name="UnnecessarySemicolonInTryWithResources"/>
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
 
         <!-- Checks for class design                         -->
         <!-- See http://checkstyle.sf.net/config_design.html -->
@@ -207,17 +242,23 @@
         <!-- Miscellaneous other checks.                   -->
         <!-- See http://checkstyle.sf.net/config_misc.html -->
         <module name="ArrayTypeStyle"/>
+        <module name="AvoidEscapedUnicodeCharacters"/>
+        <module name="CommentsIndentation"/>
         <!--<module name="FinalParameters"/>-->
         <!-- <module name="TodoComment"/> -->
         <module name="UpperEll"/>
-        <!--        <module name="UnnecessaryParentheses"/>-->
-        <module name="UnnecessarySemicolonInEnumeration"/>
-        <module name="UnnecessarySemicolonInTryWithResources"/>
-        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
-        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+
+        <!-- Checks for metrics.                                       -->
+        <!-- See https://checkstyle.sourceforge.io/config_metrics.html -->
+<!--        <module name="CyclomaticComplexity"/>-->
 
     </module>
-	
+
+    <module name="Translation">
+        <property name="baseName" value="^AutoComplete.*"/>
+    </module>
+    <module name="UniqueProperties"/>
+
 	<module name="SuppressionFilter">
         <property name="file" value="${config_loc}/acSuppressions.xml"/>
 	</module>

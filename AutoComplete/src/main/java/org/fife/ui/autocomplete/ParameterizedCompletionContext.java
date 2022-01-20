@@ -434,7 +434,7 @@ class ParameterizedCompletionContext {
 				JTextComponent tc = ac.getTextComponent();
 				Highlight h = getCurrentParameterHighlight();
 				if (h!=null) {
-					 // "+1" is a workaround for Java Highlight issues.
+					// "+1" is a workaround for Java Highlight issues.
 					tc.setSelectionStart(h.getStartOffset()+1);
 					tc.setSelectionEnd(h.getEndOffset());
 					tc.replaceSelection(choice);
@@ -597,13 +597,13 @@ class ParameterizedCompletionContext {
 		if (pos==firstIndex && lastSelectedParam==firstIndex && highlights.size()>1) {
 			pos = getLastHighlight(highlights);
 			currentPrev = highlights.get(pos);
-			 // "+1" is a workaround for Java Highlight issues.
+			// "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentPrev.getStartOffset()+1);
 			tc.setSelectionEnd(currentPrev.getEndOffset());
 			updateToolTipText(pos);
 		}
 		else if (currentPrev!=null && dot>currentPrev.getStartOffset()) {
-			 // "+1" is a workaround for Java Highlight issues.
+			// "+1" is a workaround for Java Highlight issues.
 			tc.setSelectionStart(currentPrev.getStartOffset()+1);
 			tc.setSelectionEnd(currentPrev.getEndOffset());
 			updateToolTipText(pos);
@@ -1095,7 +1095,7 @@ class ParameterizedCompletionContext {
 				for (int i=0; i<replacementCount; i++) {
 					DocumentRange dr = info.getReplacementLocation(i);
 					HighlightPainter painter = i<replacementCount-1 ? p : endingP;
-					 // "-1" is a workaround for Java Highlight issues.
+					// "-1" is a workaround for Java Highlight issues.
 					tags.add(h.addHighlight(
 							dr.getStartOffset()-1, dr.getEndOffset(), painter));
 				}

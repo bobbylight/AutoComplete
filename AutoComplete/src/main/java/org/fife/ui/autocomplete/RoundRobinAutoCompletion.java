@@ -2,7 +2,7 @@
  * 12/02/2013
  *
  * This library is distributed under a modified BSD license.  See the included
- * LICENSE.md file for details.
+ * AutoComplete.License.txt file for details.
  */
 package org.fife.ui.autocomplete;
 
@@ -130,7 +130,8 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 					// Be sure to start with the default provider
 					resetProvider();
 				}
-				//Check if there are completions from the current provider. If not, advance to the next provider and display that one.
+				// Check if there are completions from the current provider. If not, advance to the next provider and
+				// display that one.
 				// A completion provider can force displaying "his" empty completion pop-up by returning an empty
 				// BasicCompletion. This is useful when the user is typing backspace and you like to display the first
 				// provider always first.

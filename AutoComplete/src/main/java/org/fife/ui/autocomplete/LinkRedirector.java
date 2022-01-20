@@ -20,6 +20,14 @@ import java.net.URL;
 public interface LinkRedirector {
 
 
+	/**
+	 * Hook to return an alternate URL to navigate to when a URL is clicked in
+	 * an {@code RSyntaxTextArea} instance.
+	 *
+	 * @param original The original URL, e.g. from a {@code HyperlinkEvent}.
+	 * @return The link to redirect to, or {@code null} if the original URL
+	 *         should still be used.
+	 */
 	URL possiblyRedirect(URL original);
 
 

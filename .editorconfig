@@ -2,4 +2,5 @@
 indent_style = tab
 indent_size = 4
 trim_trailing_whitespace = true
-end_of_line=lf
+end_of_line = lf
+max_line_length = 120

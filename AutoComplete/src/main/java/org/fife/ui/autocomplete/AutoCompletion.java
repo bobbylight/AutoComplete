@@ -637,7 +637,7 @@ public class AutoCompletion {
 		textComp.replaceSelection(replacement);
 
 		if (isParameterAssistanceEnabled() &&
-				(c instanceof ParameterizedCompletion)) {
+				c instanceof ParameterizedCompletion) {
 			ParameterizedCompletion pc = (ParameterizedCompletion) c;
 			startParameterizedCompletionAssistance(pc, typedParamListStartChar);
 		}
@@ -770,7 +770,7 @@ public class AutoCompletion {
 	 * any character that resets the completion list to "all completions").
 	 *
 	 * @return Whether the popup should be hidden when the completion list is
-	 * reset to show all completions.
+	 *         reset to show all completions.
 	 * @see #setHideOnNoText(boolean)
 	 */
 	protected boolean isHideOnNoText() {
