@@ -9,13 +9,10 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -126,6 +123,8 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	private static final String MSG =
 					"org.fife.ui.autocomplete.AutoCompleteDescWindow";
 
+	private static final String FLAT_LAF_BORDER_PREFIX = "com.formdev.flatlaf.ui.Flat";
+
 
 	/**
 	 * Constructor.
@@ -141,7 +140,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		ComponentOrientation o = ac.getTextComponentOrientation();
 
 		JPanel cp = new JPanel(new BorderLayout());
-		cp.setBorder(TipUtil.getToolTipBorder());
+		cp.setBorder(getToolTipBorder());
 
 		descArea = new JEditorPane("text/html", null);
 		TipUtil.tweakTipEditorPane(descArea);
@@ -257,6 +256,42 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 
 
 	/**
+	 * FlatLaf adds insets to tool tips, and for some themes (usually light ones)
+	 * also uses a line border, whereas for other themes (usually dark ones)
+	 * there is no line border.  We need to ensure our border has no insets
+	 * so our draggable bottom component looks good, but we'd like to preserve
+	 * the color of the line border, if any.  This method allows us to do so
+	 * without a compile-time dependency on flatlaf.
+	 *
+	 * @param border The default tool tip border for the current Look and Feel.
+	 * @return The border to use for this window.
+	 */
+	private static Border getReplacementForFlatLafBorder(Border border) {
+
+		Class<?> clazz = border.getClass();
+
+		// If it's a FlatLineBorder, get its color.
+		// If it's a FlatEmptyBorder, just return a 0-sized regular EmptyBorder.
+		Color color = null;
+		Method[] methods = clazz.getDeclaredMethods();
+		for (Method method : methods) {
+			if ("getLineColor".equals(method.getName())) {
+				try {
+					color = (Color)method.invoke(border);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					e.printStackTrace(); // Never happens
+				}
+			}
+		}
+
+		if (color != null) {
+			return BorderFactory.createLineBorder(color);
+		}
+		return BorderFactory.createEmptyBorder();
+	}
+
+
+	/**
 	 * Returns the localized message for the specified key.
 	 *
 	 * @param key The key.
@@ -267,6 +302,21 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			bundle = ResourceBundle.getBundle(MSG);
 		}
 		return bundle.getString(key);
+	}
+
+
+	private static Border getToolTipBorder() {
+
+		Border border = org.fife.ui.rsyntaxtextarea.focusabletip.TipUtil.getToolTipBorder();
+
+
+		// Special case for FlatDarkLaf and FlatLightLaf, since they add an
+		// empty border to tool tips that messes up our floating-window appearance
+		if (isFlatLafBorder(border)) {
+			border = getReplacementForFlatLafBorder(border);
+		}
+
+		return border;
 	}
 
 
@@ -336,6 +386,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			}
 		}
 
+	}
+
+
+	private static boolean isFlatLafBorder(Border border) {
+		return border != null && border.getClass().getName().startsWith(FLAT_LAF_BORDER_PREFIX);
 	}
 
 
