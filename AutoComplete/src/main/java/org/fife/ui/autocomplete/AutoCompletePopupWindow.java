@@ -751,7 +751,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			super.setVisible(visible);
 
 			// Some languages, such as Java, can use quite a lot of memory
-			// when displaying hundreds of completion choices.  We pro-actively
+			// when displaying hundreds of completion choices.  We proactively
 			// clear our list model here to make them available for GC.
 			// Otherwise, they stick around, and consider the following:  a
 			// user starts code-completion for Java 5 SDK classes, then hides
@@ -763,6 +763,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			if (!visible) { // Do after super.setVisible(false)
 				lastSelection = list.getSelectedValue();
 				model.clear();
+			}
+			else {
+				list.repaint(); // https://github.com/bobbylight/AutoComplete/issues/70
 			}
 
 			// Must set descWindow's visibility one way or the other each time,
