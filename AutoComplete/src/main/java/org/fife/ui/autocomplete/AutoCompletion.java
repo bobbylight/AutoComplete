@@ -248,6 +248,11 @@ public class AutoCompletion {
 	 */
 	private static final boolean DEBUG = initDebug();
 
+	/**
+	 * Fired by {@code JTextComponent}s when their {@code Document} changes.
+	 */
+	private static final String DOCUMENT_CHANGED_PROPERTY = "document";
+
 
 	/**
 	 * Constructor.
@@ -1042,9 +1047,8 @@ public class AutoCompletion {
 
 
 	/**
-	 * Sets whether or not the popup should be hidden when the
-	 * CompletionProvider changes. If set to false, caller has to ensure refresh
-	 * of the popup content.
+	 * Sets whether the popup should be hidden when the CompletionProvider changes.
+	 * If set to false, caller has to ensure refresh of the popup content.
 	 *
 	 * @param hideOnCompletionProviderChange Whether the popup should be hidden
 	 *        when the completion provider changes.
@@ -1315,7 +1319,7 @@ public class AutoCompletion {
 	 * completion popup.
 	 */
 	private class AutoActivationListener extends FocusAdapter implements
-			DocumentListener, CaretListener, ActionListener {
+			DocumentListener, CaretListener, ActionListener, PropertyChangeListener {
 
 		private Timer timer;
 		private boolean justInserted;
@@ -1333,6 +1337,7 @@ public class AutoCompletion {
 		public void addTo(JTextComponent tc) {
 			tc.addFocusListener(this);
 			tc.getDocument().addDocumentListener(this);
+			tc.addPropertyChangeListener(DOCUMENT_CHANGED_PROPERTY, this);
 			tc.addCaretListener(this);
 		}
 
@@ -1375,9 +1380,29 @@ public class AutoCompletion {
 			}
 		}
 
+		@Override
+		public void propertyChange(PropertyChangeEvent e) {
+
+			String name = e.getPropertyName();
+
+			if (DOCUMENT_CHANGED_PROPERTY.equals(name)) {
+				// The document switched out from under us
+				Document old = (Document)e.getOldValue();
+				if (old != null) {
+					old.removeDocumentListener(this);
+				}
+				Document newDoc = (Document)e.getNewValue();
+				if (newDoc != null) {
+					newDoc.addDocumentListener(this);
+				}
+			}
+
+		}
+
 		public void removeFrom(JTextComponent tc) {
 			tc.removeFocusListener(this);
 			tc.getDocument().removeDocumentListener(this);
+			tc.removePropertyChangeListener(DOCUMENT_CHANGED_PROPERTY, this);
 			tc.removeCaretListener(this);
 			timer.stop();
 			justInserted = false;
