@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+
+    <Match>
+
+        <Package name="org.fife.ui.autocomplete" />
+
+        <Not>
+            <Or>
+            </Or>
+        </Not>
+    </Match>
+</FindBugsFilter>

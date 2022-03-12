@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:6.1.0'
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:6.2.0'
     }
 }
 
@@ -24,7 +24,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '7.3.3'
+        gradleVersion = '7.4.1'
     }
 }
 
@@ -39,8 +39,13 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '9.2.1'
+        toolVersion = '9.3'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
+    }
+
+    spotbugs {
+        // Relative to subprojects
+        includeFilter = file('../config/spotbugs-exclude.xml')
     }
 
     spotbugsMain {
