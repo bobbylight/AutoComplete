@@ -144,7 +144,7 @@ class FastListUI extends BasicListUI {
 	@SuppressWarnings("unchecked") // BasicListUI has unparameterized JList
 	protected void updateLayoutState() {
 
-		ListModel model = list.getModel();
+		ListModel<?> model = list.getModel();
 		int itemCount = model.getSize();
 
 		// If the item count is small enough to run fast on practically all
