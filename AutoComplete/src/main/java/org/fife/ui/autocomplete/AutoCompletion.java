@@ -126,7 +126,7 @@ public class AutoCompletion {
 	private boolean autoActivationEnabled;
 
 	/**
-	 * Whether or not, when there is only a single auto-complete option that
+	 * Whether, when there is only a single auto-complete option that
 	 * matches the text at the current text position, that text should be
 	 * auto-inserted, instead of the completion window displaying.
 	 */
@@ -213,14 +213,14 @@ public class AutoCompletion {
 	private EventListenerList listeners;
 
 	/**
-	 * Whether or not the popup should be hidden when user types a space (or any
+	 * Whether the popup should be hidden when user types a space (or any
 	 * character that resets the completion list to "all completions"). Defaults
 	 * to true.
 	 */
 	private boolean hideOnNoText;
 
 	/**
-	 * Whether or not the popup should be hidden when the CompletionProvider
+	 * Whether the popup should be hidden when the CompletionProvider
 	 * changes. If set to false, caller has to ensure refresh of the popup
 	 * content. Defaults to true.
 	 */
@@ -757,7 +757,7 @@ public class AutoCompletion {
 
 
 	/**
-	 * Whether or not the popup should be hidden when the CompletionProvider
+	 * Whether the popup should be hidden when the CompletionProvider
 	 * changes. If set to false, caller has to ensure refresh of the popup
 	 * content.
 	 *
@@ -771,7 +771,7 @@ public class AutoCompletion {
 
 
 	/**
-	 * Whether or not the popup should be hidden when user types a space (or
+	 * Whether the popup should be hidden when user types a space (or
 	 * any character that resets the completion list to "all completions").
 	 *
 	 * @return Whether the popup should be hidden when the completion list is
@@ -1061,10 +1061,10 @@ public class AutoCompletion {
 
 
 	/**
-	 * Sets whether or not the popup should be hidden when user types a space
+	 * Sets whether the popup should be hidden when user types a space
 	 * (or any character that resets the completion list to "all completions").
 	 *
-	 * @param hideOnNoText Whether the popup sh ould be hidden when the
+	 * @param hideOnNoText Whether the popup should be hidden when the
 	 *        completion list is reset to show all completions.
 	 * @see #isHideOnNoText()
 	 */
@@ -1208,9 +1208,8 @@ public class AutoCompletion {
 				String template = "${}" + text + "${cursor}";
 				textComponent.replaceSelection(Character.toString(p
 						.getParameterListStart()));
-				TemplateCompletion tc = new TemplateCompletion(p, null, null,
-						template);
-				pc = tc;
+				pc = new TemplateCompletion(p, null, null,
+					template);
 			}
 			else {
 				text = p.getParameterListStart() + text;

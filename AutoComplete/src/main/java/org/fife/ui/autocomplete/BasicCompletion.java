@@ -23,7 +23,7 @@ package org.fife.ui.autocomplete;
  */
 public class BasicCompletion extends AbstractCompletion {
 
-	private String replacementText;
+	private final String replacementText;
 	private String shortDesc;
 	private String summary;
 
@@ -72,9 +72,6 @@ public class BasicCompletion extends AbstractCompletion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getReplacementText() {
 		return replacementText;
@@ -93,9 +90,6 @@ public class BasicCompletion extends AbstractCompletion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getSummary() {
 		return summary;
@@ -127,9 +121,9 @@ public class BasicCompletion extends AbstractCompletion {
 	/**
 	 * Returns a string representation of this completion.  If the short
 	 * description is not <code>null</code>, this method will return:
-	 *
+	 * <p>
 	 * <code>getInputText() + " - " + shortDesc</code>
-	 *
+	 * <p>
 	 * otherwise, it will return {@code getInputText()}.
 	 *
 	 * @return A string representation of this completion.

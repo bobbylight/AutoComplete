@@ -157,9 +157,6 @@ public abstract class AbstractCompletionProvider
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {

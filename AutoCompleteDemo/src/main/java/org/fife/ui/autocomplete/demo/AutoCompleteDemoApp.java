@@ -16,7 +16,7 @@ import org.fife.ui.autocomplete.*;
 
 /**
  * A program that demonstrates use of auto-completion.  It creates a simple
- * C source editor with context sensitive auto-completion.
+ * C source editor with context-sensitive auto-completion.
  *
  * @author Robert Futrell
  * @version 1.0

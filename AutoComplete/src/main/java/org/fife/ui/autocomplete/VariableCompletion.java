@@ -99,9 +99,6 @@ public class VariableCompletion extends BasicCompletion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getSummary() {
 		StringBuilder sb = new StringBuilder();

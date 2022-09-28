@@ -28,7 +28,7 @@ class CompletionListModel extends AbstractListModel<Completion> {
 	/**
 	 * Container for items in this model.
 	 */
-	private List<Completion> delegate;
+	private final List<Completion> delegate;
 
 
 	/**
@@ -40,7 +40,7 @@ class CompletionListModel extends AbstractListModel<Completion> {
 
 
 	/**
-	 * Removes all of the elements from this list.  The list will
+	 * Removes all the elements from this list.  The list will
 	 * be empty after this call returns (unless it throws an exception).
 	 *
 	 * @see #setContents(Collection)

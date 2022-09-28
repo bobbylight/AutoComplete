@@ -357,8 +357,7 @@ public class CompletionXMLParser extends DefaultHandler {
 
 
     @Override
-	public InputSource resolveEntity(String publicID,
-			String systemID) throws SAXException {
+	public InputSource resolveEntity(String publicID, String systemID) {
 		return new InputSource(getClass().
 				getResourceAsStream("CompletionXml.dtd"));
 	}

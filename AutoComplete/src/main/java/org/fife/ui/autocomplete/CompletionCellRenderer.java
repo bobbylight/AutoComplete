@@ -121,7 +121,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 	/**
 	 * Constructor.  This is primarily a hook for Substance, or any other
-	 * Look and Feel whose renderers look drastically different than standard
+	 * Look and Feel whose renderers look drastically different from standard
 	 * <code>DefaultListCellRenderer</code>s.  Everything except for the text
 	 * rendering will be done by the delegate.  In almost all scenarios, you
 	 * will want to use the no-argument constructor instead of this one.
@@ -398,7 +398,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param selected Whether the item is selected.
 	 * @param hasFocus Whether the item has focus.
 	 */
-	protected void prepareForFunctionCompletion(JList list,
+	protected void prepareForFunctionCompletion(JList<?> list,
 		FunctionCompletion fc, int index, boolean selected, boolean hasFocus) {
 
 		StringBuilder sb = new StringBuilder(PREFIX);
@@ -464,14 +464,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param selected Whether the item is selected.
 	 * @param hasFocus Whether the item has focus.
 	 */
-	protected void prepareForMarkupTagCompletion(JList list,
-		MarkupTagCompletion mc, int index, boolean selected, boolean hasFocus) {
-
-		StringBuilder sb = new StringBuilder(PREFIX);
-		sb.append(mc.getName());
-
-		setText(sb.toString());
-
+	protected void prepareForMarkupTagCompletion(JList<?> list,
+			MarkupTagCompletion mc, int index, boolean selected, boolean hasFocus) {
+		setText(PREFIX + mc.getName());
 	}
 
 
@@ -485,7 +480,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param selected Whether the item is selected.
 	 * @param hasFocus Whether the item has focus.
 	 */
-	protected void prepareForOtherCompletion(JList list,
+	protected void prepareForOtherCompletion(JList<?> list,
 		Completion c, int index, boolean selected, boolean hasFocus) {
 
 		StringBuilder sb = new StringBuilder(PREFIX);
@@ -519,7 +514,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param selected Whether the item is selected.
 	 * @param hasFocus Whether the item has focus.
 	 */
-	protected void prepareForTemplateCompletion(JList list,
+	protected void prepareForTemplateCompletion(JList<?> list,
 		TemplateCompletion tc, int index, boolean selected, boolean hasFocus) {
 
 		StringBuilder sb = new StringBuilder(PREFIX);
@@ -551,7 +546,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param selected Whether the item is selected.
 	 * @param hasFocus Whether the item has focus.
 	 */
-	protected void prepareForVariableCompletion(JList list,
+	protected void prepareForVariableCompletion(JList<?> list,
 		VariableCompletion vc, int index, boolean selected, boolean hasFocus) {
 
 		StringBuilder sb = new StringBuilder(PREFIX);

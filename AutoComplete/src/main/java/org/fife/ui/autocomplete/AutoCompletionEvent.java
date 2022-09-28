@@ -22,7 +22,7 @@ public class AutoCompletionEvent extends EventObject {
 	/**
 	 * The type of this event.
 	 */
-	private Type type;
+	private final Type type;
 
 
 	/**

@@ -12,7 +12,7 @@ package org.fife.ui.autocomplete;
 
 /**
  * A completion where the input text is shorthand for (really, just different
- * than) the actual text to be inserted.  For example, the input text
+ * from) the actual text to be inserted.  For example, the input text
  * "<code>sysout</code>" could be associated with the completion
  * "<code>System.out.println(</code>" in Java.
  *

@@ -24,7 +24,7 @@ import javax.swing.Icon;
  */
 public class EmptyIcon implements Icon, Serializable {
 
-	private int size;
+	private final int size;
 
 
 	public EmptyIcon(int size) {

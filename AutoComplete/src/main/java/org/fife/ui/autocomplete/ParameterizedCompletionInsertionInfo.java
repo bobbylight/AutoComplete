@@ -79,7 +79,7 @@ public class ParameterizedCompletionInsertionInfo {
 
 	/**
 	 * Returns the maximum offset the caret can move to before being outside
-	 * of the text inserted for this completion.
+	 * the text inserted for this completion.
 	 *
 	 * @return The maximum offset.
 	 * @see #getMinOffset()
@@ -91,7 +91,7 @@ public class ParameterizedCompletionInsertionInfo {
 
 	/**
 	 * Returns the minimum offset the caret can move to before being outside
-	 * of the text inserted for this completion.
+	 * the text inserted for this completion.
 	 *
 	 * @return The minimum offset.
 	 * @see #getMaxOffset()
@@ -180,7 +180,7 @@ public class ParameterizedCompletionInsertionInfo {
 
 
 	/**
-	 * Returns whether or not there is an initial selected region for the
+	 * Returns whether there is an initial selected region for the
 	 * completion (i.e., whether the completion actually has any parameters).
 	 *
 	 * @return Whether there is a region to initially select for the completion.
@@ -206,7 +206,7 @@ public class ParameterizedCompletionInsertionInfo {
 
 	/**
 	 * Sets the document range the caret can move around in before being
-	 * outside of the text inserted for the completion.
+	 * outside the text inserted for the completion.
 	 *
 	 * @param minOffs The minimum offset.
 	 * @param maxOffs The maximum offset, that will track its location as the

@@ -33,7 +33,7 @@ public abstract class AbstractCompletion implements Completion {
 	/**
 	 * The provider that created this completion.
 	 */
-	private CompletionProvider provider;
+	private final CompletionProvider provider;
 
 	/**
 	 * The icon to use for this completion.
@@ -71,9 +71,6 @@ public abstract class AbstractCompletion implements Completion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int compareTo(Completion c2) {
 		if (c2==this) {
@@ -86,18 +83,12 @@ public abstract class AbstractCompletion implements Completion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getAlreadyEntered(JTextComponent comp) {
 		return provider.getAlreadyEnteredText(comp);
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Icon getIcon() {
 		return icon;
@@ -118,18 +109,12 @@ public abstract class AbstractCompletion implements Completion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public CompletionProvider getProvider() {
 		return provider;
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int getRelevance() {
 		return relevance;

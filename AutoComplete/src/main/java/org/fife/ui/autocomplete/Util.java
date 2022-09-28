@@ -241,7 +241,7 @@ public final class Util {
 
 	/**
 	 * Returns whether a string starts with a specified prefix, ignoring case.
-	 * This method does not support characters outside of the BMP.
+	 * This method does not support characters outside the BMP.
 	 *
 	 * @param str The string to check.  This cannot be {@code null}.
 	 * @param prefix The prefix to check for.  This cannot be {@code null}.

@@ -73,7 +73,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	/**
 	 * A segment to use for fast char access.
 	 */
-	private Segment s = new Segment();
+	private final Segment s = new Segment();
 
 	protected static final String EMPTY_STRING = "";
 
@@ -105,7 +105,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 		}
 
 		// NOTE: We can't sort by relevance prior to this; we need to have
-		// things alphabetical so we can easily narrow down completions to
+		// things alphabetical, so we can easily narrow down completions to
 		// those starting with what was already typed.
 		if (/*sortByRelevance*/true) {
 			completions.sort(SORT_BY_RELEVANCE_COMPARATOR);

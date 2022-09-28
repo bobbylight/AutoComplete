@@ -155,9 +155,6 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean getShowParameterToolTip() {
 		return false;
@@ -253,18 +250,12 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Parameter getParam(int index) {
 		return params.get(index);
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int getParamCount() {
 		return params==null ? 0 : params.size();

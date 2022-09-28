@@ -484,9 +484,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setVisible(boolean visible) {
 		if (!visible) {

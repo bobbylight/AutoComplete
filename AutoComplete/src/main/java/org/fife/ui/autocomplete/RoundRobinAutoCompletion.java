@@ -133,7 +133,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 				// Check if there are completions from the current provider. If not, advance to the next provider and
 				// display that one.
 				// A completion provider can force displaying "his" empty completion pop-up by returning an empty
-				// BasicCompletion. This is useful when the user is typing backspace and you like to display the first
+				// BasicCompletion. This is useful when the user is typing backspace, and you like to display the first
 				// provider always first.
 				for (int i=1; i<cycle.size(); i++) {
 					List<Completion> completions = getCompletionProvider().getCompletions(getTextComponent());

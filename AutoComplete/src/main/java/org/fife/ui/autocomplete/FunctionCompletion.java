@@ -253,14 +253,13 @@ public class FunctionCompletion extends VariableCompletion
 
 		// Get the range in which the caret can move before we hide
 		// this tool tip.
-		int minPos = dot;
 		Position maxPos = null;
 		try {
-			maxPos = tc.getDocument().createPosition(dot-sb.length()+1);
+			maxPos = tc.getDocument().createPosition(dot - sb.length()+1);
 		} catch (BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 		}
-		info.setCaretRange(minPos, maxPos);
+		info.setCaretRange(dot, maxPos);
 		int firstParamLen = 0;
 
 		// Create the text to insert (keep it one completion for
@@ -302,9 +301,6 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Parameter getParam(int index) {
 		return params.get(index);
@@ -323,9 +319,6 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean getShowParameterToolTip() {
 		return true;
@@ -361,9 +354,6 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getSummary() {
 		StringBuilder sb = new StringBuilder();
@@ -377,9 +367,6 @@ public class FunctionCompletion extends VariableCompletion
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
 		justification = "Subclasses could return null")

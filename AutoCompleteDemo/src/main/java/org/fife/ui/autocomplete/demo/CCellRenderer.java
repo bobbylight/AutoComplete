@@ -25,8 +25,8 @@ import org.fife.ui.autocomplete.VariableCompletion;
  */
 class CCellRenderer extends CompletionCellRenderer {
 
-	private Icon variableIcon;
-	private Icon functionIcon;
+	private final Icon variableIcon;
+	private final Icon functionIcon;
 
 
 	/**
@@ -38,22 +38,16 @@ class CCellRenderer extends CompletionCellRenderer {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected void prepareForOtherCompletion(JList list,
+	protected void prepareForOtherCompletion(JList<?> list,
 			Completion c, int index, boolean selected, boolean hasFocus) {
 		super.prepareForOtherCompletion(list, c, index, selected, hasFocus);
 		setIcon(getEmptyIcon());
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected void prepareForVariableCompletion(JList list,
+	protected void prepareForVariableCompletion(JList<?> list,
 			VariableCompletion vc, int index, boolean selected,
 			boolean hasFocus) {
 		super.prepareForVariableCompletion(list, vc, index, selected,
@@ -62,11 +56,8 @@ class CCellRenderer extends CompletionCellRenderer {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected void prepareForFunctionCompletion(JList list,
+	protected void prepareForFunctionCompletion(JList<?> list,
 			FunctionCompletion fc, int index, boolean selected,
 			boolean hasFocus) {
 		super.prepareForFunctionCompletion(list, fc, index, selected,

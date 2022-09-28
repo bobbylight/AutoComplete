@@ -150,18 +150,12 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getReplacementText() {
 		return getName();
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getSummary() {
 		StringBuilder sb = new StringBuilder();

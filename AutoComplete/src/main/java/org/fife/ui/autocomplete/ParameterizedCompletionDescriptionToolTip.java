@@ -175,8 +175,8 @@ class ParameterizedCompletionDescriptionToolTip {
 				sb.append("...<b>")
 					.append(HtmlUtil.escapeForHtml(temp, "<br>", false))
 					.append("</b>...");
-				// Hacky calls to hide tool tip if "trailing" parameter is focused and we are displaying only
-				// one argument at a time, then re-show if it they tab back into a parameter.  Otherwise we
+				// Hacky calls to hide tool tip if "trailing" parameter is focused, and we are displaying only
+				// one argument at a time, then re-show it if they tab back into a parameter.  Otherwise, we
 				// end up showing an empty tool tip here
 				if (!isVisible()) {
 					setVisible(true);

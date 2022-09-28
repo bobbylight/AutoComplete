@@ -11,9 +11,9 @@ package org.fife.ui.autocomplete;
 import java.awt.Point;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.text.BadLocationException;
@@ -50,7 +50,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 * since this may be called multiple times in succession (this is usually
 	 * called by {@code JTextComponent.getToolTipText()}, and if the user
 	 * wiggles the mouse while a tool tip is displayed, this method gets
-	 * repeatedly called.  It can be costly so we try to speed it up a tad).
+	 * repeatedly called.  It can be costly, so we try to speed it up a tad).
 	 */
 	private List<Completion> lastParameterizedCompletionsAt;
 
@@ -84,7 +84,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 *
 	 * This method returns all characters before the caret that are matched
 	 * by  {@link #isValidChar(char)}.
-	 *
+	 * <p>
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -118,9 +118,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 
@@ -179,9 +176,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<ParameterizedCompletion> getParameterizedCompletions(
 			JTextComponent tc) {
@@ -203,7 +197,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		Element elem = root.getElement(line);
 		int offs = elem.getStartOffset();
 		int len = dot - offs - 1/*paramListStart.length()*/;
-		if (len<=0) { // Not enough chars on line for a method.
+		if (len<=0) { // Not enough chars on the line for a method.
 			return list; // null
 		}
 
@@ -278,7 +272,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 */
 	public void loadFromXML(File file) throws IOException {
 		try (BufferedInputStream bin = new BufferedInputStream(
-			new FileInputStream(file))) {
+			Files.newInputStream(file.toPath()))) {
 			loadFromXML(bin);
 		}
 	}
@@ -309,8 +303,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	 */
 	public void loadFromXML(InputStream in, ClassLoader cl) throws IOException {
 
-		//long start = System.currentTimeMillis();
-
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(true);
 		CompletionXMLParser handler = new CompletionXMLParser(this, cl);
@@ -331,8 +323,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		} catch (SAXException | ParserConfigurationException e) {
 			throw new IOException(e.toString());
 		}
-		//long time = System.currentTimeMillis() - start;
-		//System.out.println("XML loaded in: " + time + "ms");
 
 	}
 
@@ -350,7 +340,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 		if (in==null) {
 			File file = new File(resource);
 			if (file.isFile()) {
-				in = new FileInputStream(file);
+				in = Files.newInputStream(file.toPath());
 			}
 			else {
 				throw new IOException("No such resource: " + resource);

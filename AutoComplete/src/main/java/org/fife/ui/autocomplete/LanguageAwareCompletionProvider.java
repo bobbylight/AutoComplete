@@ -40,7 +40,7 @@ import org.fife.ui.rtextarea.ToolTipSupplier;
  *
  * This provider also implements the
  * {@code org.fife.ui.rtextarea.ToolTipSupplier} interface, which allows it
- * to display tooltips for completion choices.  Thus the standard
+ * to display tooltips for completion choices.  Thus, the standard
  * {@link VariableCompletion} and {@link FunctionCompletion} completions should
  * be able to display tooltips with the variable declaration or function
  * definition (provided the {@code RSyntaxTextArea} was registered with the
@@ -110,9 +110,6 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getAlreadyEnteredText(JTextComponent comp) {
 		if (!(comp instanceof RSyntaxTextArea)) {
@@ -134,9 +131,6 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 		return defaultProvider==null ? null :
@@ -186,9 +180,6 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<ParameterizedCompletion> getParameterizedCompletions(
 			JTextComponent tc) {
@@ -201,27 +192,18 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public char getParameterListEnd() {
 		return defaultProvider.getParameterListEnd();
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getParameterListSeparator() {
 		return defaultProvider.getParameterListSeparator();
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public char getParameterListStart() {
 		return defaultProvider.getParameterListStart();
@@ -323,13 +305,10 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isAutoActivateOkay(JTextComponent tc) {
 		CompletionProvider provider = getProviderFor(tc);
-		return provider!=null ? provider.isAutoActivateOkay(tc) : false;
+		return provider != null && provider.isAutoActivateOkay(tc);
 	}
 
 

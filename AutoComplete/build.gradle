@@ -64,7 +64,7 @@ publishing {
                         'complete with full HTML support and navigable with hyperlinks. Optional parameter completion ' +
                         'assistance for functions and methods, ala Eclipse and NetBeans. Completion information is ' +
                         'typically specified in an XML file, but can even be dynamic.'
-                url = 'http://www.fifesoft.com/rsyntaxtextarea/'
+                url = 'https://github.com/bobbylight/AutoComplete'
                 inceptionYear = '2003'
                 packaging = 'jar'
                 licenses {
