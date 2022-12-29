@@ -24,7 +24,7 @@ import javax.swing.Icon;
  */
 public class EmptyIcon implements Icon, Serializable {
 
-	private final int size;
+	private int size;
 
 
 	public EmptyIcon(int size) {
@@ -49,4 +49,13 @@ public class EmptyIcon implements Icon, Serializable {
 	}
 
 
+	/**
+	 * Sets the size of this icon. The parent container will likely need
+	 * to be revalidated if this is called after the UI is displayed.
+	 *
+	 * @param size The new icon size.
+	 */
+	public void setSize(int size) {
+		this.size = size;
+	}
 }
