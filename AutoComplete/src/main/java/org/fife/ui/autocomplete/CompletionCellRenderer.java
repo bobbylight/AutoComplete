@@ -136,6 +136,53 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 
 	/**
+	 * Utility function to append a short description to a string buffer.
+	 * Useful to ensure consistency when rendering completions that display
+	 * a trailing description of the completion.
+	 *
+	 * @param sb The string buffer to append to.
+	 * @param definition The text to append.
+	 * @see #prepareForOtherCompletion(JList, Completion, int, boolean, boolean)
+	 * @see #prepareForTemplateCompletion(JList, TemplateCompletion, int, boolean, boolean)
+	 */
+	protected void appendShortDescription(StringBuilder sb, String definition) {
+		sb.append(" - ");
+		if (!selected) {
+			sb.append("<font color='").append(typeColor).append("'>");
+		}
+		sb.append(definition);
+		if (!selected) {
+			sb.append("</font>");
+		}
+	}
+
+
+	/**
+	 * Utility function that appends a variable or function completion's type to a
+	 * string buffer if {@link #getShowTypes()} is {@code true}.
+	 *
+	 * @param sb The string buffer to possibly append to.
+	 * @param varOrFunctionCompletion The completion to examine.
+	 * @see #prepareForFunctionCompletion(JList, FunctionCompletion, int, boolean, boolean)
+	 * @see #prepareForVariableCompletion(JList, VariableCompletion, int, boolean, boolean)
+	 */
+	protected void appendTypeIfNecessary(StringBuilder sb, VariableCompletion varOrFunctionCompletion) {
+
+		if (getShowTypes() && varOrFunctionCompletion.getType()!=null) {
+
+			sb.append(" : ");
+			if (!selected) {
+				sb.append("<font color='").append(typeColor).append("'>");
+			}
+			sb.append(varOrFunctionCompletion.getType());
+			if (!selected) {
+				sb.append("</font>");
+			}
+		}
+	}
+
+
+	/**
 	 * Creates the icon to use if no icon is found for a specific completion.
 	 * The default implementation returns a 16x16 empty icon.
 	 *
@@ -439,17 +486,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 			sb.append(paramListEnd);
 		}
 
-		if (getShowTypes() && fc.getType()!=null) {
-			sb.append(" : ");
-			if (!selected) {
-				sb.append("<font color='").append(typeColor).append("'>");
-			}
-			sb.append(fc.getType());
-			if (!selected) {
-				sb.append("</font>");
-			}
-		}
-
+		appendTypeIfNecessary(sb, fc);
 		setText(sb.toString());
 
 	}
@@ -489,14 +526,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 		if (c instanceof BasicCompletion) {
 			String definition = ((BasicCompletion)c).getShortDescription();
 			if (definition!=null) {
-				sb.append(" - ");
-				if (!selected) {
-					sb.append("<font color='").append(typeColor).append("'>");
-				}
-				sb.append(definition);
-				if (!selected) {
-					sb.append("</font>");
-				}
+				appendShortDescription(sb, definition);
 			}
 		}
 
@@ -522,14 +552,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 		String definition = tc.getShortDescription();
 		if (definition!=null) {
-			sb.append(" - ");
-			if (!selected) {
-				sb.append("<font color='").append(typeColor).append("'>");
-			}
-			sb.append(definition);
-			if (!selected) {
-				sb.append("</font>");
-			}
+			appendShortDescription(sb, definition);
 		}
 
 		setText(sb.toString());
@@ -551,17 +574,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 
 		StringBuilder sb = new StringBuilder(PREFIX);
 		sb.append(vc.getName());
-
-		if (getShowTypes() && vc.getType()!=null) {
-			sb.append(" : ");
-			if (!selected) {
-				sb.append("<font color='").append(typeColor).append("'>");
-			}
-			sb.append(vc.getType());
-			if (!selected) {
-				sb.append("</font>");
-			}
-		}
+		appendTypeIfNecessary(sb, vc);
 
 		setText(sb.toString());
 

@@ -150,6 +150,7 @@ public class TemplateCompletion extends AbstractCompletion
 		return definitionString;
 	}
 
+
 	public String getShortDescription() {
 		return shortDescription;
 	}

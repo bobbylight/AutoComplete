@@ -387,7 +387,7 @@ class ParameterizedCompletionContext {
 	 * Returns the highlight from a list that comes "last" in that list.  Even
 	 * though most parameter highlights are ordered, sometimes they aren't
 	 * (e.g. the "cursor" parameter in a template completion is always last,
-	 * even though it can be anywhere in the template.
+	 * even though it can be anywhere in the template).
 	 *
 	 * @param highlights The list of highlights.  Assumed to be non-empty.
 	 * @return The highlight that comes last in the document.
