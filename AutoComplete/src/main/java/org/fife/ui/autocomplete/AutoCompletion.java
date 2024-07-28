@@ -1509,6 +1509,7 @@ public class AutoCompletion {
 		}
 
 		public void removeFrom(Window w) {
+			hideChildWindows();
 			w.removeComponentListener(this);
 			w.removeWindowFocusListener(this);
 		}

@@ -27,7 +27,7 @@ public class AutoCompleteDemoApp extends JFrame {
 	/**
 	 * Constructor.
 	 */
-	public AutoCompleteDemoApp() {
+	AutoCompleteDemoApp() {
 		this(null);
 	}
 

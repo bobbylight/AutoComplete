@@ -340,7 +340,7 @@ class DemoRootPane extends JRootPane {
 		Font f = UIManager.getFont("Label.font");
 		String fontTag = "<body style=\"font-family: " + f.getFamily() +
 					"; font-size: " + f.getSize() + "pt; \">";
-		String text = "<html>" + fontTag + "" +
+		String text = "<html>" + fontTag +
 			"The text area below provides simple code completion for the C " +
 			"programming language as you type. Simply type <b>Ctrl+Space</b> " +
 			"at any time to see a list of completion choices (function names, "+
