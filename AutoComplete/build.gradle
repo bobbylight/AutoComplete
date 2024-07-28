@@ -11,7 +11,7 @@ assert current().isJava8Compatible()
 archivesBaseName = 'autocomplete'
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.3.2'
+    api 'com.fifesoft:rsyntaxtextarea:3.5.1'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
@@ -40,9 +40,9 @@ publishing {
             def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
             url = isReleaseVersion ? releasesRepoUrl : snapshotsRepoUrl
             credentials { // Credentials usually kept in user's .gradle/gradle.properties
-                // We must defensively check for these properties so Travis CI build works
-                username = project.hasProperty('ossrhUsername') ? ossrhUsername : 'unknown'
-                password = project.hasProperty('ossrhPassword') ? ossrhPassword : 'unknown'
+                // We must defensively check for these properties so CI builds work
+                username = project.hasProperty('ossrhToken') ? ossrhToken : 'unknown'
+                password = project.hasProperty('ossrhTokenPassword') ? ossrhTokenPassword : 'unknown'
             }
         }
     }
