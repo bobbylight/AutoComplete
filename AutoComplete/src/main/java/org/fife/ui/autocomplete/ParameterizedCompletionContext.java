@@ -276,7 +276,7 @@ class ParameterizedCompletionContext {
 	 */
 	public String getArgumentText(int offs) {
 		List<Highlight> paramHighlights = getParameterHighlights();
-		if (paramHighlights==null || paramHighlights.size()==0) {
+		if (paramHighlights==null || paramHighlights.isEmpty()) {
 			return null;
 		}
 		for (Highlight h : paramHighlights) {

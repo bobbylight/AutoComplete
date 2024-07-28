@@ -160,8 +160,8 @@ final class TipUtil {
 		textArea.getCaret().setSelectionVisible(true);
 
 		// Set the foreground color.  Important because when rendering HTML,
-		// default foreground becomes black, which may not match all LAF's
-		// (e.g. Substance).
+		// default foreground becomes black, which may not match all Look and
+		// Feels (e.g. Substance).
 		Color fg = UIManager.getColor("ToolTip.foreground");
 		if (fg == null) {
 			fg = UIManager.getColor("Label.foreground");

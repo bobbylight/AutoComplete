@@ -396,7 +396,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 		String tip = null;
 
 		List<Completion> completions = getCompletionsAt(textArea, e.getPoint());
-		if (completions!=null && completions.size()>0) {
+		if (completions!=null && !completions.isEmpty()) {
 			// Only ever 1 match for us in C...
 			Completion c = completions.get(0);
 			tip = c.getToolTipText();

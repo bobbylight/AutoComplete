@@ -8,12 +8,7 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.Color;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.lang.reflect.Method;
+import java.awt.*;
 import java.net.URI;
 import java.security.AccessControlException;
 import java.util.regex.Pattern;
@@ -65,7 +60,7 @@ public final class Util {
 
 	private static final boolean USE_SUBSTANCE_RENDERERS;
 	private static boolean desktopCreationAttempted;
-	private static Object desktop;
+	private static Desktop desktop;
 	private static final Object LOCK_DESKTOP_CREATION = new Object();
 
 
@@ -77,20 +72,17 @@ public final class Util {
 	 *
 	 * @param uri The URI to open.  If this is <code>null</code>, nothing
 	 *        happens and this method returns <code>false</code>.
-	 * @return Whether the operation was successful.  This will be
-	 *         <code>false</code> on JRE's older than 1.6.
+	 * @return Whether the operation was successful.
 	 */
 	public static boolean browse(URI uri) {
 
 		boolean success = false;
 
 		if (uri!=null) {
-			Object desktop = getDesktop();
+			Desktop desktop = getDesktop();
 			if (desktop!=null) {
 				try {
-					Method m = desktop.getClass().getDeclaredMethod(
-								"browse", URI.class);
-					m.invoke(desktop, uri);
+					desktop.browse(uri);
 					success = true;
 				} catch (RuntimeException re) {
 					throw re; // Keep FindBugs happy
@@ -107,38 +99,20 @@ public final class Util {
 
 	/**
 	 * Returns the singleton <code>java.awt.Desktop</code> instance, or
-	 * <code>null</code> if it is unsupported on this platform (or the JRE
-	 * is older than 1.6).
+	 * <code>null</code> if it is unsupported on this platform.
 	 *
-	 * @return The desktop, as an {@link Object}.
+	 * @return The desktop, as an {@link Object}, or {@code null}
+	 *         if desktop operations are unsupported.
 	 */
-	private static Object getDesktop() {
+	private static Desktop getDesktop() {
 
 		synchronized (LOCK_DESKTOP_CREATION) {
-
 			if (!desktopCreationAttempted) {
-
 				desktopCreationAttempted = true;
-
-				try {
-					Class<?> desktopClazz = Class.forName("java.awt.Desktop");
-					Method m = desktopClazz.
-						getDeclaredMethod("isDesktopSupported");
-
-					boolean supported= (Boolean) m.invoke(null);
-					if (supported) {
-						m = desktopClazz.getDeclaredMethod("getDesktop");
-						desktop = m.invoke(null);
-					}
-
-				} catch (RuntimeException re) {
-					throw re; // Keep FindBugs happy
-				} catch (Exception e) {
-					// Ignore; keeps desktop as null.
+				if (Desktop.isDesktopSupported()) {
+					desktop = Desktop.getDesktop();
 				}
-
 			}
-
 		}
 
 		return desktop;
@@ -196,9 +170,9 @@ public final class Util {
 
 	/**
 	 * Give apps a chance to decorate us with drop shadows, etc. Since very
-	 * scrolly things such as lists (of e.g. completions) are *very* slow when
-	 * in per-pixel translucent windows, even as of Java 7u2, we force the user
-	 * to specify an extra option for the two "main" auto-complete windows.
+	 * scrollable things such as lists (of e.g. completions) are *very* slow
+	 * when in per-pixel translucent windows, even as of Java 7u2, we force the
+	 * user to specify an extra option for the two "main" auto-complete windows.
 	 *
 	 * @return Whether to allow decorating the main auto-complete windows.
 	 * @see #PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS

@@ -70,7 +70,7 @@ public class VariableCompletion extends BasicCompletion {
 			sb.append(type).append(' ');
 		}
 
-		// Add the item being described's name.
+		// Add the name of the item being described
 		sb.append(getName());
 
 		return sb.toString();

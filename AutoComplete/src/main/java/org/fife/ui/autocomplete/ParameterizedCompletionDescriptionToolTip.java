@@ -77,7 +77,7 @@ class ParameterizedCompletionDescriptionToolTip {
 		descLabel.setOpaque(true);
 		descLabel.setBackground(TipUtil.getToolTipBackground());
 		// It appears that if a JLabel is set as a content pane directly, when
-		// using the JDK's opacity API's, it won't paint its background, even
+		// using the JDK's opacity APIs, it won't paint its background, even
 		// if label.setOpaque(true) is called.  You have to have a container
 		// underneath it for it to paint its background.  Thus, we embed our
 		// label in a parent JPanel to handle this case.

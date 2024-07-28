@@ -222,7 +222,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 		if (listEnd<0x20 || listEnd==0x7F) {
 			throw new IllegalArgumentException("Invalid listEnd");
 		}
-		if (separator==null || separator.length()==0) {
+		if (separator==null || separator.isEmpty()) {
 			throw new IllegalArgumentException("Invalid separator");
 		}
 		paramListStart = listStart;

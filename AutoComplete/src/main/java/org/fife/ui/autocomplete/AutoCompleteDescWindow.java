@@ -333,7 +333,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			return;
 		}
 
-		// Users can redirect URL's, perhaps to a local copy of documentation.
+		// Users can redirect URLs, perhaps to a local copy of documentation.
 		URL url = e.getURL();
 		if (url!=null) {
 			LinkRedirector redirector = AutoCompletion.getLinkRedirector();

@@ -103,7 +103,7 @@ public class AutoCompletion {
 	private ExternalURLHandler externalURLHandler;
 
 	/**
-	 * An optional redirector that converts URL's to some other location before
+	 * An optional redirector that converts URLs to some other location before
 	 * being handed over to <code>externalURLHandler</code>.
 	 */
 	private static LinkRedirector linkRedirector;
@@ -1074,7 +1074,7 @@ public class AutoCompletion {
 
 
 	/**
-	 * Sets the redirector for external URL's found in code completion
+	 * Sets the redirector for external URLs found in code completion
 	 * documentation. When a non-local link in completion popups is clicked,
 	 * this redirector is given the chance to modify the URL fetched and
 	 * displayed.

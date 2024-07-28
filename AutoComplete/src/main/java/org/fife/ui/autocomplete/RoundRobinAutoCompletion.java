@@ -137,7 +137,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 				// provider always first.
 				for (int i=1; i<cycle.size(); i++) {
 					List<Completion> completions = getCompletionProvider().getCompletions(getTextComponent());
-					if (completions.size() > 0) {
+					if (!completions.isEmpty()) {
 						//nothing to do, just let the current provider display
 						break;
 					}

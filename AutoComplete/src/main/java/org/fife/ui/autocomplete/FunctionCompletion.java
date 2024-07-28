@@ -200,7 +200,7 @@ public class FunctionCompletion extends VariableCompletion
 			sb.append(type).append(' ');
 		}
 
-		// Add the item being described's name.
+		// Add the name of the described item
 		sb.append(getName());
 
 		// Add parameters for functions.

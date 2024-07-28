@@ -10,7 +10,7 @@ import java.net.URL;
 
 
 /**
- * Possibly redirects one URL to another.  Useful if you want "external" URL's
+ * Possibly redirects one URL to another.  Useful if you want "external" URLs
  * in code completion documentation to point to a local copy instead, for
  * example.
  *
