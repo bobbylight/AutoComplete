@@ -38,6 +38,9 @@ public class AutoCompletionStyleContext {
 	private Color parameterOutlineColor;
 
 
+	/**
+	 * Constructor.
+	 */
 	public AutoCompletionStyleContext() {
 		setParameterOutlineColor(Color.gray);
 		setParameterCopyColor(new Color(0xb4d7ff));

@@ -6,8 +6,6 @@ import static org.gradle.api.JavaVersion.*
 
 ['distribution', 'maven-publish', 'signing'].each { apply plugin: it }
 
-assert current().isJava8Compatible()
-
 archivesBaseName = 'autocomplete'
 
 dependencies {

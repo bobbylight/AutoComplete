@@ -38,6 +38,9 @@ import org.xml.sax.SAXException;
  */
 public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
+	/**
+	 * A buffer used when generating completion results.
+	 */
 	protected Segment seg;
 
 	/**

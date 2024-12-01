@@ -75,6 +75,9 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	private final Segment s = new Segment();
 
+	/**
+	 * An empty string, defined as a constant.
+	 */
 	protected static final String EMPTY_STRING = "";
 
 	/**

@@ -81,12 +81,30 @@ public class TemplateCompletion extends AbstractCompletion
 	private List<Parameter> params;
 
 
+	/**
+	 * Constructor.
+	 *
+	 * @param provider The completion provider.
+	 * @param inputText The text to be entered to trigger this completion.
+	 * @param definitionString The definition of this completion.
+	 * @param template The template.
+	 */
 	public TemplateCompletion(CompletionProvider provider,
 			String inputText, String definitionString, String template) {
 		this(provider, inputText, definitionString, template, null, null);
 	}
 
 
+	/**
+	 * Constructor.
+	 *
+	 * @param provider The completion provider.
+	 * @param inputText The text to be entered to trigger this completion.
+	 * @param definitionString The definition of this completion.
+	 * @param template The template.
+	 * @param shortDescription A short description of this completion.
+	 * @param summary A longer summary of this template.
+	 */
 	public TemplateCompletion(CompletionProvider provider,
 				String inputText, String definitionString, String template,
 				String shortDescription, String summary) {
@@ -151,6 +169,12 @@ public class TemplateCompletion extends AbstractCompletion
 	}
 
 
+	/**
+	 * Returns a short description of this completion.
+	 *
+	 * @return A short description.
+	 * @see #setShortDescription(String)
+	 */
 	public String getShortDescription() {
 		return shortDescription;
 	}

@@ -35,6 +35,9 @@ public class ParameterizedCompletionInsertionInfo {
 	private List<ReplacementCopy> replacementCopies;
 
 
+	/**
+	 * Constructor.
+	 */
 	public ParameterizedCompletionInsertionInfo() {
 		defaultEnd = -1;
 	}
@@ -72,6 +75,12 @@ public class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	/**
+	 * Returns the default end offset.
+	 *
+	 * @return The default end offset.
+	 * @see #setDefaultEndOffs(int)
+	 */
 	public int getDefaultEndOffs() {
 		return defaultEnd>-1 ? defaultEnd : getMaxOffset().getOffset();
 	}
@@ -101,6 +110,11 @@ public class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	/**
+	 * Returns the number of replacements.
+	 *
+	 * @return The number of replacements.
+	 */
 	public int getReplacementCopyCount() {
 		return replacementCopies==null ? 0 : replacementCopies.size();
 	}
@@ -220,6 +234,12 @@ public class ParameterizedCompletionInsertionInfo {
 	}
 
 
+	/**
+	 * Sets the default end offset.
+	 *
+	 * @param end The new default end offset.
+	 * @see #getDefaultEndOffs()
+	 */
 	public void setDefaultEndOffs(int end) {
 		defaultEnd = end;
 	}
@@ -251,14 +271,29 @@ public class ParameterizedCompletionInsertionInfo {
 			this.end = end;
 		}
 
+		/**
+		 * Returns the end of the replacement.
+		 *
+		 * @return The end of the replacement.
+		 */
 		public int getEnd() {
 			return end;
 		}
 
+		/**
+		 * Returns the ID of the replacement.
+		 *
+		 * @return The ID of the replacement.
+		 */
 		public String getId() {
 			return id;
 		}
 
+		/**
+		 * Returns the start of the replacement.
+		 *
+		 * @return The start of the replacement.
+		 */
 		public int getStart() {
 			return start;
 		}

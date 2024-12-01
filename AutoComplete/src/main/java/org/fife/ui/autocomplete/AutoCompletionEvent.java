@@ -63,7 +63,15 @@ public class AutoCompletionEvent extends EventObject {
 	 * Enumeration of the various types of this event.
 	 */
 	public enum Type {
+
+		/**
+		 * Denotes that the auto-completion window was shown.
+		 */
 		POPUP_SHOWN,
+
+		/**
+		 * Denotes that the auto-completion window was hidden.
+		 */
 		POPUP_HIDDEN
 	}
 

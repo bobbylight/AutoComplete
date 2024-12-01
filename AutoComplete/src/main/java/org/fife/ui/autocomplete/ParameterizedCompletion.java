@@ -123,10 +123,20 @@ public interface ParameterizedCompletion extends Completion {
 			this.isEndParam = endParam;
 		}
 
+		/**
+		 * Returns the description of this completion.
+		 *
+		 * @return The description of this completion.
+		 */
 		public String getDescription() {
 			return desc;
 		}
 
+		/**
+		 * Returns the name of this completion.
+		 *
+		 * @return The name of this completion.
+		 */
 		public String getName() {
 			return name;
 		}
@@ -160,6 +170,12 @@ public interface ParameterizedCompletion extends Completion {
 			return isEndParam;
 		}
 
+		/**
+		 * Sets the description of this completion.
+		 *
+		 * @param desc The description.
+		 * @see #getDescription()
+		 */
 		public void setDescription(String desc) {
 			this.desc = desc;
 		}

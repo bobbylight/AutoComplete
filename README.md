@@ -1,7 +1,7 @@
 # AutoComplete
-
 ![Java Build](https://github.com/bobbylight/AutoComplete/actions/workflows/gradle.yml/badge.svg)
 ![Java Build](https://github.com/bobbylight/AutoComplete/actions/workflows/codeql-analysis.yml/badge.svg)
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fifesoft/autocomplete/badge.svg)
 
 AutoComplete is a code completion library for Swing JTextComponents, with enhanced functionality available
 for instances of [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea).
@@ -21,7 +21,9 @@ SNAPSHOT builds of the in-development, unreleased version are hosted on
 [Sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/fifesoft/autocomplete/).
 
 # Compiling
-AutoComplete is built using Gradle.  To compile the source, run all tests, and build the distribution jar,
+AutoComplete is built using Gradle. It requires Java 17 to buil but runs on
+Java 8 or later.
+To compile the source, run all tests, and build the distribution jar,
 simply run the following gradle command:
 
 ```bash

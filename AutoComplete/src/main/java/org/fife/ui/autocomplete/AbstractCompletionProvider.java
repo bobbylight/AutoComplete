@@ -104,6 +104,11 @@ public abstract class AbstractCompletionProvider
 	}
 
 
+	/**
+	 * Adds a completion to this provider.
+	 *
+	 * @param c The completion to add.
+	 */
 	protected void checkProviderAndAdd(Completion c) {
 		if (c.getProvider()!=this) {
 			throw new IllegalArgumentException("Invalid CompletionProvider");

@@ -24,9 +24,17 @@ import javax.swing.Icon;
  */
 public class EmptyIcon implements Icon, Serializable {
 
+	/**
+	 * The size of the icon.
+	 */
 	private int size;
 
 
+	/**
+	 * Constructor.
+	 *
+	 * @param size The size of this icon.
+	 */
 	public EmptyIcon(int size) {
 		this.size = size;
 	}

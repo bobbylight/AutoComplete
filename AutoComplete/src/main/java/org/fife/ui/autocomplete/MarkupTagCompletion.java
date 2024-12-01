@@ -76,6 +76,11 @@ public class MarkupTagCompletion extends AbstractCompletion {
 	}
 
 
+	/**
+	 * Adds the definition string for this completion to a buffer.
+	 *
+	 * @param sb The buffer to add to.
+	 */
 	protected void addDefinitionString(StringBuilder sb) {
 		sb.append("<html><b>").append(name).append("</b>");
 	}
