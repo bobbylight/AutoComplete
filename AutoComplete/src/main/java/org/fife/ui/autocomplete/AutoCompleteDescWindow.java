@@ -132,6 +132,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * @param owner The parent window.
 	 * @param ac The parent auto-completion.
 	 */
+	@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 	AutoCompleteDescWindow(Window owner, AutoCompletion ac) {
 
 		super(owner);

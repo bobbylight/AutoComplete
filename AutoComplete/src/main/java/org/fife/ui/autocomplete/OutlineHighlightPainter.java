@@ -53,7 +53,7 @@ class OutlineHighlightPainter extends
 	 */
 	OutlineHighlightPainter(Color color) {
 		super(color);
-		setColor(color);
+		this.color = color != null? color : Color.BLACK; // SpotBugs
 	}
 
 

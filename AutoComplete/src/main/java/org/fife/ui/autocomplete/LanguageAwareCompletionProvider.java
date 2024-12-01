@@ -90,6 +90,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @param defaultProvider The provider to use when no provider is assigned
 	 *        to a particular token type.  This cannot be <code>null</code>.
 	 */
+	@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 	public LanguageAwareCompletionProvider(CompletionProvider defaultProvider) {
 		setDefaultCompletionProvider(defaultProvider);
 	}
