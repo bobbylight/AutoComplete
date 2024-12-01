@@ -259,6 +259,7 @@ public class AutoCompletion {
 	 *
 	 * @param provider The completion provider. This cannot be <code>null</code>
 	 */
+	@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 	public AutoCompletion(CompletionProvider provider) {
 
 		setChoicesWindowSize(350, 200);
