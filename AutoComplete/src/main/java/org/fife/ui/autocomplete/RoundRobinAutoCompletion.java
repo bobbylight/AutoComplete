@@ -116,7 +116,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	 * <code>CompletionProvider</code> is displayed based on the context in
 	 * which the user presses the trigger key.
 	 */
-	private class CycleAutoCompleteAction extends AutoCompleteAction {
+	private final class CycleAutoCompleteAction extends AutoCompleteAction {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -141,7 +141,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 						//nothing to do, just let the current provider display
 						break;
 					}
-					else{
+					else {
 						//search for non-empty completions
 						advanceProvider();
 					}

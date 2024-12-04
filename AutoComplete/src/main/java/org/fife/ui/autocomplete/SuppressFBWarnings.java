@@ -1,3 +1,7 @@
+/*
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE.md file for details.
+ */
 package org.fife.ui.autocomplete;
 
 import java.lang.annotation.Retention;

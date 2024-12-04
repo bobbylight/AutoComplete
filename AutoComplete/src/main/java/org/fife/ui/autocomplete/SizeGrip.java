@@ -205,7 +205,7 @@ class SizeGrip extends JPanel {
 	 * Listens for mouse events on this panel and resizes the parent window
 	 * appropriately.
 	 */
-	private class MouseHandler extends MouseInputAdapter {
+	private final class MouseHandler extends MouseInputAdapter {
 
 		private Point origPos;
 

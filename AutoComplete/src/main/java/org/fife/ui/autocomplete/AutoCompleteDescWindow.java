@@ -553,7 +553,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * Action that actually updates the summary text displayed.
 	 */
-	private class TimerAction extends AbstractAction {
+	private final class TimerAction extends AbstractAction {
 
 		private Completion completion;
 		private String anchor;

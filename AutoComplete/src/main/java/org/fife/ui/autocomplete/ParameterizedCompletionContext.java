@@ -867,7 +867,7 @@ class ParameterizedCompletionContext {
 	/**
 	 * Called when the user presses Enter while entering parameters.
 	 */
-	private class GotoEndAction extends AbstractAction {
+	private final class GotoEndAction extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -912,7 +912,7 @@ class ParameterizedCompletionContext {
 	 * Called when the user types the character marking the closing of the
 	 * parameter list, such as '<code>)</code>'.
 	 */
-	private class ClosingAction extends AbstractAction {
+	private final class ClosingAction extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -969,7 +969,7 @@ class ParameterizedCompletionContext {
 	/**
 	 * Action performed when the user hits the escape key.
 	 */
-	private class HideAction extends AbstractAction {
+	private final class HideAction extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -993,7 +993,7 @@ class ParameterizedCompletionContext {
 	 * Listens for various events in the text component while this tool tip
 	 * is visible.
 	 */
-	private class Listener implements FocusListener, CaretListener,
+	private final class Listener implements FocusListener, CaretListener,
 							DocumentListener {
 
 		private boolean markOccurrencesEnabled;
@@ -1209,7 +1209,7 @@ class ParameterizedCompletionContext {
 	/**
 	 * Action performed when the user hits the tab key.
 	 */
-	private class NextParamAction extends AbstractAction {
+	private final class NextParamAction extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -1238,7 +1238,7 @@ class ParameterizedCompletionContext {
 	/**
 	 * Action performed when the user hits shift+tab.
 	 */
-	private class PrevParamAction extends AbstractAction {
+	private final class PrevParamAction extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

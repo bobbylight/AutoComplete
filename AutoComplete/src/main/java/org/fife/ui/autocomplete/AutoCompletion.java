@@ -1437,7 +1437,7 @@ public class AutoCompletion {
 	 * Listens for LookAndFeel changes and updates the various popup windows
 	 * involved in auto-completion accordingly.
 	 */
-	private class LookAndFeelChangeListener implements PropertyChangeListener {
+	private final class LookAndFeelChangeListener implements PropertyChangeListener {
 
 		@Override
 		public void propertyChange(PropertyChangeEvent e) {
@@ -1486,7 +1486,7 @@ public class AutoCompletion {
 	 * Listens for events in the parent window of the text component with
 	 * auto-completion enabled.
 	 */
-	private class ParentWindowListener extends ComponentAdapter implements
+	private final class ParentWindowListener extends ComponentAdapter implements
 			WindowFocusListener {
 
 		public void addTo(Window w) {
@@ -1530,7 +1530,7 @@ public class AutoCompletion {
 	/**
 	 * Listens for events from the popup window.
 	 */
-	private class PopupWindowListener extends ComponentAdapter {
+	private final class PopupWindowListener extends ComponentAdapter {
 
 		@Override
 		public void componentHidden(ComponentEvent e) {
@@ -1558,7 +1558,7 @@ public class AutoCompletion {
 	/**
 	 * Listens for events from the text component we're installed on.
 	 */
-	private class TextComponentListener extends FocusAdapter implements
+	private final class TextComponentListener extends FocusAdapter implements
 			HierarchyListener {
 
 		void addTo(JTextComponent tc) {
