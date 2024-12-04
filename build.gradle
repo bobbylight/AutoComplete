@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:6.4.0'
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:7.1.0'
     }
 }
 
@@ -16,7 +16,7 @@ plugins {
 assert JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)
 
 group 'com.fifesoft'
-// NOTE: Local Java 8:  /Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home
+// NOTE: Local Java 17: /Library/Java/JavaVirtualMachines/jdk-17.0.13+11/Contents/Home
 
 allprojects {
 
