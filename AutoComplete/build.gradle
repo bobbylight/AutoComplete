@@ -2,33 +2,30 @@ plugins {
     id 'java-library'
 }
 
-import static org.gradle.api.JavaVersion.*
+['base', 'distribution', 'maven-publish', 'signing'].each { apply plugin: it }
 
-['distribution', 'maven-publish', 'signing'].each { apply plugin: it }
-
-archivesBaseName = 'autocomplete'
+base {
+    archivesName = 'autocomplete'
+}
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.5.1'
+    api 'com.fifesoft:rsyntaxtextarea:3.5.4'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
-
-ext.sharedManifest = manifest {
-	attributes('Class-Path': 'rsyntaxtextarea.jar',
-		'Specification-Title': 'AutoComplete',
-		'Specification-Version': version,
-		'Implementation-Title': 'org.fife.ui',
-		'Implementation-Version': version)
-
-}
 
 java {
     withSourcesJar()
     withJavadocJar()
 }
 jar {
-	manifest { from sharedManifest }
+	manifest {
+        attributes('Class-Path': 'rsyntaxtextarea.jar',
+                'Specification-Title': 'AutoComplete',
+                'Specification-Version': version,
+                'Implementation-Title': 'org.fife.ui',
+                'Implementation-Version': version)
+    }
 }
 
 publishing {
@@ -91,7 +88,7 @@ publishing {
 
 signing {
     // Don't require signing for e.g. ./gradlew install
-    required { gradle.taskGraph.hasTask('publish') && isReleaseVersion }
+    required = gradle.taskGraph.hasTask('publish') && isReleaseVersion
     sign publishing.publications.maven
 }
 tasks.withType(Sign) {

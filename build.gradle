@@ -8,14 +8,14 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.spotbugs' version '6.0.26'
+    id 'com.github.spotbugs' version '6.1.3'
 }
 
 // We require building with JDK 17 or later. Built artifact compatibility
 // is controlled by javaLanguageVersion
 assert JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)
 
-group 'com.fifesoft'
+group = 'com.fifesoft'
 // NOTE: Local Java 17: /Library/Java/JavaVirtualMachines/jdk-17.0.13+11/Contents/Home
 
 allprojects {
@@ -23,12 +23,12 @@ allprojects {
     repositories {
         mavenCentral()
         maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
         }
     }
 
     wrapper {
-        gradleVersion = '8.11.1'
+        gradleVersion = '8.12.1'
     }
 }
 
@@ -47,7 +47,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '10.20.1'
+        toolVersion = '10.21.2'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
@@ -78,8 +78,9 @@ subprojects {
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.3'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+        testImplementation platform('org.junit:junit-bom:5.11.4')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
     compileJava {
