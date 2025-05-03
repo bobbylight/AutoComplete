@@ -9,6 +9,13 @@
  */
 package org.fife.ui.autocomplete;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
+import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -19,26 +26,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
-import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
 
 /**
@@ -583,23 +570,39 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarBackAction extends AbstractAction {
 
 		ToolBarBackAction(boolean ltr) {
-			String img = "org/fife/ui/autocomplete/arrow_" +
-						(ltr ? "left.png" : "right.png");
-			ClassLoader cl = getClass().getClassLoader();
-			Icon icon = new ImageIcon(cl.getResource(img));
+			setIcon(ltr);
+
+			UIManager.addPropertyChangeListener(evt -> {
+				if (evt.getPropertyName().equals("lookAndFeel")) {
+					setIcon(ltr);
+				}
+			});
+		}
+
+		private void setIcon(boolean ltr) {
+			Icon icon = UIManager.getIcon("autocomplete.leftArrow");
+
+			if (icon == null) {
+				if (ltr)
+					icon = new ImageIcon(getClass().getResource("arrow_left.png"));
+				else
+					icon = new ImageIcon(getClass().getResource("arrow_right.png"));
+
+				UIManager.put("autocomplete.leftArrow", icon);
+			}
+
 			putValue(Action.SMALL_ICON, icon);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (historyPos>0) {
+			if (historyPos > 0) {
 				HistoryEntry pair = history.get(--historyPos);
 				descArea.setText(pair.summary);
-				if (pair.anchor!=null) {
+				if (pair.anchor != null) {
 					//System.out.println("Scrolling to: " + pair.anchor);
 					descArea.scrollToReference(pair.anchor);
-				}
-				else {
+				} else {
 					descArea.setCaretPosition(0);
 				}
 				setActionStates();
@@ -615,23 +618,39 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarForwardAction extends AbstractAction {
 
 		ToolBarForwardAction(boolean ltr) {
-			String img = "org/fife/ui/autocomplete/arrow_" +
-							(ltr ? "right.png" : "left.png");
-			ClassLoader cl = getClass().getClassLoader();
-			Icon icon = new ImageIcon(cl.getResource(img));
+			setIcon(ltr);
+
+			UIManager.addPropertyChangeListener(evt -> {
+				if (evt.getPropertyName().equals("lookAndFeel")) {
+					setIcon(ltr);
+				}
+			});
+		}
+
+		void setIcon(boolean ltr) {
+			Icon icon = UIManager.getIcon("autocomplete.rightArrow");
+
+			if (icon == null) {
+				if (ltr)
+					icon = new ImageIcon(getClass().getResource("arrow_right.png"));
+				else
+					icon = new ImageIcon(getClass().getResource("arrow_left.png"));
+
+				UIManager.put("autocomplete.rightArrow", icon);
+			}
+
 			putValue(Action.SMALL_ICON, icon);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (history!=null && historyPos<history.size()-1) {
+			if (history != null && historyPos < history.size() - 1) {
 				HistoryEntry pair = history.get(++historyPos);
 				descArea.setText(pair.summary);
-				if (pair.anchor!=null) {
+				if (pair.anchor != null) {
 					//System.out.println("Scrolling to: " + pair.anchor);
 					descArea.scrollToReference(pair.anchor);
-				}
-				else {
+				} else {
 					descArea.setCaretPosition(0);
 				}
 				setActionStates();
