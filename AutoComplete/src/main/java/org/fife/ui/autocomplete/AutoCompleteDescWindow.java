@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * The optional "description" window that describes the currently selected
@@ -503,7 +505,43 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		TipUtil.tweakTipEditorPane(descArea);
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
-		((JPanel)getContentPane()).setBorder(TipUtil.getToolTipBorder());
+		((JPanel) getContentPane()).setBorder(TipUtil.getToolTipBorder());
+
+		ComponentOrientation orientation = ac.getTextComponentOrientation();
+		setIcon(forwardAction, orientation.isLeftToRight(), "forward");
+		setIcon(backAction, orientation.isLeftToRight(), "back");
+	}
+
+	private static void setIcon(Action action, boolean ltr, String type) {
+		Icon leftIcon = UIManager.getIcon("autocomplete.leftArrow");
+		Icon rightIcon = UIManager.getIcon("autocomplete.rightArrow");
+
+		if (leftIcon == null) {
+			String leftIc = ltr ? "arrow_left.png" : "arrow_right.png";
+			leftIcon = new ImageIcon(requireNonNull(AutoCompleteDescWindow.class.getResource(leftIc)));
+			UIManager.put("autocomplete.leftArrow", leftIcon);
+		}
+
+		if (rightIcon == null) {
+			String rightIc = ltr ? "arrow_right.png" : "arrow_left.png";
+			rightIcon = new ImageIcon(requireNonNull(AutoCompleteDescWindow.class.getResource(rightIc)));
+			UIManager.put("autocomplete.leftArrow", leftIcon);
+		}
+
+
+		if ("back".equals(type)) {
+			if (ltr) {
+				action.putValue(Action.SMALL_ICON, leftIcon);
+			} else {
+				action.putValue(Action.SMALL_ICON, rightIcon);
+			}
+		} else if ("forward".equals(type)) {
+			if (ltr) {
+				action.putValue(Action.SMALL_ICON, rightIcon);
+			} else {
+				action.putValue(Action.SMALL_ICON, leftIcon);
+			}
+		}
 	}
 
 
@@ -517,7 +555,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		private String anchor;
 
 		HistoryEntry(Completion completion, String summary,
-									String anchor) {
+					 String anchor) {
 			this.completion = completion;
 			this.summary = summary;
 			this.anchor = anchor;
@@ -570,28 +608,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarBackAction extends AbstractAction {
 
 		ToolBarBackAction(boolean ltr) {
-			setIcon(ltr);
-
-			UIManager.addPropertyChangeListener(evt -> {
-				if (evt.getPropertyName().equals("lookAndFeel")) {
-					setIcon(ltr);
-				}
-			});
-		}
-
-		private void setIcon(boolean ltr) {
-			Icon icon = UIManager.getIcon("autocomplete.leftArrow");
-
-			if (icon == null) {
-				if (ltr)
-					icon = new ImageIcon(getClass().getResource("arrow_left.png"));
-				else
-					icon = new ImageIcon(getClass().getResource("arrow_right.png"));
-
-				UIManager.put("autocomplete.leftArrow", icon);
-			}
-
-			putValue(Action.SMALL_ICON, icon);
+			setIcon(this, ltr, "back");
 		}
 
 		@Override
@@ -608,7 +625,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 				setActionStates();
 			}
 		}
-
 	}
 
 
@@ -618,28 +634,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarForwardAction extends AbstractAction {
 
 		ToolBarForwardAction(boolean ltr) {
-			setIcon(ltr);
-
-			UIManager.addPropertyChangeListener(evt -> {
-				if (evt.getPropertyName().equals("lookAndFeel")) {
-					setIcon(ltr);
-				}
-			});
-		}
-
-		void setIcon(boolean ltr) {
-			Icon icon = UIManager.getIcon("autocomplete.rightArrow");
-
-			if (icon == null) {
-				if (ltr)
-					icon = new ImageIcon(getClass().getResource("arrow_right.png"));
-				else
-					icon = new ImageIcon(getClass().getResource("arrow_left.png"));
-
-				UIManager.put("autocomplete.rightArrow", icon);
-			}
-
-			putValue(Action.SMALL_ICON, icon);
+			setIcon(this, ltr, "forward");
 		}
 
 		@Override
@@ -656,7 +651,6 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 				setActionStates();
 			}
 		}
-
 	}
 
 
