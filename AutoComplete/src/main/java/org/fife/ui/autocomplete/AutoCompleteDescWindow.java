@@ -63,12 +63,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * Action that goes to the previous description displayed.
 	 */
-	private Action backAction;
+	private final Action backAction;
 
 	/**
 	 * Action that goes to the next description displayed.
 	 */
-	private Action forwardAction;
+	private final Action forwardAction;
 
 	/**
 	 * History of descriptions displayed.
@@ -508,26 +508,25 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		((JPanel) getContentPane()).setBorder(TipUtil.getToolTipBorder());
 
 		ComponentOrientation orientation = ac.getTextComponentOrientation();
-		setIcon(forwardAction, orientation.isLeftToRight(), "forward");
-		setIcon(backAction, orientation.isLeftToRight(), "back");
+		setArrowIcon(forwardAction, orientation.isLeftToRight(), "forward");
+		setArrowIcon(backAction, orientation.isLeftToRight(), "back");
 	}
 
-	private static void setIcon(Action action, boolean ltr, String type) {
+	private static void setArrowIcon(Action action, boolean ltr, String type) {
 		Icon leftIcon = UIManager.getIcon("autocomplete.leftArrow");
 		Icon rightIcon = UIManager.getIcon("autocomplete.rightArrow");
 
 		if (leftIcon == null) {
-			String leftIc = ltr ? "arrow_left.png" : "arrow_right.png";
-			leftIcon = new ImageIcon(requireNonNull(AutoCompleteDescWindow.class.getResource(leftIc)));
+			URL leftIc = AutoCompleteDescWindow.class.getResource("arrow_left.png");
+			leftIcon = new ImageIcon(requireNonNull(leftIc));
 			UIManager.put("autocomplete.leftArrow", leftIcon);
 		}
 
 		if (rightIcon == null) {
-			String rightIc = ltr ? "arrow_right.png" : "arrow_left.png";
-			rightIcon = new ImageIcon(requireNonNull(AutoCompleteDescWindow.class.getResource(rightIc)));
+			URL rightIc = AutoCompleteDescWindow.class.getResource("arrow_right.png");
+			rightIcon = new ImageIcon(requireNonNull(rightIc));
 			UIManager.put("autocomplete.leftArrow", leftIcon);
 		}
-
 
 		if ("back".equals(type)) {
 			if (ltr) {
@@ -541,7 +540,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			} else {
 				action.putValue(Action.SMALL_ICON, leftIcon);
 			}
-		}
+		} else throw new IllegalArgumentException();
 	}
 
 
@@ -608,7 +607,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarBackAction extends AbstractAction {
 
 		ToolBarBackAction(boolean ltr) {
-			setIcon(this, ltr, "back");
+			setArrowIcon(this, ltr, "back");
 		}
 
 		@Override
@@ -634,7 +633,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarForwardAction extends AbstractAction {
 
 		ToolBarForwardAction(boolean ltr) {
-			setIcon(this, ltr, "forward");
+			setArrowIcon(this, ltr, "forward");
 		}
 
 		@Override
