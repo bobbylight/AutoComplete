@@ -525,7 +525,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		if (rightIcon == null) {
 			URL rightIc = AutoCompleteDescWindow.class.getResource("arrow_right.png");
 			rightIcon = new ImageIcon(requireNonNull(rightIc));
-			UIManager.put("autocomplete.leftArrow", leftIcon);
+			UIManager.put("autocomplete.rightArrow", leftIcon);
 		}
 
 		if ("back".equals(type)) {
