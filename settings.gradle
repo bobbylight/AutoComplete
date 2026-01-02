@@ -1,3 +1,9 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'AutoComplete'
 
 include 'AutoComplete', 'AutoCompleteDemo'
