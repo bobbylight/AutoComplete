@@ -3,14 +3,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:7.1.0'
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:7.2.0'
     }
 }
 
 plugins {
-    id 'com.github.spotbugs' version '6.1.7'
+    id 'com.github.spotbugs' version '6.4.8'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
-
 }
 
 apply plugin: 'io.github.gradle-nexus.publish-plugin'
@@ -32,7 +31,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '8.12.1'
+        gradleVersion = '9.2.1'
     }
 }
 
@@ -51,7 +50,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '10.21.2'
+        toolVersion = '12.3.0'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
@@ -82,7 +81,7 @@ subprojects {
     }
 
     dependencies {
-        testImplementation platform('org.junit:junit-bom:5.11.4')
+        testImplementation platform('org.junit:junit-bom:6.0.1')
         testImplementation 'org.junit.jupiter:junit-jupiter'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
