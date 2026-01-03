@@ -9,6 +9,13 @@
  */
 package org.fife.ui.autocomplete;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
+import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -19,26 +26,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
-import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -74,12 +63,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * Action that goes to the previous description displayed.
 	 */
-	private Action backAction;
+	private final Action backAction;
 
 	/**
 	 * Action that goes to the next description displayed.
 	 */
-	private Action forwardAction;
+	private final Action forwardAction;
 
 	/**
 	 * History of descriptions displayed.
@@ -516,7 +505,42 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		TipUtil.tweakTipEditorPane(descArea);
 		scrollPane.setBackground(descArea.getBackground());
 		scrollPane.getViewport().setBackground(descArea.getBackground());
-		((JPanel)getContentPane()).setBorder(TipUtil.getToolTipBorder());
+		((JPanel) getContentPane()).setBorder(TipUtil.getToolTipBorder());
+
+		ComponentOrientation orientation = ac.getTextComponentOrientation();
+		setArrowIcon(forwardAction, orientation.isLeftToRight(), "forward");
+		setArrowIcon(backAction, orientation.isLeftToRight(), "back");
+	}
+
+	private static void setArrowIcon(Action action, boolean ltr, String type) {
+		Icon leftIcon = UIManager.getIcon("autocomplete.leftArrow");
+		Icon rightIcon = UIManager.getIcon("autocomplete.rightArrow");
+
+		if (leftIcon == null) {
+			URL leftIc = AutoCompleteDescWindow.class.getResource("arrow_left.png");
+			leftIcon = new ImageIcon(requireNonNull(leftIc));
+			UIManager.put("autocomplete.leftArrow", leftIcon);
+		}
+
+		if (rightIcon == null) {
+			URL rightIc = AutoCompleteDescWindow.class.getResource("arrow_right.png");
+			rightIcon = new ImageIcon(requireNonNull(rightIc));
+			UIManager.put("autocomplete.rightArrow", rightIcon);
+		}
+
+		if ("back".equals(type)) {
+			if (ltr) {
+				action.putValue(Action.SMALL_ICON, leftIcon);
+			} else {
+				action.putValue(Action.SMALL_ICON, rightIcon);
+			}
+		} else if ("forward".equals(type)) {
+			if (ltr) {
+				action.putValue(Action.SMALL_ICON, rightIcon);
+			} else {
+				action.putValue(Action.SMALL_ICON, leftIcon);
+			}
+		} else throw new IllegalArgumentException();
 	}
 
 
@@ -530,7 +554,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		private String anchor;
 
 		HistoryEntry(Completion completion, String summary,
-									String anchor) {
+					 String anchor) {
 			this.completion = completion;
 			this.summary = summary;
 			this.anchor = anchor;
@@ -583,29 +607,23 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarBackAction extends AbstractAction {
 
 		ToolBarBackAction(boolean ltr) {
-			String img = "org/fife/ui/autocomplete/arrow_" +
-						(ltr ? "left.png" : "right.png");
-			ClassLoader cl = getClass().getClassLoader();
-			Icon icon = new ImageIcon(cl.getResource(img));
-			putValue(Action.SMALL_ICON, icon);
+			setArrowIcon(this, ltr, "back");
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (historyPos>0) {
+			if (historyPos > 0) {
 				HistoryEntry pair = history.get(--historyPos);
 				descArea.setText(pair.summary);
-				if (pair.anchor!=null) {
+				if (pair.anchor != null) {
 					//System.out.println("Scrolling to: " + pair.anchor);
 					descArea.scrollToReference(pair.anchor);
-				}
-				else {
+				} else {
 					descArea.setCaretPosition(0);
 				}
 				setActionStates();
 			}
 		}
-
 	}
 
 
@@ -615,29 +633,23 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	class ToolBarForwardAction extends AbstractAction {
 
 		ToolBarForwardAction(boolean ltr) {
-			String img = "org/fife/ui/autocomplete/arrow_" +
-							(ltr ? "right.png" : "left.png");
-			ClassLoader cl = getClass().getClassLoader();
-			Icon icon = new ImageIcon(cl.getResource(img));
-			putValue(Action.SMALL_ICON, icon);
+			setArrowIcon(this, ltr, "forward");
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (history!=null && historyPos<history.size()-1) {
+			if (history != null && historyPos < history.size() - 1) {
 				HistoryEntry pair = history.get(++historyPos);
 				descArea.setText(pair.summary);
-				if (pair.anchor!=null) {
+				if (pair.anchor != null) {
 					//System.out.println("Scrolling to: " + pair.anchor);
 					descArea.scrollToReference(pair.anchor);
-				}
-				else {
+				} else {
 					descArea.setCaretPosition(0);
 				}
 				setActionStates();
 			}
 		}
-
 	}
 
 
