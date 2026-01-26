@@ -9,6 +9,8 @@ import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.beans.*;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.Objects;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -87,6 +89,11 @@ public class AutoCompletion {
 	 * Provides the completion options relevant to the current caret position.
 	 */
 	private CompletionProvider provider;
+
+	/**
+	 * If set, provides a description window different from the default {@link AutoCompleteDescWindow}.
+	 */
+	private Function<Window, AbstractDescriptionWindow> descriptionWindowFactory;
 
 	/**
 	 * The renderer to use for the completion choices. If this is
@@ -402,6 +409,9 @@ public class AutoCompletion {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, mask);
 	}
 
+	Function<Window, AbstractDescriptionWindow> getDescriptionWindowFactory() {
+		return descriptionWindowFactory;
+	}
 
 	/**
 	 * Returns the handler to use when an external URL is clicked in the
@@ -892,8 +902,7 @@ public class AutoCompletion {
 					popupWindow.setSize(preferredChoicesWindowSize);
 				}
 				if (preferredDescWindowSize != null) {
-					popupWindow
-							.setDescriptionWindowSize(preferredDescWindowSize);
+					popupWindow.setDescriptionWindowSize(preferredDescWindowSize);
 				}
 			}
 
@@ -1018,6 +1027,13 @@ public class AutoCompletion {
 		}
 	}
 
+	/**
+	 * Set a {@link AbstractDescriptionWindow} provider. By default, a {@link AutoCompleteDescWindow} is used.
+	 * @param descriptionWindowFactory A {@link Callable} returning an instance of a {@link AbstractDescriptionWindow}
+	 */
+	public void setDescriptionWindowFactory(Function<Window, AbstractDescriptionWindow> descriptionWindowFactory) {
+		this.descriptionWindowFactory = descriptionWindowFactory;
+	}
 
 	/**
 	 * Sets the size of the completion choices window.
