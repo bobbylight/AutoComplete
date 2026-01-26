@@ -9,6 +9,13 @@
  */
 package org.fife.ui.autocomplete;
 
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
+import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -19,26 +26,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
-import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
 
 /**
@@ -48,13 +35,13 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  * @author Robert Futrell
  * @version 1.0
  */
-class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
-				DescWindowCallback {
+class AutoCompleteDescWindow extends AbstractDescriptionWindow
+	implements HyperlinkListener, DescWindowCallback {
 
 	/**
 	 * The parent AutoCompletion instance.
 	 */
-	private AutoCompletion ac;
+	private final AutoCompletion ac;
 
 	/**
 	 * Renders the HTML description.
@@ -97,12 +84,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * completions, those with slow-to-calculate summaries won't bog down the
 	 * scrolling.
 	 */
-	private Timer timer;
+	private final Timer timer;
 
 	/**
 	 * The action that listens for the timer to fire.
 	 */
-	private TimerAction timerAction;
+	private final TimerAction timerAction;
 
 	/**
 	 * The resource bundle for this window.
@@ -115,13 +102,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * performance for {@link Completion}s that may be slow to compute their
 	 * summary text.
 	 */
-	private static final int INITIAL_TIMER_DELAY			= 120;
+	private static final int INITIAL_TIMER_DELAY = 120;
 
 	/**
 	 * The resource bundle name.
 	 */
-	private static final String MSG =
-					"org.fife.ui.autocomplete.AutoCompleteDescWindow";
+	private static final String MSG = "org.fife.ui.autocomplete.AutoCompleteDescWindow";
 
 	private static final String FLAT_LAF_BORDER_PREFIX = "com.formdev.flatlaf.ui.Flat";
 
@@ -177,10 +163,8 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		};
 		bottomPanel.setBorder(b);
 		bottomPanel.setBackground(ac.getDescWindowColor());
-		SizeGrip rp = new SizeGrip();
 		bottomPanel.add(descWindowNavBar, BorderLayout.LINE_START);
-		bottomPanel.add(rp, BorderLayout.LINE_END);
-		rp.setBackground(ac.getDescWindowColor());
+		bottomPanel.add(createSizeGrip(), BorderLayout.LINE_END);
 		cp.add(bottomPanel, BorderLayout.SOUTH);
 		setContentPane(cp);
 
@@ -202,6 +186,32 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		timer = new Timer(INITIAL_TIMER_DELAY, timerAction);
 		timer.setRepeats(false);
 
+	}
+
+
+	/**
+	 * Append the {@code action} at the end of the bottom nav-bar of the window.
+	 *
+	 * @param action The {@link Action} to add
+	 * @return The new button which dispatches the action
+	 */
+	public JButton addToNavBar(Action action) {
+		return addToNavBar(action, false);
+	}
+
+
+	/**
+	 * Append the {@code action} at the end of the bottom nav-bar of the window.
+	 *
+	 * @param action             The {@link Action} to add
+	 * @param addSeparatorBefore If {@code true}, add a {@link JSeparator} before the {@code action}
+	 * @return The new button which dispatches the action
+	 */
+	public JButton addToNavBar(Action action, boolean addSeparatorBefore) {
+		if (addSeparatorBefore) {
+			descWindowNavBar.addSeparator();
+		}
+		return descWindowNavBar.add(action);
 	}
 
 
@@ -246,6 +256,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 *
 	 * @return Whether a copy occurred.
 	 */
+	@Override
 	public boolean copy() {
 		if (isVisible() &&
 				descArea.getSelectionStart()!=descArea.getSelectionEnd()) {
@@ -427,6 +438,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 *
 	 * @param item The item whose description you want to display.
 	 */
+	@Override
 	public void setDescriptionFor(Completion item) {
 		setDescriptionFor(item, false);
 	}
@@ -510,6 +522,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * Called by the parent completion popup window the LookAndFeel is updated.
 	 */
+	@Override
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(this);
 		// Update editor pane for new font, bg, selection colors, etc.
@@ -525,12 +538,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 */
 	private static class HistoryEntry {
 
-		private Completion completion;
-		private String summary;
-		private String anchor;
+		private final Completion completion;
+		private final String summary;
+		private final String anchor;
 
-		HistoryEntry(Completion completion, String summary,
-									String anchor) {
+		HistoryEntry(Completion completion, String summary, String anchor) {
 			this.completion = completion;
 			this.summary = summary;
 			this.anchor = anchor;
@@ -567,8 +579,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			setDisplayedDesc(completion, anchor, addToHistory);
 		}
 
-		void setCompletion(Completion c, String anchor,
-									boolean addToHistory) {
+		void setCompletion(Completion c, String anchor, boolean addToHistory) {
 			this.completion = c;
 			this.anchor = anchor;
 			this.addToHistory = addToHistory;
