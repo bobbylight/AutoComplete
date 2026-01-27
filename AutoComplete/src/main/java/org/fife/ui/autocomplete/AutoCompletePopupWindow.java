@@ -9,23 +9,9 @@
  */
 package org.fife.ui.autocomplete;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.List;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JWindow;
-import javax.swing.KeyStroke;
-import javax.swing.ListCellRenderer;
-import javax.swing.SwingUtilities;
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
@@ -33,8 +19,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ListUI;
 import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
-
-import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.List;
 
 
 /**
@@ -49,22 +39,22 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  */
 @SuppressWarnings("checkstyle:MultipleVariableDeclarations")
 class AutoCompletePopupWindow extends JWindow implements CaretListener,
-									ListSelectionListener, MouseListener {
+	ListSelectionListener, MouseListener {
 
 	/**
 	 * The parent AutoCompletion instance.
 	 */
-	private AutoCompletion ac;
+	private final AutoCompletion ac;
 
 	/**
 	 * The list of completion choices.
 	 */
-	private PopupList list;
+	private final PopupList list;
 
 	/**
 	 * The contents of {@link #list()}.
 	 */
-	private CompletionListModel model;
+	private final CompletionListModel model;
 
 	/**
 	 * A hack to work around the fact that we clear our completion model (and
@@ -77,7 +67,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * Optional popup window containing a description of the currently
 	 * selected completion.
 	 */
-	private AutoCompleteDescWindow descWindow;
+	private AbstractDescriptionWindow descWindow;
 
 	/**
 	 * The preferred size of the optional description window.  This field
@@ -211,23 +201,28 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @return The description window.
 	 */
-	private AutoCompleteDescWindow createDescriptionWindow() {
+	private AbstractDescriptionWindow createDescriptionWindow() {
 
-		AutoCompleteDescWindow dw = new AutoCompleteDescWindow(this, ac);
+		AbstractDescriptionWindow dw;
+
+		if (ac.getDescriptionWindowFactory() == null) {
+			dw = new AutoCompleteDescWindow(this, ac);
+		} else {
+			dw = ac.getDescriptionWindowFactory().apply(this);
+		}
 		dw.applyComponentOrientation(ac.getTextComponentOrientation());
 
 		Dimension size = preferredDescWindowSize;
-		if (size==null) {
+		if (size == null) {
 			size = getSize();
 		}
 		dw.setSize(size);
 
-		if (descWindowColor  != null) {
-		    dw.setBackground(descWindowColor);
-        }
-        else {
-            descWindowColor = dw.getBackground();
-        }
+		if (descWindowColor != null) {
+			dw.setBackground(descWindowColor);
+		} else {
+			descWindowColor = dw.getBackground();
+		}
 
 		return dw;
 	}
@@ -277,6 +272,13 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 
 	/**
+	 * @return The {@link AutoCompletion} object
+	 */
+	AutoCompletion getAutoCompletion() {
+		return ac;
+	}
+
+	/**
 	 * Returns the copy keystroke to use for this platform.
 	 *
 	 * @return The copy keystroke.
@@ -308,9 +310,8 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @return The default list cell renderer.
 	 * @see #setListCellRenderer(ListCellRenderer)
 	 */
-	public ListCellRenderer getListCellRenderer() {
-		DelegatingCellRenderer dcr = (DelegatingCellRenderer)list.
-															getCellRenderer();
+	public ListCellRenderer<?> getListCellRenderer() {
+		DelegatingCellRenderer dcr = (DelegatingCellRenderer) list.getCellRenderer();
 		return dcr.getFallbackCellRenderer();
 	}
 
