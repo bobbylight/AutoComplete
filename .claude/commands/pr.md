@@ -46,5 +46,5 @@ Create a branch (if needed), commit staged/unstaged changes, push, and open/upda
    - Body: formatted using this repo's PR template (`.github/PULL_REQUEST_TEMPLATE.md`),
      with an additional footer: `🤖 Generated with [Claude Code](https://claude.ai/claude-code)`
    - Labels — add any that are relevant:
-     - `bug`, `build`, `ci/cd`, `code-folding`, dependencies`, `enhancement`, `refactor`, `sytax-highlighting`
+     - `bug`, `build`, `ci/cd`, `dependencies`, `enhancement`, `refactor`
      - Only add a `tests` label if the PR is *only* adding test coverage

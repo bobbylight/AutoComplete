@@ -160,6 +160,8 @@ public interface ParameterizedCompletion extends Completion {
 		}
 
 		/**
+		 * Returns whether this is the last parameter in the completion text.
+		 *
 		 * @return Whether this parameter is an "ending parameter;"
 		 *         that is, whether this parameter is at a logical "ending
 		 *         point" in the completion text.  If the user types in a

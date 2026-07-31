@@ -88,6 +88,14 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 								new SortByRelevanceComparator();
 
 
+	/**
+	 * Empty constructor.
+	 */
+	public CompletionProviderBase() {
+		// Constructor only for no-oart Javadoc comment/linting
+	}
+
+
 	@Override
 	public void clearParameterizedCompletionParams() {
 		paramListEnd = paramListStart = 0;

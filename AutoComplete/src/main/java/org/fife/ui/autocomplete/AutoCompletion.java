@@ -10,6 +10,7 @@ package org.fife.ui.autocomplete;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import java.beans.*;
 import java.util.List;
 import javax.swing.*;
@@ -380,8 +381,8 @@ public class AutoCompletion {
 	 * @return The default auto-complete trigger key.
 	 */
 	public static KeyStroke getDefaultTriggerKey() {
-		// Default to CTRL, even on Mac, since Ctrl+Space activates Spotlight
-		int mask = InputEvent.CTRL_MASK;
+		// Default to CTRL, even on Mac, since Cmd+Space activates Spotlight
+		int mask = InputEvent.CTRL_DOWN_MASK;
 		return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, mask);
 	}
 
@@ -865,19 +866,17 @@ public class AutoCompletion {
 			popupWindow.setCompletions(completions);
 
 			if (!popupWindow.isVisible()) {
-				Rectangle r;
+				Rectangle2D r;
 				try {
-					r = textComponent.modelToView(textComponent
-							.getCaretPosition());
+					r = textComponent.modelToView2D(textComponent.getCaretPosition());
 				} catch (BadLocationException ble) {
 					ble.printStackTrace();
 					return -1;
 				}
-				Point p = new Point(r.x, r.y);
+				Point p = new Point((int)r.getX(), (int)r.getY());
 				SwingUtilities.convertPointToScreen(p, textComponent);
-				r.x = p.x;
-				r.y = p.y;
-				popupWindow.setLocationRelativeTo(r);
+				Rectangle r2 = new Rectangle(p.x, p.y, (int)r.getWidth(), (int)r.getHeight());
+				popupWindow.setLocationRelativeTo(r2);
 				setPopupVisible(true);
 			}
 
@@ -1416,10 +1415,16 @@ public class AutoCompletion {
 	}
 
 	/**
-	 * The <code>Action</code> that displays the popup window if auto-completion
-	 * is enabled.
+	 * The <code>Action</code> that displays the popup window if auto-completionn is enabled.
 	 */
 	protected class AutoCompleteAction extends AbstractAction {
+
+		/**
+		 * Empty constructor.
+		 */
+		protected AutoCompleteAction() {
+			// Empty constructor for Javadoc constructor/linting
+		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -1486,8 +1491,7 @@ public class AutoCompletion {
 	 * Listens for events in the parent window of the text component with
 	 * auto-completion enabled.
 	 */
-	private final class ParentWindowListener extends ComponentAdapter implements
-			WindowFocusListener {
+	private final class ParentWindowListener extends ComponentAdapter implements WindowFocusListener {
 
 		public void addTo(Window w) {
 			w.addComponentListener(this);
@@ -1558,8 +1562,7 @@ public class AutoCompletion {
 	/**
 	 * Listens for events from the text component we're installed on.
 	 */
-	private final class TextComponentListener extends FocusAdapter implements
-			HierarchyListener {
+	private final class TextComponentListener extends FocusAdapter implements HierarchyListener {
 
 		void addTo(JTextComponent tc) {
 			tc.addFocusListener(this);

@@ -124,7 +124,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 	@Override
 	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 
-		int offset = tc.viewToModel(p);
+		int offset = tc.viewToModel2D(p);
 		if (offset<0 || offset>=tc.getDocument().getLength()) {
 			lastCompletionsAtText = null;
 			return lastParameterizedCompletionsAt = null;

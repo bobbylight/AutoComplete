@@ -17,6 +17,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -205,12 +206,11 @@ class ParameterizedCompletionContext {
 					parentWindow, this, ac, pc);
 			try {
 				int dot = tc.getCaretPosition();
-				Rectangle r = tc.modelToView(dot);
-				Point p = new Point(r.x, r.y);
+				Rectangle2D r = tc.modelToView2D(dot);
+				Point p = new Point((int)r.getX(), (int)r.getY());
 				SwingUtilities.convertPointToScreen(p, tc);
-				r.x = p.x;
-				r.y = p.y;
-				tip.setLocationRelativeTo(r);
+				Rectangle r2 = new Rectangle(p.x, p.y, (int)r.getWidth(), (int)r.getHeight());
+				tip.setLocationRelativeTo(r2);
 				tip.setVisible(true);
 			} catch (BadLocationException ble) { // Should never happen
 				UIManager.getLookAndFeel().provideErrorFeedback(tc);
@@ -472,7 +472,7 @@ class ParameterizedCompletionContext {
 		oldTabAction = am.get(IM_KEY_TAB);
 		am.put(IM_KEY_TAB, new NextParamAction());
 
-		ks = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK);
 		oldShiftTabKey = im.get(ks);
 		im.put(ks, IM_KEY_SHIFT_TAB);
 		oldShiftTabAction = am.get(IM_KEY_SHIFT_TAB);
@@ -674,12 +674,11 @@ class ParameterizedCompletionContext {
 
 			JTextComponent tc = ac.getTextComponent();
 			try {
-				Rectangle r = tc.modelToView(offs);
-				Point p = new Point(r.x, r.y);
+				Rectangle2D r = tc.modelToView2D(offs);
+				Point p = new Point((int)r.getX(), (int)r.getY());
 				SwingUtilities.convertPointToScreen(p, tc);
-				r.x = p.x;
-				r.y = p.y;
-				paramChoicesWindow.setLocationRelativeTo(r);
+				Rectangle r2 = new Rectangle(p.x, p.y, (int)r.getWidth(), (int)r.getHeight());
+				paramChoicesWindow.setLocationRelativeTo(r2);
 			} catch (BadLocationException ble) { // Should never happen
 				UIManager.getLookAndFeel().provideErrorFeedback(tc);
 				ble.printStackTrace();
@@ -770,7 +769,7 @@ class ParameterizedCompletionContext {
 		im.put(ks, oldTabKey);
 		am.put(IM_KEY_TAB, oldTabAction);
 
-		ks = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK);
 		im.put(ks, oldShiftTabKey);
 		am.put(IM_KEY_SHIFT_TAB, oldShiftTabAction);
 

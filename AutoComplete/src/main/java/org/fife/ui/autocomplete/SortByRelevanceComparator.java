@@ -22,6 +22,14 @@ import java.util.Comparator;
  */
 public class SortByRelevanceComparator implements Comparator<Completion>, Serializable {
 
+	/**
+	 * Compares to {@code CompletionProvider}s by their relevance before sorting them
+	 * lexicographically.
+	 */
+	public SortByRelevanceComparator() {
+		// Do nothing (for Javadoc comment)
+	}
+
 
 	@Override
 	public int compare(Completion c1, Completion c2) {
