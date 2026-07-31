@@ -294,6 +294,31 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 
 
 	/**
+	 * Loads completions from an XML file.  The XML should validate against
+	 * <code>CompletionXml.dtd</code>.
+	 *
+	 * @param resource A resource the current ClassLoader can get to.
+	 * @throws IOException If an IO error occurs.
+	 */
+	public void loadFromXML(String resource) throws IOException {
+		ClassLoader cl = getClass().getClassLoader();
+		InputStream in = cl.getResourceAsStream(resource);
+		if (in==null) {
+			File file = new File(resource);
+			if (file.isFile()) {
+				in = Files.newInputStream(file.toPath());
+			}
+			else {
+				throw new IOException("No such resource: " + resource);
+			}
+		}
+		try (BufferedInputStream bin = new BufferedInputStream(in)) {
+			loadFromXML(bin);
+		}
+	}
+
+
+	/**
 	 * Loads completions from an XML input stream.  The XML should validate
 	 * against <code>CompletionXml.dtd</code>.
 	 *
@@ -327,31 +352,6 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 			throw new IOException(e.toString());
 		}
 
-	}
-
-
-	/**
-	 * Loads completions from an XML file.  The XML should validate against
-	 * <code>CompletionXml.dtd</code>.
-	 *
-	 * @param resource A resource the current ClassLoader can get to.
-	 * @throws IOException If an IO error occurs.
-	 */
-	public void loadFromXML(String resource) throws IOException {
-		ClassLoader cl = getClass().getClassLoader();
-		InputStream in = cl.getResourceAsStream(resource);
-		if (in==null) {
-			File file = new File(resource);
-			if (file.isFile()) {
-				in = Files.newInputStream(file.toPath());
-			}
-			else {
-				throw new IOException("No such resource: " + resource);
-			}
-		}
-		try (BufferedInputStream bin = new BufferedInputStream(in)) {
-			loadFromXML(bin);
-		}
 	}
 
 
