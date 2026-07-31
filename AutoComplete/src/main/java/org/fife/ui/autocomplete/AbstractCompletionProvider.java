@@ -236,6 +236,13 @@ public abstract class AbstractCompletionProvider
 	public static class CaseInsensitiveComparator implements Comparator,
 														Serializable {
 
+		/**
+		 * Empty constructor.
+		 */
+		public CaseInsensitiveComparator() {
+			// Empty constructor for Javadoc/linting
+		}
+
 		@Override
 		public int compare(Object o1, Object o2) {
 			String s1 = o1 instanceof String ? (String)o1 :

@@ -283,7 +283,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 */
 	private static KeyStroke getCopyKeyStroke() {
 		int key = KeyEvent.VK_C;
-		int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 		return KeyStroke.getKeyStroke(key, mask);
 	}
 

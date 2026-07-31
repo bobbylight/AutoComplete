@@ -229,7 +229,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	public void delegateToSubstanceRenderer() throws Exception {
 		Class<?> clazz = Class.forName(SUBSTANCE_RENDERER_CLASS_NAME);
 		DefaultListCellRenderer delegate =
-				(DefaultListCellRenderer)clazz.newInstance();
+				(DefaultListCellRenderer)clazz.getDeclaredConstructor().newInstance();
 		setDelegateRenderer(delegate);
 	}
 
