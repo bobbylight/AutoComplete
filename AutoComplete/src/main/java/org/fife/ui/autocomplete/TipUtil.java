@@ -89,7 +89,7 @@ final class TipUtil {
 
 	/**
 	 * Returns the color to use for hyperlink-style components in tool tips.
-	 * This method will return <code>Color.blue</code> unless it appears
+	 * This method will return <code>Color.BLUE</code> unless it appears
 	 * that the current LookAndFeel uses light text on a dark background,
 	 * in which case a brighter alternative is returned.
 	 *
@@ -105,7 +105,7 @@ final class TipUtil {
 			fg = new JToolTip().getForeground();
 		}
 
-		return Util.isLightForeground(fg) ? Util.LIGHT_HYPERLINK_FG : Color.blue;
+		return Util.isLightForeground(fg) ? Util.LIGHT_HYPERLINK_FG : Color.BLUE;
 
 	}
 

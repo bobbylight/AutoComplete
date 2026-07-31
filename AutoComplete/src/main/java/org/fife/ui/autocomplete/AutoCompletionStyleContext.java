@@ -42,7 +42,7 @@ public class AutoCompletionStyleContext {
 	 * Constructor.
 	 */
 	public AutoCompletionStyleContext() {
-		setParameterOutlineColor(Color.gray);
+		setParameterOutlineColor(Color.GRAY);
 		setParameterCopyColor(new Color(0xb4d7ff));
 		setParameterizedCompletionCursorPositionColor(new Color(0x00b400));
 	}
