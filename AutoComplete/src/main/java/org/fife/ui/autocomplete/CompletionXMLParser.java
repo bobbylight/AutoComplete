@@ -1,9 +1,4 @@
 /*
- * 02/06/2010
- *
- * CompletionXMLParser.java - Parses XML representing code completion for a
- * C-like language.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

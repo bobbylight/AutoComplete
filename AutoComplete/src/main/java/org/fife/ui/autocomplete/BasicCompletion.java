@@ -1,8 +1,4 @@
 /*
- * 01/03/2009
- *
- * BasicCompletion.java - A straightforward Completion implementation.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

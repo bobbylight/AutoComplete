@@ -1,9 +1,4 @@
 /*
- * 12/23/2008
- *
- * ExternalURLHandler.java - Implementations can be registered as a callback
- * to handle the user clicking on external URLs.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

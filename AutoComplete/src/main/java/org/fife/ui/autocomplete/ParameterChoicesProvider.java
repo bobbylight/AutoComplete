@@ -1,9 +1,4 @@
 /*
- * 12/14/2010
- *
- * ParameterChoicesProvider.java - Provides completions for a
- * ParameterizedCompletion's parameters.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

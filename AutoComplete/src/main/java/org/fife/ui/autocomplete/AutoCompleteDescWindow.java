@@ -1,9 +1,4 @@
 /*
- * 12/21/2008
- *
- * AutoCompleteDescWindow.java - A window containing a description of the
- * currently selected completion.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

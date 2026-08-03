@@ -1,9 +1,4 @@
 /*
- * 01/06/2009
- *
- * MarkupTagCompletion.java - A completion representing a tag in markup, such
- * as HTML or XML.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

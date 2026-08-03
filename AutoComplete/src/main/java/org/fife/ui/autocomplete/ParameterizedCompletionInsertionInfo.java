@@ -1,9 +1,4 @@
 /*
- * 05/26/2012
- *
- * ParameterizedCompletionInsertionInfo.java - Used internally to track the
- * changes required for a specific parameterized completion.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

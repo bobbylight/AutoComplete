@@ -1,8 +1,4 @@
 /*
- * 12/22/2008
- *
- * VariableCompletion.java - A completion for a variable.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

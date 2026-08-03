@@ -1,10 +1,4 @@
 /*
- * 04/26/2010
- *
- * FastListUI.java - A JList UI implementation that computes the preferred size
- * of all cells really fast, to facilitate lists of possibly thousands of items
- * rendered with HTML, which is slow with BasicListUI extensions.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

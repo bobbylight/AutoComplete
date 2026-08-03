@@ -1,9 +1,4 @@
 /*
- * 06/17/2012
- *
- * ParameterizedCompletionContext.java - Manages the state of parameterized
- * completion-related UI components during code completion.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

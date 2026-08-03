@@ -1,9 +1,4 @@
 /*
- * 12/22/2008
- *
- * ShorthandCompletion.java - A completion that is shorthand for some other
- * text.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

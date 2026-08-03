@@ -1,8 +1,4 @@
 /*
- * 12/22/2008
- *
- * CompletionListModel.java - A model that allows bulk addition of elements.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */
