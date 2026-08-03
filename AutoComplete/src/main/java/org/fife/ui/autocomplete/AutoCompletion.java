@@ -802,6 +802,11 @@ public class AutoCompletion {
 		return popupWindow != null && popupWindow.isVisible();
 	}
 
+	// Returns the completion popup window, or null if not created yet.
+	AutoCompletePopupWindow getPopupWindow() {
+		return popupWindow;
+	}
+
 
 	/**
 	 * Refreshes the popup window. First, this method gets the possible
@@ -1151,6 +1156,11 @@ public class AutoCompletion {
 	 */
 	public void setShowDescWindow(boolean show) {
 		hidePopupWindow(); // Needed to force it to take effect
+		if (!show && popupWindow != null) {
+			// Dispose (rather than hide) the desc window on toggle-off, to avoid a
+			// Linux/X11 "ghost" window bug when hiding it instead; see issue #84.
+			popupWindow.disposeDescWindow();
+		}
 		showDescWindow = show;
 	}
 
