@@ -297,6 +297,36 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 
 	/**
+	 * Returns the description window, if it has been created.
+	 *
+	 * @return The description window, or {@code null} if it has not been
+	 *         created yet.
+	 */
+	AutoCompleteDescWindow getDescWindow() {
+		return descWindow;
+	}
+
+
+	/**
+	 * Disposes of the description window, if it has been created, and
+	 * discards our reference to it so it is lazily recreated the next time
+	 * it's needed. Simply hiding the description window is not enough here;
+	 * on some Linux/X11 window managers, quickly toggling a {@code JWindow}
+	 * visible and then invisible can leave a blank "ghost" window on screen
+	 * that never gets un-mapped or repainted. Disposing of the native peer
+	 * avoids that.
+	 *
+	 * @see AutoCompletion#setShowDescWindow(boolean)
+	 */
+	void disposeDescWindow() {
+		if (descWindow != null) {
+			descWindow.dispose();
+			descWindow = null;
+		}
+	}
+
+
+	/**
 	 * Returns the default list cell renderer used when a completion provider
 	 * does not supply its own.
 	 *
