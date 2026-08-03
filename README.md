@@ -21,7 +21,7 @@ SNAPSHOT builds of the in-development, unreleased version are hosted on
 [Sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/fifesoft/autocomplete/).
 
 # Compiling
-AutoComplete is built using Gradle. It requires Java 17 to buil but runs on
+AutoComplete is built using Gradle. It requires Java 17 to build but runs on
 Java 8 or later.
 To compile the source, run all tests, and build the distribution jar,
 simply run the following gradle command:

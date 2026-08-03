@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.Objects;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.JTextComponent;
@@ -130,10 +131,7 @@ class OutlineHighlightPainter extends
 	 * @see #getColor()
 	 */
 	public void setColor(Color color) {
-		if (color==null) {
-			throw new IllegalArgumentException("color cannot be null");
-		}
-		this.color = color;
+		this.color = Objects.requireNonNull(color, "color cannot be null");
 	}
 
 

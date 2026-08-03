@@ -13,7 +13,7 @@ Create a branch (if needed), commit staged/unstaged changes, push, and open/upda
 
 2. **Ensure JDK 25 is on the path**. This library requires JDK 25 or later to build.
    Ensure that `java --version` shows `25` or later. If not, search for Java 25 in common
-   locaitons for the operating system. If you can't find it, exit early.
+   locations for the operating system. If you can't find it, exit early.
 
 3. **Build locally** by running `./gradlew clean build`. If there are any checkstyle
    or spotbugs failure, or javac errors, fix them and rerun this check to verify your changes.

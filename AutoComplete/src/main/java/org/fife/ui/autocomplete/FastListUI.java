@@ -141,10 +141,9 @@ class FastListUI extends BasicListUI {
 	 * completions.
 	 */
 	@Override
-	@SuppressWarnings("unchecked") // BasicListUI has unparameterized JList
 	protected void updateLayoutState() {
 
-		ListModel<?> model = list.getModel();
+		ListModel<Object> model = list.getModel();
 		int itemCount = model.getSize();
 
 		// If the item count is small enough to run fast on practically all
@@ -157,7 +156,7 @@ class FastListUI extends BasicListUI {
 
 		// Otherwise, assume all cells are the same height as the first cell,
 		// and estimate the necessary width.
-		ListCellRenderer<Object> renderer = (ListCellRenderer<Object>)list.getCellRenderer();
+		ListCellRenderer<Object> renderer = list.getCellRenderer();
 
 		cellWidth = list.getWidth();
 		if (list.getParent() instanceof JViewport) { // Always true for us

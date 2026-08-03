@@ -308,7 +308,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @return The default list cell renderer.
 	 * @see #setListCellRenderer(ListCellRenderer)
 	 */
-	public ListCellRenderer getListCellRenderer() {
+	public ListCellRenderer<Object> getListCellRenderer() {
 		DelegatingCellRenderer dcr = (DelegatingCellRenderer)list.
 															getCellRenderer();
 		return dcr.getFallbackCellRenderer();
