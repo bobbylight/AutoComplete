@@ -13,6 +13,7 @@ import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.beans.*;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -425,7 +426,7 @@ public class AutoCompletion {
 	 * @return The default list cell renderer.
 	 * @see #setListCellRenderer(ListCellRenderer)
 	 */
-	public ListCellRenderer getListCellRenderer() {
+	public ListCellRenderer<Object> getListCellRenderer() {
 		return renderer;
 	}
 
@@ -978,10 +979,7 @@ public class AutoCompletion {
 	 *         <code>null</code>.
 	 */
 	public void setCompletionProvider(CompletionProvider provider) {
-		if (provider == null) {
-			throw new IllegalArgumentException("provider cannot be null");
-		}
-		this.provider = provider;
+		this.provider = Objects.requireNonNull(provider, "provider cannot be null");
 		if (isHideOnCompletionProviderChange()) {
 			hidePopupWindow(); // In case new choices should be displayed.
 		}
@@ -1165,14 +1163,11 @@ public class AutoCompletion {
 	 * Sets the keystroke that should be used to trigger the auto-complete popup
 	 * window.
 	 *
-	 * @param ks The keystroke.
-	 * @throws IllegalArgumentException If <code>ks</code> is <code>null</code>.
+	 * @param ks The keystroke. This cannot be {@code null}.
 	 * @see #getTriggerKey()
 	 */
 	public void setTriggerKey(KeyStroke ks) {
-		if (ks == null) {
-			throw new IllegalArgumentException("trigger key cannot be null");
-		}
+		Objects.requireNonNull(ks, "trigger key cannot be null");
 		if (!ks.equals(trigger)) {
 			if (textComponent != null) {
 				// Put old trigger action back.

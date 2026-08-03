@@ -13,6 +13,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
@@ -332,10 +333,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 	 * @see #getDefaultCompletionProvider()
 	 */
 	public void setDefaultCompletionProvider(CompletionProvider provider) {
-		if (provider==null) {
-			throw new IllegalArgumentException("provider cannot be null");
-		}
-		this.defaultProvider = provider;
+		this.defaultProvider = Objects.requireNonNull(provider, "provider cannot be null");
 	}
 
 

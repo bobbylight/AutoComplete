@@ -369,11 +369,7 @@ public class TemplateCompletion extends AbstractCompletion
 				}
 			}
 
-			StringBuilder sb2 = new StringBuilder();
-			for (int i = 0; i < size; i++) {
-				sb2.append(' ');
-			}
-			String tabStr = sb2.toString();
+			String tabStr = " ".repeat(Math.max(0, size));
 
 			int lastOffs = 0;
 			do {
