@@ -4,13 +4,6 @@
  */
 package org.fife.ui.autocomplete;
 
-import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
-
-import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +14,26 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
 import static java.util.Objects.requireNonNull;
 
@@ -58,12 +71,12 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	/**
 	 * Action that goes to the previous description displayed.
 	 */
-	private final Action backAction;
+	private Action backAction;
 
 	/**
 	 * Action that goes to the next description displayed.
 	 */
-	private final Action forwardAction;
+	private Action forwardAction;
 
 	/**
 	 * History of descriptions displayed.
@@ -535,7 +548,9 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 			} else {
 				action.putValue(Action.SMALL_ICON, leftIcon);
 			}
-		} else throw new IllegalArgumentException();
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 
@@ -549,7 +564,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		private String anchor;
 
 		HistoryEntry(Completion completion, String summary,
-					 String anchor) {
+									String anchor) {
 			this.completion = completion;
 			this.summary = summary;
 			this.anchor = anchor;
@@ -645,6 +660,7 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 				setActionStates();
 			}
 		}
+
 	}
 
 
