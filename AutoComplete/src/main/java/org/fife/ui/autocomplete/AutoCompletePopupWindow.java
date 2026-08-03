@@ -1,9 +1,4 @@
 /*
- * 12/21/2008
- *
- * AutoCompletePopupWindow.java - A window containing a list of auto-complete
- * choices.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

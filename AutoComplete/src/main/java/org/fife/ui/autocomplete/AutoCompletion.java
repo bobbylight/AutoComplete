@@ -1,8 +1,4 @@
 /*
- * 12/21/2008
- *
- * AutoCompletion.java - Handles auto-completion for a text component.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

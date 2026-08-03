@@ -1,8 +1,4 @@
 /*
- * 02/06/2010
- *
- * CompletionProviderBase.java - Base completion provider implementation.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

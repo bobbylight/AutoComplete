@@ -1,8 +1,4 @@
 /*
- * 04/29/2010
- *
- * EmptyIcon.java - The canonical icon that paints nothing.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

@@ -1,9 +1,4 @@
 /*
- * 12/21/2008
- *
- * CompletionProvider.java - Provides autocompletion values based on the
- * text currently in a text component.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

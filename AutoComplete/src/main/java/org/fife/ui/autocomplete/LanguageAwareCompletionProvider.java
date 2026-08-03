@@ -1,9 +1,4 @@
 /*
- * 01/03/2009
- *
- * LanguageAwareCompletionProvider.java - A completion provider that is aware
- * of the language it is working with.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

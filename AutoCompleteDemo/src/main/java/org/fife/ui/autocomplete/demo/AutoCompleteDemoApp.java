@@ -1,8 +1,4 @@
 /*
- * 12/21/2008
- *
- * AutoCompleteDemoApp.java - A demo program for the auto-completion library.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

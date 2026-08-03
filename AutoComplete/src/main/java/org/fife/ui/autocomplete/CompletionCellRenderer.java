@@ -1,9 +1,4 @@
 /*
- * 12/23/2008
- *
- * CompletionCellRenderer.java - Cell renderer that can render the standard
- * completion types like Eclipse or NetBeans does.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

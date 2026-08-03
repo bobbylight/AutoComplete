@@ -1,9 +1,4 @@
 /*
- * 12/21/2008
- *
- * ParameterizedCompletionDescriptionToolTip.java - A "tool tip" displaying
- * information on the function or method currently being entered.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

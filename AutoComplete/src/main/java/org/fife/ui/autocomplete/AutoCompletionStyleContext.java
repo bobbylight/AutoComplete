@@ -1,8 +1,4 @@
 /*
- * 06/24/2012
- *
- * AutoCompletionStyleContext.java - Manages styles related to auto-completion.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

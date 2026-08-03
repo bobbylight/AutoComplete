@@ -1,8 +1,4 @@
 /*
- * 12/21/2008
- *
- * Util.java - Utility methods for the autocompletion package.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

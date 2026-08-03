@@ -1,9 +1,4 @@
 /*
- * 12/17/2010
- *
- * SortByRelevanceComparator.java - Sorts two Completions by relevance before
- * sorting them lexicographically.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

@@ -1,8 +1,4 @@
 /*
- * 01/13/2009
- *
- * DemoRootPane.java - Root pane for the demo applet and standalone application.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

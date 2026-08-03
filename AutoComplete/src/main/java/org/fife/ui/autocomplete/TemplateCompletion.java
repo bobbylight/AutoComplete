@@ -1,10 +1,4 @@
 /*
- * 05/26/2012
- *
- * TemplateCompletion.java - A completion used to insert boilerplate code
- * snippets that have arbitrary sections the user will want to change, such as
- * for-loops.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

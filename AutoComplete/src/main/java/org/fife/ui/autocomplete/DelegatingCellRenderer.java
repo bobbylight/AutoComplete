@@ -1,9 +1,4 @@
 /*
- * 12/22/2008
- *
- * DelegatingCellRenderer.java - A renderer for Completions that will delegate
- * to the Completion's provider's renderer, if there is one.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */

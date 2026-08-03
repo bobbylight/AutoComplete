@@ -1,9 +1,4 @@
 /*
- * 04/26/2009
- *
- * OutlineHighlightPainter.java - Highlight painter that draws an outline
- * around its text.
- *
  * This library is distributed under a modified BSD license.  See the included
  * LICENSE.md file for details.
  */
