@@ -341,24 +341,22 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 							newUrl, e.getDescription(), e.getSourceElement());
 				}
 			}
-		}
 
-		// Custom hyperlink handler for this completion type
-		ExternalURLHandler handler = ac.getExternalURLHandler();
-		if (handler!=null) {
-			HistoryEntry current = history.get(historyPos);
-			handler.urlClicked(e, current.completion, this);
-			return;
-		}
-
-		// No custom handler...
-		if (url!=null) {
+			// Custom hyperlink handler for this completion type
+			ExternalURLHandler handler = ac.getExternalURLHandler();
+			if (handler!=null) {
+				HistoryEntry current = history.get(historyPos);
+				handler.urlClicked(e, current.completion, this);
+			}
+			else {
+			// No custom handler...
 			// Try loading in external browser (Java 6+ only).
-			try {
-				Util.browse(new URI(url.toString()));
-			} catch (/*IO*/URISyntaxException ioe) {
-				UIManager.getLookAndFeel().provideErrorFeedback(descArea);
-				ioe.printStackTrace();
+				try {
+					Util.browse(new URI(url.toString()));
+				} catch (/*IO*/URISyntaxException ioe) {
+					UIManager.getLookAndFeel().provideErrorFeedback(descArea);
+					ioe.printStackTrace();
+				}
 			}
 		}
 		else { // Assume simple function name text, like in c.xml
