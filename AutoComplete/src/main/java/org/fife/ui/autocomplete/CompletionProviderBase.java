@@ -170,11 +170,11 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 
 
 	@Override
-	public boolean isAutoActivateOkay(JTextComponent tc) {
+	public boolean isAutoActivateOkay(JTextComponent tc, int offs) {
 		Document doc = tc.getDocument();
 		char ch = 0;
 		try {
-			doc.getText(tc.getCaretPosition(), 1, s);
+			doc.getText(offs, 1, s);
 			ch = s.first();
 		} catch (BadLocationException ble) { // Never happens
 			ble.printStackTrace();

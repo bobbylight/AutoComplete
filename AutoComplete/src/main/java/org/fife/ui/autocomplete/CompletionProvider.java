@@ -154,16 +154,21 @@ public interface CompletionProvider {
 	/**
 	 * This method is called if auto-activation is enabled in the parent
 	 * {@link AutoCompletion} after the user types a single character.  This
-	 * provider should check the text at the current caret position of the
+	 * provider should check the text at the offset just inserted into the
 	 * text component, and decide whether auto-activation would be appropriate
 	 * here.  For example, a <code>CompletionProvider</code> for Java might
 	 * want to return <code>true</code> for this method only if the last
 	 * character typed was a '<code>.</code>'.
 	 *
 	 * @param tc The text component.
+	 * @param offs The offset of the character just inserted into the text
+	 *        component.  This is passed explicitly, rather than being
+	 *        derived from the text component's caret position, since the
+	 *        caret is not guaranteed to have been updated yet when this
+	 *        method is called.
 	 * @return Whether auto-activation would be appropriate.
 	 */
-	boolean isAutoActivateOkay(JTextComponent tc);
+	boolean isAutoActivateOkay(JTextComponent tc, int offs);
 
 
 	/**

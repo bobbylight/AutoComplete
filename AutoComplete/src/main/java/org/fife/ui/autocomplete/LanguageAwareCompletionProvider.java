@@ -303,9 +303,9 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase
 
 
 	@Override
-	public boolean isAutoActivateOkay(JTextComponent tc) {
+	public boolean isAutoActivateOkay(JTextComponent tc, int offs) {
 		CompletionProvider provider = getProviderFor(tc);
-		return provider != null && provider.isAutoActivateOkay(tc);
+		return provider != null && provider.isAutoActivateOkay(tc, offs);
 	}
 
 
