@@ -1367,7 +1367,7 @@ public class AutoCompletion {
 			justInserted = false;
 			if (isAutoCompleteEnabled() && isAutoActivationEnabled() &&
 					e.getLength() == 1) {
-				if (textComponent != null && provider.isAutoActivateOkay(textComponent)) {
+				if (textComponent != null && provider.isAutoActivateOkay(textComponent, e.getOffset())) {
 					timer.restart();
 					justInserted = true;
 				}
