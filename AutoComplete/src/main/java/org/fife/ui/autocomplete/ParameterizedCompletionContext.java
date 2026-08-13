@@ -38,10 +38,9 @@ import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
 import org.fife.ui.autocomplete.ParameterizedCompletionInsertionInfo.ReplacementCopy;
-import org.fife.ui.rsyntaxtextarea.DocumentRange;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.ChangeableHighlightPainter;
-
+import org.fife.ui.rtextarea.DocumentRange;
 
 /**
  * Manages UI and state specific to parameterized completions - the parameter

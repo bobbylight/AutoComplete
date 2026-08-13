@@ -9,7 +9,7 @@ base {
 }
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.6.1'
+    api 'com.fifesoft:rsyntaxtextarea:4.0.1'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
