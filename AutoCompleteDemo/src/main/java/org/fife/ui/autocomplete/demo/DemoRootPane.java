@@ -90,7 +90,7 @@ class DemoRootPane extends JRootPane {
 		// Install auto-completion onto our text area.
 		ac = new AutoCompletion(provider);
 		ac.setListCellRenderer(new CCellRenderer());
-		ac.setShowDescWindow(true);
+		ac.setDescWindowVisibility(DescWindowVisibility.ALWAYS);
 		ac.setParameterAssistanceEnabled(true);
 
 		ac.setAutoCompleteEnabled(true);
@@ -449,7 +449,7 @@ class DemoRootPane extends JRootPane {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			boolean show = showDescWindowItem.isSelected();
-			ac.setShowDescWindow(show);
+			ac.setDescWindowVisibility(show ? DescWindowVisibility.ALWAYS : DescWindowVisibility.NEVER);
 		}
 
 	}
