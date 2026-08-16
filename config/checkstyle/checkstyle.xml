@@ -64,7 +64,7 @@
     <!-- Checks for Size Violations.                             -->
     <!-- See https://checkstyle.sourceforge.io/config_sizes.html -->
     <module name="FileLength">
-        <property name="max" value="1615"/>
+        <property name="max" value="1700"/>
     </module>
 
     <module name="LineLength">

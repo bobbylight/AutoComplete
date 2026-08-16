@@ -107,10 +107,10 @@ public class AutoCompletion {
 	private static LinkRedirector linkRedirector;
 
 	/**
-	 * Whether the description window should be displayed along with the
+	 * Whether/when the description window should be displayed along with the
 	 * completion choice window.
 	 */
-	private boolean showDescWindow;
+	private DescWindowVisibility descWindowVisibility;
 
 	/**
 	 * Whether auto-complete is enabled.
@@ -175,6 +175,12 @@ public class AutoCompletion {
 	 * reset it when we uninstall.
 	 */
 	private Action oldParenAction;
+
+	/**
+	 * The keystroke that toggles the description window's visibility in
+	 * {@link DescWindowVisibility#ON_DEMAND} mode, or <code>null</code>.
+	 */
+	private KeyStroke descWindowToggleKey;
 
 	/**
 	 * Listens for events in the parent window that affect the visibility of the
@@ -268,7 +274,8 @@ public class AutoCompletion {
 		setAutoCompleteEnabled(true);
 		setAutoCompleteSingleChoices(true);
 		setAutoActivationEnabled(false);
-		setShowDescWindow(false);
+		setDescWindowVisibility(DescWindowVisibility.NEVER);
+		setDescWindowToggleKey(getDefaultDescWindowToggleKey());
 		setHideOnCompletionProviderChange(true);
 		setHideOnNoText(true);
 		setParameterDescriptionTruncateThreshold(300);
@@ -385,6 +392,18 @@ public class AutoCompletion {
 
 
 	/**
+	 * Returns the default desc window toggle keystroke ({@link DescWindowVisibility#ON_DEMAND}).
+	 *
+	 * @return The default keystroke.
+	 * @see #setDescWindowToggleKey(KeyStroke)
+	 */
+	public static KeyStroke getDefaultDescWindowToggleKey() {
+		int mask = InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK;
+		return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, mask);
+	}
+
+
+	/**
 	 * Returns the handler to use when an external URL is clicked in the
 	 * description window.
 	 *
@@ -462,14 +481,24 @@ public class AutoCompletion {
 
 
 	/**
-	 * Returns whether the "description window" should be shown alongside the
-	 * completion window.
+	 * Returns whether/when the "description window" should be shown alongside the completion choices window.
 	 *
-	 * @return Whether the description window should be shown.
-	 * @see #setShowDescWindow(boolean)
+	 * @return Whether/when the description window should be shown.
+	 * @see #setDescWindowVisibility(DescWindowVisibility)
 	 */
-	public boolean getShowDescWindow() {
-		return showDescWindow;
+	public DescWindowVisibility getDescWindowVisibility() {
+		return descWindowVisibility;
+	}
+
+
+	/**
+	 * Returns the desc window toggle keystroke ({@link DescWindowVisibility#ON_DEMAND}).
+	 *
+	 * @return The keystroke, or <code>null</code> if none is installed.
+	 * @see #setDescWindowToggleKey(KeyStroke)
+	 */
+	public KeyStroke getDescWindowToggleKey() {
+		return descWindowToggleKey;
 	}
 
 
@@ -665,6 +694,9 @@ public class AutoCompletion {
 
 		this.textComponent = c;
 		installTriggerKey(getTriggerKey());
+		if (descWindowToggleKey != null) {
+			AutoCompletePopupWindow.installDescWindowToggleKey(this, textComponent, descWindowToggleKey);
+		}
 
 		// Install the function completion key, if there is one.
 		// NOTE: We cannot do this if the start char is ' ' (e.g. just a space
@@ -1148,20 +1180,20 @@ public class AutoCompletion {
 
 
 	/**
-	 * Sets whether the "description window" should be shown beside the
-	 * completion window.
+	 * Sets whether/when the "description window" should be shown beside the completion choices window.
 	 *
-	 * @param show Whether to show the description window.
-	 * @see #getShowDescWindow()
+	 * @param visibility Whether/when to show the description window.
+	 * @see #getDescWindowVisibility()
 	 */
-	public void setShowDescWindow(boolean show) {
+	public void setDescWindowVisibility(DescWindowVisibility visibility) {
+		Objects.requireNonNull(visibility, "visibility cannot be null");
 		hidePopupWindow(); // Needed to force it to take effect
-		if (!show && popupWindow != null) {
+		if (visibility != DescWindowVisibility.ALWAYS && popupWindow != null) {
 			// Dispose (rather than hide) the desc window on toggle-off, to avoid a
 			// Linux/X11 "ghost" window bug when hiding it instead; see issue #84.
 			popupWindow.disposeDescWindow();
 		}
-		showDescWindow = show;
+		descWindowVisibility = visibility;
 	}
 
 
@@ -1182,6 +1214,27 @@ public class AutoCompletion {
 				installTriggerKey(ks);
 			}
 			trigger = ks;
+		}
+	}
+
+
+	/**
+	 * Sets the desc window toggle keystroke ({@link DescWindowVisibility#ON_DEMAND}).
+	 *
+	 * @param ks The keystroke, or {@code null} to remove any previously installed toggle keystroke.
+	 * @see #getDescWindowToggleKey()
+	 */
+	public void setDescWindowToggleKey(KeyStroke ks) {
+		if (!Objects.equals(ks, descWindowToggleKey)) {
+			if (textComponent != null) {
+				if (descWindowToggleKey != null) {
+					AutoCompletePopupWindow.uninstallDescWindowToggleKey(textComponent, descWindowToggleKey);
+				}
+				if (ks != null) {
+					AutoCompletePopupWindow.installDescWindowToggleKey(this, textComponent, ks);
+				}
+			}
+			descWindowToggleKey = ks;
 		}
 	}
 
@@ -1238,6 +1291,9 @@ public class AutoCompletion {
 			hidePopupWindow(); // Unregisters listeners, actions, etc.
 
 			uninstallTriggerKey();
+			if (descWindowToggleKey != null) {
+				AutoCompletePopupWindow.uninstallDescWindowToggleKey(textComponent, descWindowToggleKey);
+			}
 
 			// Uninstall the function completion key.
 			char start = provider.getParameterListStart();

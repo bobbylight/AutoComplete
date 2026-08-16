@@ -75,6 +75,14 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	private AutoCompleteDescWindow descWindow;
 
 	/**
+	 * Whether the description window is currently toggled "on" when
+	 * {@link AutoCompletion#getDescWindowVisibility()} is
+	 * {@link DescWindowVisibility#ON_DEMAND}. Ignored for other visibility
+	 * settings.
+	 */
+	private boolean descWindowVisibleOnDemand;
+
+	/**
 	 * The preferred size of the optional description window.  This field
 	 * only exists because the user may (and usually will) set the size of
 	 * the description window before it exists (it must be parented to a
@@ -272,6 +280,115 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 
 
 	/**
+	 * Returns whether the description window should currently be displayed,
+	 * per {@link AutoCompletion#getDescWindowVisibility()}.
+	 *
+	 * @return Whether the description window should currently be displayed.
+	 * @see #toggleDescriptionWindow()
+	 */
+	private boolean shouldShowDescWindow() {
+		switch (ac.getDescWindowVisibility()) {
+			case ALWAYS:
+				return true;
+			case ON_DEMAND:
+				return descWindowVisibleOnDemand;
+			case NEVER:
+			default:
+				return false;
+		}
+	}
+
+
+	/**
+	 * Toggles whether the description window is displayed, when
+	 * {@link AutoCompletion#getDescWindowVisibility()} is
+	 * {@link DescWindowVisibility#ON_DEMAND}. Does nothing otherwise, or if
+	 * this popup window is not currently visible.
+	 */
+	void toggleDescriptionWindow() {
+
+		if (ac.getDescWindowVisibility() != DescWindowVisibility.ON_DEMAND || !isVisible()) {
+			return;
+		}
+
+		descWindowVisibleOnDemand = !descWindowVisibleOnDemand;
+
+		if (descWindowVisibleOnDemand) {
+			if (descWindow == null) {
+				descWindow = createDescriptionWindow();
+			}
+			Completion c = list.getSelectedValue();
+			if (c != null) {
+				descWindow.setDescriptionFor(c);
+			}
+			positionDescWindow();
+			descWindow.setVisible(true);
+		}
+		else if (descWindow != null) {
+			descWindow.setVisible(false);
+		}
+
+	}
+
+
+	/**
+	 * The key used in the input map for the description window toggle action.
+	 */
+	private static final String DESC_WINDOW_TOGGLE_KEY = "AutoCompletion.ToggleDescWindow";
+
+
+	/**
+	 * Installs a "description window toggle key" action onto a text component.
+	 *
+	 * @param ac The auto-completion instance the text component is installed on.
+	 * @param tc The text component.
+	 * @param ks The keystroke that should toggle the description window's visibility.
+	 * @see #uninstallDescWindowToggleKey(JTextComponent, KeyStroke)
+	 */
+	static void installDescWindowToggleKey(AutoCompletion ac, JTextComponent tc, KeyStroke ks) {
+		InputMap im = tc.getInputMap();
+		im.put(ks, DESC_WINDOW_TOGGLE_KEY);
+		ActionMap am = tc.getActionMap();
+		am.put(DESC_WINDOW_TOGGLE_KEY, new ToggleDescWindowAction(ac));
+	}
+
+
+	/**
+	 * Removes a previously-installed "description window toggle key" action from a text component.
+	 *
+	 * @param tc The text component.
+	 * @param ks The keystroke previously passed to {@link #installDescWindowToggleKey}.
+	 */
+	static void uninstallDescWindowToggleKey(JTextComponent tc, KeyStroke ks) {
+		tc.getInputMap().remove(ks);
+		tc.getActionMap().remove(DESC_WINDOW_TOGGLE_KEY);
+	}
+
+
+	/**
+	 * Toggles the description window's visibility when triggered while {@link DescWindowVisibility#ON_DEMAND}
+	 * is active; a no-op otherwise.
+	 */
+	private static final class ToggleDescWindowAction extends AbstractAction {
+
+		private final AutoCompletion ac;
+
+		ToggleDescWindowAction(AutoCompletion ac) {
+			this.ac = ac;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			AutoCompletePopupWindow popupWindow = ac.getPopupWindow();
+			if (popupWindow != null) {
+				popupWindow.toggleDescriptionWindow();
+			}
+		}
+
+	}
+
+
+	/**
 	 * Returns the copy keystroke to use for this platform.
 	 *
 	 * @return The copy keystroke.
@@ -316,7 +433,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * that never gets un-mapped or repainted. Disposing of the native peer
 	 * avoids that.
 	 *
-	 * @see AutoCompletion#setShowDescWindow(boolean)
+	 * @see AutoCompletion#setDescWindowVisibility(DescWindowVisibility)
 	 */
 	void disposeDescWindow() {
 		if (descWindow != null) {
@@ -452,7 +569,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 */
 	private void positionDescWindow() {
 
-		boolean showDescWindow = descWindow!=null && ac.getShowDescWindow();
+		boolean showDescWindow = descWindow!=null && shouldShowDescWindow();
 		if (!showDescWindow) {
 			return;
 		}
@@ -703,7 +820,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
 		//Dimension screenSize = getToolkit().getScreenSize();
 
-		boolean showDescWindow = descWindow!=null && ac.getShowDescWindow();
+		boolean showDescWindow = descWindow!=null && shouldShowDescWindow();
 		int totalH = getHeight();
 		if (showDescWindow) {
 			totalH = Math.max(totalH, descWindow.getHeight());
@@ -755,7 +872,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 				installKeyBindings();
 				lastLine = ac.getLineOfCaret();
 				selectFirstItem();
-				if (descWindow==null && ac.getShowDescWindow()) {
+				// ON_DEMAND starts back off each time the popup is (re)shown.
+				descWindowVisibleOnDemand = false;
+				if (descWindow==null && shouldShowDescWindow()) {
 					descWindow = createDescriptionWindow();
 					positionDescWindow();
 				}
@@ -771,6 +890,19 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			}
 			else {
 				uninstallKeyBindings();
+				// Explicitly hide the desc window *before* hiding ourselves.
+				// java.awt.Window#hide() cascades to any owned window that is
+				// still visible at that moment, hiding it too and flagging it
+				// to be automatically re-shown (via Window#show()'s internal
+				// "showWithParent" bookkeeping) the next time we're shown
+				// again - even if that desc window gets disposed in the
+				// meantime. Hiding it first ensures it's already invisible
+				// when our own super.setVisible(false) cascades below, so the
+				// JDK never sets that flag and can't resurrect a disposed
+				// desc window behind our back.
+				if (descWindow != null) {
+					descWindow.setVisible(false);
+				}
 			}
 
 			super.setVisible(visible);
@@ -797,7 +929,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 			// because of the way child JWindows' visibility is handled - in
 			// some ways it's dependent on the parent, in other ways it's not.
 			if (descWindow!=null) {
-				descWindow.setVisible(visible && ac.getShowDescWindow());
+				descWindow.setVisible(visible && shouldShowDescWindow());
 			}
 
 		}
