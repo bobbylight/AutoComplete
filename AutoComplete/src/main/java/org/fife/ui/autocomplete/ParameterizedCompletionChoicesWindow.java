@@ -289,7 +289,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	public void setVisible(boolean visible) {
 		if (visible!=isVisible()) {
 			// i.e. if no possibilities matched what's been typed
-			if (visible && model.size()==0) {//list.getVisibleRowCount()==0) {
+			if (visible && model.isEmpty()) {//list.getVisibleRowCount()==0) {
 				return;
 			}
 			super.setVisible(visible);

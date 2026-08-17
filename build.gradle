@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.spotbugs' version '6.5.9'
+    id 'com.github.spotbugs' version '6.5.10'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
@@ -31,7 +31,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '9.6.1'
+        gradleVersion = '9.7.0'
     }
 }
 
@@ -50,7 +50,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '13.8.0'
+        toolVersion = '13.11.0'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
@@ -81,7 +81,7 @@ subprojects {
     }
 
     dependencies {
-        testImplementation platform('org.junit:junit-bom:6.0.1')
+        testImplementation platform('org.junit:junit-bom:6.1.3')
         testImplementation 'org.junit.jupiter:junit-jupiter'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
