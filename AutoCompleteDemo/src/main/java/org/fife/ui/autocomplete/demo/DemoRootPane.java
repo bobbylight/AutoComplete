@@ -4,10 +4,7 @@
  */
 package org.fife.ui.autocomplete.demo;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +49,6 @@ class DemoRootPane extends JRootPane {
 	private AutoCompletion ac;
 	private JCheckBoxMenuItem cellRenderingItem;
 	private JCheckBoxMenuItem alternateRowColorsItem;
-	private JCheckBoxMenuItem showDescWindowItem;
 	private JCheckBoxMenuItem paramAssistanceItem;
 	private JEditorPane ep;
 
@@ -254,6 +250,16 @@ class DemoRootPane extends JRootPane {
 		menu.add(item);
 		mb.add(menu);
 
+		ButtonGroup bg = new ButtonGroup();
+		JMenu descWindowMenu = new JMenu("Description Window Visibility");
+		for (DescWindowVisibility value : DescWindowVisibility.values()) {
+			JRadioButtonMenuItem rbItem = new JRadioButtonMenuItem(value.name());
+			rbItem.setSelected(value == DescWindowVisibility.ALWAYS);
+			rbItem.addActionListener(e -> ac.setDescWindowVisibility(value));
+			descWindowMenu.add(rbItem);
+			bg.add(rbItem);
+		}
+
 		menu = new JMenu("View");
 		Action renderAction = new FancyCellRenderingAction();
 		cellRenderingItem = new JCheckBoxMenuItem(renderAction);
@@ -262,17 +268,14 @@ class DemoRootPane extends JRootPane {
 		Action alternateRowColorsAction = new AlternateRowColorsAction();
 		alternateRowColorsItem = new JCheckBoxMenuItem(alternateRowColorsAction);
 		menu.add(alternateRowColorsItem);
-		Action descWindowAction = new ShowDescWindowAction();
-		showDescWindowItem = new JCheckBoxMenuItem(descWindowAction);
-		showDescWindowItem.setSelected(true);
-		menu.add(showDescWindowItem);
+		menu.add(descWindowMenu);
 		Action paramAssistanceAction = new ParameterAssistanceAction();
 		paramAssistanceItem = new JCheckBoxMenuItem(paramAssistanceAction);
 		paramAssistanceItem.setSelected(true);
 		menu.add(paramAssistanceItem);
 		mb.add(menu);
 
-		ButtonGroup bg = new ButtonGroup();
+		bg = new ButtonGroup();
 		menu = new JMenu("LookAndFeel");
 		Action lafAction = new LafAction("System", UIManager.getSystemLookAndFeelClassName());
 		JRadioButtonMenuItem rbmi = new JRadioButtonMenuItem(lafAction);
@@ -435,24 +438,5 @@ class DemoRootPane extends JRootPane {
 		}
 
 	}
-
-
-	/**
-	 * Toggles whether the description window is visible.
-	 */
-	private class ShowDescWindowAction extends AbstractAction {
-
-		ShowDescWindowAction() {
-			putValue(NAME, "Show Description Window");
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			boolean show = showDescWindowItem.isSelected();
-			ac.setDescWindowVisibility(show ? DescWindowVisibility.ALWAYS : DescWindowVisibility.NEVER);
-		}
-
-	}
-
 
 }
