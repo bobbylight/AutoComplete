@@ -35,8 +35,6 @@ import javax.swing.event.HyperlinkListener;
 
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
-import static java.util.Objects.requireNonNull;
-
 
 /**
  * The optional "description" window that describes the currently selected
@@ -520,37 +518,40 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 		setArrowIcon(backAction, orientation.isLeftToRight(), "back");
 	}
 
+	/**
+	 * Sets the appropriate arrow icon for the specified navigation action based on
+	 * the component orientation (Left-to-Right or Right-to-Left) and action type.
+	 * <p>
+	 * This method first checks the {@link UIManager} for a custom icon registered under
+	 * the semantic key. If absent, it loads the default icon resource from the classpath,
+	 * caches it in the {@link UIManager} for future use, and assigns it to the action.
+	 *
+	 * @param action the menu or toolbar action to update with the icon
+	 * @param ltr    {@code true} if the component orientation is Left-to-Right; {@code false} for Right-to-Left
+	 * @param type   the type of navigation action, either {@code "back"} or {@code "forward"}
+	 */
 	private static void setArrowIcon(Action action, boolean ltr, String type) {
-		Icon leftIcon = UIManager.getIcon("autocomplete.leftArrow");
-		Icon rightIcon = UIManager.getIcon("autocomplete.rightArrow");
+		// Determine the UIManager key based on action type and text direction
+		String key = "back".equals(type) ?
+			(ltr ? "autocomplete.descWindow.backIcon" : "autocomplete.descWindow.forwardIcon") :
+			(ltr ? "autocomplete.descWindow.forwardIcon" : "autocomplete.descWindow.backIcon");
 
-		if (leftIcon == null) {
-			URL leftIc = AutoCompleteDescWindow.class.getResource("arrow_left.png");
-			leftIcon = new ImageIcon(requireNonNull(leftIc));
-			UIManager.put("autocomplete.leftArrow", leftIcon);
-		}
+		Icon icon = UIManager.getIcon(key);
 
-		if (rightIcon == null) {
-			URL rightIc = AutoCompleteDescWindow.class.getResource("arrow_right.png");
-			rightIcon = new ImageIcon(requireNonNull(rightIc));
-			UIManager.put("autocomplete.rightArrow", rightIcon);
-		}
+		if (icon == null) {
+			// Fallback to default classpath resources if not defined in UIManager
+			String resourceName = key.endsWith("backIcon") ? "arrow_left.png" : "arrow_right.png";
+			URL url = AutoCompleteDescWindow.class.getResource(resourceName);
 
-		if ("back".equals(type)) {
-			if (ltr) {
-				action.putValue(Action.SMALL_ICON, leftIcon);
+			if (url != null) {
+				icon = new ImageIcon(url);
+				UIManager.put(key, icon);
 			} else {
-				action.putValue(Action.SMALL_ICON, rightIcon);
+				throw new IllegalArgumentException("Icon resource not found on classpath: " + resourceName);
 			}
-		} else if ("forward".equals(type)) {
-			if (ltr) {
-				action.putValue(Action.SMALL_ICON, rightIcon);
-			} else {
-				action.putValue(Action.SMALL_ICON, leftIcon);
-			}
-		} else {
-			throw new IllegalArgumentException();
 		}
+
+		action.putValue(Action.SMALL_ICON, icon);
 	}
 
 
