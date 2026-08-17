@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class AbstractCompletionProviderTest {
 
 	/**
-	 * Regression test for https://github.com/bobbylight/AutoComplete/issues/101 -
+	 * Regression test for <a href="https://github.com/bobbylight/AutoComplete/issues/101">#101</a> -
 	 * when several completions share the same input text (e.g. overloaded
 	 * methods), the first one in the sorted completion list was never
 	 * included in the returned results, due to an off-by-one error.

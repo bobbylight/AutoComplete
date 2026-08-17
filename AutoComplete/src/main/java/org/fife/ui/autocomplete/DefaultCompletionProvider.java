@@ -340,7 +340,7 @@ public class DefaultCompletionProvider extends AbstractCompletionProvider {
 				char endChar = handler.getParamEndChar();
 				String sep = handler.getParamSeparator();
 				// Sanity check.  Note endChar can be null
-				if (sep != null && sep.length() > 0) {
+				if (sep != null && !sep.isEmpty()) {
 					setParameterizedCompletionParams(startChar, sep, endChar);
 				}
 			}

@@ -112,7 +112,6 @@
             <property name="accessModifiers" value="package"/>
         </module>
         -->
-        <module name="JavadocStyle"/>
         <module name="AtclauseOrder"/>
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocBlockTagLocation"/>
@@ -124,6 +123,7 @@
         <module name="JavadocTagContinuationIndentation"/>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+        <module name="SummaryJavadoc"/>
         <module name="MissingJavadocMethod">
             <property name="allowMissingPropertyJavadoc" value="true"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
@@ -173,6 +173,7 @@
 
         <!-- Checks for whitespace                                              -->
         <!-- See https://checkstyle.sourceforge.io/checks/whitespace/index.html -->
+        <module name="ArrayBracketNoWhitespace"/>
         <module name="EmptyForIteratorPad"/>
         <module name="GenericWhitespace"/>
         <module name="MethodParamPad"/>
@@ -254,6 +255,7 @@
         <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
         <module name="UnnecessarySemicolonInEnumeration"/>
         <module name="UnnecessarySemicolonInTryWithResources"/>
+        <module name="UnnecessaryTypeArgumentsWithRecordPattern"/>
         <module name="UnusedLocalVariable"/>
         <module name="UnusedTryResourceShouldBeUnnamed"/>
         <!--<module name="UseEnhancedSwitch"/> - TODO: too noisy for now -->
@@ -276,6 +278,7 @@
         <module name="AvoidEscapedUnicodeCharacters"/>
         <module name="CommentsIndentation"/>
         <!--<module name="FinalParameters"/>-->
+        <module name="MultilineCommentLeadingAsteriskPresence"/>
         <module name="NumericalPrefixesInfixesSuffixesCharacterCase"/>
         <!-- <module name="TodoComment"/> -->
         <module name="UpperEll"/>

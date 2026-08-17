@@ -228,8 +228,8 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * Makes the current history page the last one in the history.
 	 */
 	private void clearHistoryAfterCurrentPos() {
-		for (int i=history.size()-1; i>historyPos; i--) {
-			history.remove(i);
+		if (history.size() > historyPos + 1) {
+			history.subList(historyPos + 1, history.size()).clear();
 		}
 		setActionStates();
 	}
