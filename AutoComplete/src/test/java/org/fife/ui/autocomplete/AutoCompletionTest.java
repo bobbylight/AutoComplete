@@ -78,7 +78,7 @@ class AutoCompletionTest {
 		AutoCompletePopupWindow popupWindow = ac.getPopupWindow();
 		Assertions.assertNotNull(popupWindow,
 				"Popup window should have been created by doCompletion()");
-		AutoCompleteDescWindow descWindow = popupWindow.getDescWindow();
+		AbstractDescWindow descWindow = popupWindow.getDescWindow();
 		Assertions.assertNotNull(descWindow,
 				"Description window should have been created since showDescWindow was true");
 		Assertions.assertTrue(descWindow.isDisplayable(),
@@ -144,7 +144,7 @@ class AutoCompletionTest {
 		ac.doCompletion();
 
 		AutoCompletePopupWindow popupWindow = ac.getPopupWindow();
-		AutoCompleteDescWindow descWindow = popupWindow.getDescWindow();
+		AbstractDescWindow descWindow = popupWindow.getDescWindow();
 		Assertions.assertNotNull(descWindow);
 		Assertions.assertTrue(descWindow.isVisible());
 
@@ -234,7 +234,7 @@ class AutoCompletionTest {
 				"Description window should not be created until toggled on, in ON_DEMAND mode");
 
 		fireKeyAction(textArea, ac.getDescWindowToggleKey());
-		AutoCompleteDescWindow descWindow = popupWindow.getDescWindow();
+		AbstractDescWindow descWindow = popupWindow.getDescWindow();
 		Assertions.assertNotNull(descWindow,
 				"Description window should be created the first time it's toggled on");
 		Assertions.assertTrue(descWindow.isVisible(),
@@ -271,7 +271,7 @@ class AutoCompletionTest {
 		ac.doCompletion();
 
 		AutoCompletePopupWindow popupWindow = ac.getPopupWindow();
-		AutoCompleteDescWindow descWindow = popupWindow.getDescWindow();
+		AbstractDescWindow descWindow = popupWindow.getDescWindow();
 		Assertions.assertNotNull(descWindow, "Description window should already be shown (ALWAYS)");
 
 		fireKeyAction(textArea, ac.getDescWindowToggleKey());
