@@ -72,7 +72,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * Optional popup window containing a description of the currently
 	 * selected completion.
 	 */
-	private AbstractDescriptionWindow descWindow;
+	private AbstractDescWindow descWindow;
 
 	/**
 	 * Whether the description window is currently toggled "on" when
@@ -214,15 +214,16 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 *
 	 * @return The description window.
 	 */
-	private AbstractDescriptionWindow createDescriptionWindow() {
+	private AbstractDescWindow createDescriptionWindow() {
+		AbstractDescWindow dw;
 
-		AbstractDescriptionWindow dw;
-
-		if (ac.getDescriptionWindowFactory() == null) {
+		// Instantiate either a custom description window via factory or the default implementation
+		if (ac.getDescWindowFactory() == null) {
 			dw = new AutoCompleteDescWindow(this, ac);
 		} else {
-			dw = ac.getDescriptionWindowFactory().apply(this);
+			dw = ac.getDescWindowFactory().apply(this);
 		}
+
 		dw.applyComponentOrientation(ac.getTextComponentOrientation());
 
 		Dimension size = preferredDescWindowSize;
@@ -424,7 +425,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener,
 	 * @return The description window, or {@code null} if it has not been
 	 *         created yet.
 	 */
-	AutoCompleteDescWindow getDescWindow() {
+	AbstractDescWindow getDescWindow() {
 		return descWindow;
 	}
 

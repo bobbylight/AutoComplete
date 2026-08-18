@@ -4,13 +4,6 @@
  */
 package org.fife.ui.autocomplete;
 
-import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
-
-import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +14,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
+import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
 
 /**
@@ -30,13 +42,8 @@ import java.util.ResourceBundle;
  * @author Robert Futrell
  * @version 1.0
  */
-class AutoCompleteDescWindow extends AbstractDescriptionWindow
+class AutoCompleteDescWindow extends AbstractDescWindow
 	implements HyperlinkListener, DescWindowCallback {
-
-	/**
-	 * The parent AutoCompletion instance.
-	 */
-	private final AutoCompletion ac;
 
 	/**
 	 * Renders the HTML description.
@@ -79,12 +86,12 @@ class AutoCompleteDescWindow extends AbstractDescriptionWindow
 	 * completions, those with slow-to-calculate summaries won't bog down the
 	 * scrolling.
 	 */
-	private final Timer timer;
+	private Timer timer;
 
 	/**
 	 * The action that listens for the timer to fire.
 	 */
-	private final TimerAction timerAction;
+	private TimerAction timerAction;
 
 	/**
 	 * The resource bundle for this window.
@@ -97,12 +104,13 @@ class AutoCompleteDescWindow extends AbstractDescriptionWindow
 	 * performance for {@link Completion}s that may be slow to compute their
 	 * summary text.
 	 */
-	private static final int INITIAL_TIMER_DELAY = 120;
+	private static final int INITIAL_TIMER_DELAY			= 120;
 
 	/**
 	 * The resource bundle name.
 	 */
-	private static final String MSG = "org.fife.ui.autocomplete.AutoCompleteDescWindow";
+	private static final String MSG =
+					"org.fife.ui.autocomplete.AutoCompleteDescWindow";
 
 	private static final String FLAT_LAF_BORDER_PREFIX = "com.formdev.flatlaf.ui.Flat";
 
@@ -116,8 +124,7 @@ class AutoCompleteDescWindow extends AbstractDescriptionWindow
 	@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 	AutoCompleteDescWindow(Window owner, AutoCompletion ac) {
 
-		super(owner);
-		this.ac = ac;
+		super(owner, ac);
 
 		ComponentOrientation o = ac.getTextComponentOrientation();
 
@@ -199,7 +206,7 @@ class AutoCompleteDescWindow extends AbstractDescriptionWindow
 	 * Append the {@code action} at the end of the bottom nav-bar of the window.
 	 *
 	 * @param action             The {@link Action} to add
-	 * @param addSeparatorBefore If {@code true}, add a {@link JSeparator} before the {@code action}
+	 * @param addSeparatorBefore If {@code true}, add a {@link javax.swing.JSeparator} before the {@code action}
 	 * @return The new button which dispatches the action
 	 */
 	public JButton addToNavBar(Action action, boolean addSeparatorBefore) {
@@ -573,11 +580,12 @@ class AutoCompleteDescWindow extends AbstractDescriptionWindow
 	 */
 	private static class HistoryEntry {
 
-		private final Completion completion;
-		private final String summary;
-		private final String anchor;
+		private Completion completion;
+		private String summary;
+		private String anchor;
 
-		HistoryEntry(Completion completion, String summary, String anchor) {
+		HistoryEntry(Completion completion, String summary,
+									String anchor) {
 			this.completion = completion;
 			this.summary = summary;
 			this.anchor = anchor;
@@ -614,7 +622,8 @@ class AutoCompleteDescWindow extends AbstractDescriptionWindow
 			setDisplayedDesc(completion, anchor, addToHistory);
 		}
 
-		void setCompletion(Completion c, String anchor, boolean addToHistory) {
+		void setCompletion(Completion c, String anchor,
+									boolean addToHistory) {
 			this.completion = c;
 			this.anchor = anchor;
 			this.addToHistory = addToHistory;

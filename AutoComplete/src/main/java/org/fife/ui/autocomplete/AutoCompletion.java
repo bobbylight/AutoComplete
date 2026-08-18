@@ -9,7 +9,6 @@ import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
 import java.beans.*;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.Objects;
 import javax.swing.*;
@@ -91,11 +90,6 @@ public class AutoCompletion {
 	private CompletionProvider provider;
 
 	/**
-	 * If set, provides a description window different from the default {@link AutoCompleteDescWindow}.
-	 */
-	private Function<Window, AbstractDescriptionWindow> descriptionWindowFactory;
-
-	/**
 	 * The renderer to use for the completion choices. If this is
 	 * <code>null</code>, then a default renderer is used.
 	 */
@@ -118,6 +112,12 @@ public class AutoCompletion {
 	 * completion choice window.
 	 */
 	private DescWindowVisibility descWindowVisibility;
+
+	/**
+	 * Factory function used to instantiate completion description windows.
+	 * <p>If {@code null}, the default {@link AutoCompleteDescWindow} implementation is used.</p>
+	 */
+	private Function<Window, AbstractDescWindow> descWindowFactory;
 
 	/**
 	 * Whether auto-complete is enabled.
@@ -409,8 +409,14 @@ public class AutoCompletion {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, mask);
 	}
 
-	Function<Window, AbstractDescriptionWindow> getDescriptionWindowFactory() {
-		return descriptionWindowFactory;
+	/**
+	 * Returns the factory used to create description windows for completions.
+	 *
+	 * @return a {@link Function} that receives the owner {@link Window} and produces an
+	 *         {@link AbstractDescWindow} instance, or {@code null} if the default factory is used.
+	 */
+	public Function<Window, AbstractDescWindow> getDescWindowFactory() {
+		return descWindowFactory;
 	}
 
 	/**
@@ -861,7 +867,6 @@ public class AutoCompletion {
 	 * @return The current line number of the caret.
 	 */
 	protected int refreshPopupWindow() {
-
 		// A return value of null => don't suggest completions
 		String text = provider.getAlreadyEnteredText(textComponent);
 		if (text == null && !isPopupVisible()) {
@@ -1028,11 +1033,18 @@ public class AutoCompletion {
 	}
 
 	/**
-	 * Set a {@link AbstractDescriptionWindow} provider. By default, a {@link AutoCompleteDescWindow} is used.
-	 * @param descriptionWindowFactory A {@link Callable} returning an instance of a {@link AbstractDescriptionWindow}
+	 * Sets the factory used to create description windows for completions.
+	 * <p>
+	 * By default, (or if set to {@code null}), an instance of {@link AutoCompleteDescWindow}
+	 * is instantiated for displaying documentation.
+	 * </p>
+	 *
+	 * @param descWindowFactory a {@link Function} that receives the owner {@link Window}
+	 *                          and produces an {@link AbstractDescWindow} instance,
+	 *                          or {@code null} to restore the default factory.
 	 */
-	public void setDescriptionWindowFactory(Function<Window, AbstractDescriptionWindow> descriptionWindowFactory) {
-		this.descriptionWindowFactory = descriptionWindowFactory;
+	public void setDescWindowFactory(Function<Window, AbstractDescWindow> descWindowFactory) {
+		this.descWindowFactory = descWindowFactory;
 	}
 
 	/**
