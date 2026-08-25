@@ -13,9 +13,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -23,12 +21,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MouseInputAdapter;
 
+import org.fife.ui.rsyntaxtextarea.OS;
+
 
 /**
  * A component that allows its parent window to be resizable, similar to the
  * size grip seen on status bars.  This is essentially a copy of the class with
- * the same name in RSyntaxTextArea, but is duplicated to prevent a dependency
- * on that library.
+ * the same name in RSyntaxTextArea.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -70,21 +69,8 @@ class SizeGrip extends JPanel {
 	private Image createOSXSizeGrip() {
 		ClassLoader cl = getClass().getClassLoader();
 		URL url = cl.getResource("org/fife/ui/autocomplete/osx_sizegrip.png");
-		if (url==null) {
-			// We're not running in a jar - we may be debugging in Eclipse,
-			// for example
-			File f = new File("../AutoComplete/src/org/fife/ui/autocomplete/osx_sizegrip.png");
-			if (f.isFile()) {
-				try {
-					url = f.toURI().toURL();
-				} catch (MalformedURLException mue) { // Never happens
-					mue.printStackTrace();
-					return null;
-				}
-			}
-			else {
-				return null; // Can't find resource or image file
-			}
+		if (url == null) {
+			return null;
 		}
 		Image image = null;
 		try {
@@ -178,7 +164,7 @@ class SizeGrip extends JPanel {
 		super.updateUI();
 		// TODO: Key off of Aqua LaF, not just OS X, as this size grip looks
 		// bad on other LaFs on Mac such as Nimbus.
-		if (System.getProperty("os.name").contains("OS X")) {
+		if (OS.get() == OS.MAC_OS_X) {
 			if (osxSizeGrip==null) {
 				osxSizeGrip = createOSXSizeGrip();
 			}

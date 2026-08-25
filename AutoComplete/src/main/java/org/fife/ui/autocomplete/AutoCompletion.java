@@ -349,7 +349,7 @@ public class AutoCompletion {
 	 * @see #setAutoActivationDelay(int)
 	 */
 	public int getAutoActivationDelay() {
-		return autoActivationListener.timer.getDelay();
+		return autoActivationListener.timer.getInitialDelay();
 	}
 
 

@@ -2,6 +2,7 @@
 ![Java Build](https://github.com/bobbylight/AutoComplete/actions/workflows/gradle.yml/badge.svg)
 ![Java Build](https://github.com/bobbylight/AutoComplete/actions/workflows/codeql-analysis.yml/badge.svg)
 ![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fifesoft/autocomplete/badge.svg)
+[![codecov](https://codecov.io/gh/bobbylight/AutoComplete/graph/badge.svg?token=GparmvFgS9)](https://codecov.io/gh/bobbylight/AutoComplete)
 
 AutoComplete is a code completion library for Swing JTextComponents, with enhanced functionality available
 for instances of [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea).
