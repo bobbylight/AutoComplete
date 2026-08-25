@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
 }
 
-['base', 'distribution', 'maven-publish', 'signing'].each { apply plugin: it }
+['base', 'jacoco', 'distribution', 'maven-publish', 'signing'].each { apply plugin: it }
 
 base {
     archivesName = 'autocomplete'
@@ -13,6 +13,13 @@ dependencies {
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
+
+jacocoTestReport {
+    reports {
+        xml.required = true // codecov depends on xml format report
+        html.required = true
+    }
+}
 
 java {
     withSourcesJar()
