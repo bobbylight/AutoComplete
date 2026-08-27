@@ -1171,6 +1171,130 @@ class AutoCompletionTest {
 
 
 	@Test
+	void getCompletionProvider_returnsProviderPassedToConstructor() {
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+		AutoCompletion ac = new AutoCompletion(provider);
+		Assertions.assertSame(provider, ac.getCompletionProvider());
+
+		DefaultCompletionProvider newProvider = new DefaultCompletionProvider();
+		ac.setCompletionProvider(newProvider);
+		Assertions.assertSame(newProvider, ac.getCompletionProvider());
+	}
+
+
+	@Test
+	void getSetDescWindowFactory_roundTripsAndIsUsedToCreateDescWindow() {
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+		provider.addCompletion(new BasicCompletion(provider, "foo", "foo's summary"));
+		provider.addCompletion(new BasicCompletion(provider, "foobar", "foobar's summary"));
+
+		AutoCompletion ac = new AutoCompletion(provider);
+		Assertions.assertNull(ac.getDescWindowFactory());
+
+		AutoCompleteDescWindow[] created = new AutoCompleteDescWindow[1];
+		java.util.function.Function<java.awt.Window, AbstractDescWindow> factory = w -> {
+			created[0] = new AutoCompleteDescWindow(w, ac);
+			return created[0];
+		};
+		ac.setDescWindowFactory(factory);
+		Assertions.assertSame(factory, ac.getDescWindowFactory());
+
+		ac.setDescWindowVisibility(DescWindowVisibility.ALWAYS);
+		JTextArea textArea = new JTextArea();
+		ac.install(textArea);
+		realize(textArea);
+
+		textArea.setText("foo");
+		textArea.setCaretPosition(textArea.getText().length());
+		ac.doCompletion();
+
+		Assertions.assertSame(created[0], ac.getPopupWindow().getDescWindow(),
+			"The custom factory should have been used to create the description window");
+	}
+
+
+	@Test
+	void setDescriptionWindowSize_beforePopupCreated_appliedWhenCreated() {
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+		provider.addCompletion(new BasicCompletion(provider, "foo", "foo's summary"));
+		provider.addCompletion(new BasicCompletion(provider, "foobar", "foobar's summary"));
+
+		AutoCompletion ac = new AutoCompletion(provider);
+		ac.setDescWindowVisibility(DescWindowVisibility.ALWAYS);
+		ac.setDescriptionWindowSize(444, 111);
+
+		JTextArea textArea = new JTextArea();
+		ac.install(textArea);
+		realize(textArea);
+
+		textArea.setText("foo");
+		textArea.setCaretPosition(textArea.getText().length());
+		ac.doCompletion();
+
+		Assertions.assertEquals(new Dimension(444, 111), ac.getPopupWindow().getDescWindow().getSize());
+	}
+
+
+	@Test
+	void isSetAutoActivationEnabled_installedComponent_addsAndRemovesListener() {
+		AutoCompletion ac = new AutoCompletion(new DefaultCompletionProvider());
+		Assertions.assertFalse(ac.isAutoActivationEnabled());
+
+		JTextArea textArea = new JTextArea();
+		ac.install(textArea);
+
+		ac.setAutoActivationEnabled(true);
+		Assertions.assertTrue(ac.isAutoActivationEnabled());
+
+		ac.setAutoActivationEnabled(false);
+		Assertions.assertFalse(ac.isAutoActivationEnabled());
+	}
+
+
+	@Test
+	void startParameterizedCompletionAssistance_noParamsAndTypedStartChar_startsTemplateAssistance() {
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+		provider.setParameterizedCompletionParams('(', ", ", ')');
+		FunctionCompletion completion = new FunctionCompletion(provider, "foo", "void");
+		provider.addCompletion(completion);
+
+		AutoCompletion ac = new AutoCompletion(provider);
+		ac.setParameterAssistanceEnabled(true);
+		JTextArea textArea = new JTextArea();
+		ac.install(textArea);
+		realize(textArea);
+
+		textArea.setText("foo");
+		textArea.setCaretPosition(textArea.getText().length());
+		ac.insertCompletion(completion, true);
+
+		Assertions.assertTrue(ac.hideChildWindows(),
+			"Assistance should start even with no params, since the start char was typed");
+	}
+
+
+	@Test
+	void startParameterizedCompletionAssistance_noParamsAndStartCharNotTyped_insertsParensLiterally() {
+		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+		provider.setParameterizedCompletionParams('(', ", ", ')');
+		FunctionCompletion completion = new FunctionCompletion(provider, "foo", "void");
+		provider.addCompletion(completion);
+
+		AutoCompletion ac = new AutoCompletion(provider);
+		ac.setParameterAssistanceEnabled(true);
+		JTextArea textArea = new JTextArea();
+		ac.install(textArea);
+
+		textArea.setText("foo");
+		textArea.setCaretPosition(textArea.getText().length());
+		ac.insertCompletion(completion, false);
+
+		Assertions.assertEquals("foo()", textArea.getText());
+		Assertions.assertFalse(ac.hideChildWindows());
+	}
+
+
+	@Test
 	void autoCompleteAction_disabled_doesNotShowPopup() {
 		DefaultCompletionProvider provider = new DefaultCompletionProvider();
 		provider.addCompletion(new BasicCompletion(provider, "foo"));

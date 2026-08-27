@@ -42,6 +42,26 @@ class ParameterizedCompletionContextTest {
 	@BeforeEach
 	void setUp() {
 		Assumptions.assumeFalse(GraphicsEnvironment.isHeadless());
+	}
+
+
+	@AfterEach
+	void tearDown() {
+		if (frame != null) {
+			frame.dispose();
+			frame = null;
+		}
+	}
+
+
+	/**
+	 * Realizes a text area with parameterized completion assistance installed. Called
+	 * explicitly at the start of each test, rather than from {@code @BeforeEach}, since
+	 * {@link SwingRunnerExtension} only runs {@code @Test} methods on the EDT - window
+	 * creation/visibility changes made here need to happen on the EDT too, alongside the
+	 * assertions that depend on them.
+	 */
+	private void realize() {
 
 		provider = new DefaultCompletionProvider();
 		provider.setParameterizedCompletionParams('(', ", ", ')');
@@ -56,15 +76,6 @@ class ParameterizedCompletionContextTest {
 		frame.add(textArea);
 		frame.pack();
 		frame.setVisible(true);
-	}
-
-
-	@AfterEach
-	void tearDown() {
-		if (frame != null) {
-			frame.dispose();
-			frame = null;
-		}
 	}
 
 
@@ -110,6 +121,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void activate_insertsParameterTextAndSelectsFirstParam() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a", "b");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -123,6 +136,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void activate_calledTwice_isIdempotent() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -138,6 +153,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void getParameterHighlights_countsParamsPlusEndMarker() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a", "b");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -151,6 +168,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void getArgumentText_offsetInParamHighlight_returnsCurrentParamText() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a", "b");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -170,6 +189,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void getArgumentText_offsetNotInAnyHighlight_returnsNull() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -182,6 +203,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void getArgumentText_noActiveHighlights_returnsNull() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 		// Never activated, so getParameterHighlights() is empty.
@@ -191,6 +214,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void tabAndShiftTab_navigateBetweenParams() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a", "b");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -208,6 +233,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void deactivate_restoresKeyBindingsAndHidesWindows() throws ReflectiveOperationException {
+		realize();
+
 		KeyStroke tabKey = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
 		Object bindingBeforeActivate = textArea.getInputMap().get(tabKey);
 
@@ -228,6 +255,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void deactivate_whenNotActive_doesNothing() throws ReflectiveOperationException {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 		Assertions.assertDoesNotThrow(ctx::deactivate);
@@ -237,6 +266,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void caretMovedBeforeMinOffset_deactivatesAutomatically() throws ReflectiveOperationException {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a", "b");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -255,6 +286,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void focusLost_deactivates() throws ReflectiveOperationException {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -272,6 +305,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void escape_noChoicesWindowVisible_deactivates() throws ReflectiveOperationException {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -290,6 +325,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void closingChar_typedWellBeforeEnd_insertsLiteralCharWithoutDeactivating() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a", "b");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -308,6 +345,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void closingChar_typedAtEndOfCompletion_deactivates() throws ReflectiveOperationException {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -323,6 +362,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void insertSelectedChoice_choicesWindowNotVisible_returnsFalse() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -335,6 +376,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void insertSelectedChoice_choiceAvailable_replacesParamAndMovesToNext() throws ReflectiveOperationException {
+		realize();
+
 		BasicCompletion choice1 = new BasicCompletion(provider, "CHOICE_ONE");
 		BasicCompletion choice2 = new BasicCompletion(provider, "CHOICE_TWO");
 		provider.setParameterChoicesProvider((tc, param) -> List.of(choice1, choice2));
@@ -360,6 +403,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void upDownArrows_choicesWindowVisible_changeSelectedChoice() throws ReflectiveOperationException {
+		realize();
+
 		BasicCompletion choice1 = new BasicCompletion(provider, "CHOICE_ONE");
 		BasicCompletion choice2 = new BasicCompletion(provider, "CHOICE_TWO");
 		provider.setParameterChoicesProvider((tc, param) -> List.of(choice1, choice2));
@@ -384,6 +429,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void updateUI_doesNotThrow() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
@@ -396,6 +443,8 @@ class ParameterizedCompletionContextTest {
 
 	@Test
 	void updateUI_neverActivated_doesNotThrow() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 		Assertions.assertDoesNotThrow(ctx::updateUI);
@@ -403,7 +452,52 @@ class ParameterizedCompletionContextTest {
 
 
 	@Test
+	void upDownArrows_choicesWindowNotVisible_fallsBackToOldAction() {
+		realize();
+
+		FunctionCompletion fc = newFunctionCompletion("a");
+		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
+
+		textArea.setCaretPosition(0);
+		ctx.activate();
+
+		// No ParameterChoicesProvider installed, so the choices window is never shown;
+		// install our own fallback action to confirm it's invoked in that case.
+		InputMap im = textArea.getInputMap();
+		ActionMap am = textArea.getActionMap();
+		KeyStroke downKs = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+		Object key = im.get(downKs);
+		Action installedAction = am.get(key);
+		Assertions.assertDoesNotThrow(() ->
+			installedAction.actionPerformed(new ActionEvent(textArea, ActionEvent.ACTION_PERFORMED, "")));
+	}
+
+
+	@Test
+	void closingChar_partOfArgumentBeingTyped_insertsLiteralWithoutDeactivating() {
+		realize();
+
+		FunctionCompletion fc = newFunctionCompletion("a");
+		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
+
+		textArea.setCaretPosition(0);
+		ctx.activate(); // Text is now "(a)"; selection ("a") is the last/only argument
+
+		// Simulate the user typing an unbalanced opening paren as part of their argument
+		// while positioned at the end of it, e.g. typing "f(x" in place of "a".
+		textArea.replaceSelection("f(x");
+
+		fireKeyAction(textArea, KeyStroke.getKeyStroke(')'));
+
+		Assertions.assertTrue(textArea.getText().contains("f(x)"),
+			"Closing paren should be treated as part of the argument, not the call's end");
+	}
+
+
+	@Test
 	void enter_noChoiceSelected_movesToDefaultEndOffset() {
+		realize();
+
 		FunctionCompletion fc = newFunctionCompletion("a");
 		ParameterizedCompletionContext ctx = new ParameterizedCompletionContext(frame, ac, fc);
 
